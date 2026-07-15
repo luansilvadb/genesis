@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -124,5 +125,42 @@ func TestTenantRequired_UserNotInTenant(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &body)
 	if body["message"] != "acesso negado a este núcleo" {
 		t.Fatalf("expected 'acesso negado a este núcleo', got '%s'", body["message"])
+	}
+}
+
+type mockMembroRepoError struct {
+	repository.MembroRepository
+}
+
+func (m *mockMembroRepoError) GetByUserID(ctx context.Context, tenantID, userID string) (*model.MembroCasa, error) {
+	return nil, errors.New("database connection lost")
+}
+
+func (m *mockMembroRepoError) ListByUserID(ctx context.Context, userID string) ([]model.MembroCasa, error) {
+	return nil, nil
+}
+
+func TestTenantRequired_MembershipLookupError(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	r := gin.New()
+	r.GET("/protected", func(c *gin.Context) {
+		c.Set("userID", "user-1")
+		c.Next()
+	}, TenantRequired(&mockMembroRepoError{}))
+
+	req := httptest.NewRequest(http.MethodGet, "/protected", nil)
+	req.Header.Set("X-Tenant-ID", "tenant-1")
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500 for DB error, got %d", w.Code)
+	}
+
+	var body map[string]string
+	_ = json.Unmarshal(w.Body.Bytes(), &body)
+	if body["message"] != "erro interno ao verificar acesso" {
+		t.Fatalf("expected 'erro interno ao verificar acesso', got '%s'", body["message"])
 	}
 }

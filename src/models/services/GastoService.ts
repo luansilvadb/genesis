@@ -188,18 +188,20 @@ export class GastoService {
 
     if (faturasParaSalvar.length > 0) await this.faturaRepo.salvarMuitas(faturasParaSalvar)
 
-    // Re-fetch faturas to resolve composite IDs (cartaoId-mes-ano) to real
-    // backend-generated UUIDs so gastos reference valid fatura rows.
-    const faturasReais = await this.faturaRepo.listarTodas()
+    // Resolve any composite fatura IDs (cartaoId-mes-ano) to real backend-generated
+    // UUIDs. Build the lookup map from already-loaded faturas plus newly-saved ones
+    // to avoid a redundant full listarTodas() call.
+    const todasFaturas = faturasPersistidas.concat(faturasParaSalvar)
     const idRealPorComposto = new Map<string, string>()
-    for (const f of faturasReais) {
+    for (const f of todasFaturas) {
       const chave = `${f.cartaoId}-${f.periodo.mes}-${f.periodo.ano}`
       idRealPorComposto.set(chave, f.id)
     }
+    // Composite IDs have the format: <cartao-uuid>-<mes>-<ano> (3 segments, last two are numbers).
+    const compositoPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-\d{1,2}-\d{4}$/
     for (const g of gastosParaSalvar) {
-      const partes = g.faturaId?.split('-')
-      if (partes && partes.length >= 3) {
-        const realId = idRealPorComposto.get(g.faturaId!)
+      if (g.faturaId && compositoPattern.test(g.faturaId)) {
+        const realId = idRealPorComposto.get(g.faturaId)
         if (realId) {
           ;(g as { faturaId: string | null }).faturaId = realId
         }

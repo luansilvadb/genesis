@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/luansilvadb/financeiro-divi/backend-go/internal/model"
+	"gorm.io/gorm"
 )
 
 type TenantRepository interface {
@@ -45,6 +46,7 @@ type CartaoRepository interface {
 
 type FaturaRepository interface {
 	Create(ctx context.Context, fatura *model.Fatura) error
+	CreateOrUpdate(ctx context.Context, tx *gorm.DB, fatura *model.Fatura) error
 	GetByID(ctx context.Context, id, tenantID string) (*model.Fatura, error)
 	ListByTenant(ctx context.Context, tenantID string) ([]model.Fatura, error)
 	ListByTenantPaginated(ctx context.Context, tenantID string, offset, limit int) ([]model.Fatura, int64, error)

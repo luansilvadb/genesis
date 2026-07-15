@@ -53,8 +53,11 @@ function validateResponse<T>(schema: z.ZodType<T>, data: unknown, endpoint: stri
     logger.error(errorMessage)
     if (import.meta.env.DEV || import.meta.env.MODE === 'test') {
       console.error(errorMessage, { raw: data, issues: result.error.issues })
+      throw new Error(`Falha na validação da resposta da API. Entre em contato com o suporte.`)
     }
-    throw new Error(`Falha na validação da resposta da API. Entre em contato com o suporte.`)
+    // In production, return raw data rather than crashing — the API contract
+    // may have evolved and the app should degrade gracefully.
+    return data as T
   }
   return data as T
 }

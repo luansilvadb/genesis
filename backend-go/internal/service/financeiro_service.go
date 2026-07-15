@@ -12,13 +12,13 @@ import (
 	"github.com/luansilvadb/financeiro-divi/backend-go/internal/validator"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"log"
 	"sync"
 	"time"
 )
 
 var ErrEventAlreadyRegistered = errors.New("evento já registrado")
+var ErrContaFixaNotFound = errors.New("conta fixa nao encontrada")
 
 // rawMessageToString converts a *json.RawMessage to *string for model storage
 // (jsonb columns in the DB store JSON as strings).
@@ -681,18 +681,17 @@ func (s *FinanceiroService) UpdateGasto(ctx context.Context, tenantID string, ga
 		gasto.SplitMode = model.SplitMode(*req.SplitMode)
 	}
 
-	// Revalidate split sums and apply new divisoes when relevant fields change.
-	if req.ValorTotalCentavos != nil || req.SplitMode != nil || len(req.Divisoes) > 0 {
-		if len(req.Divisoes) > 0 {
-			gasto.Divisoes = make([]model.DivisaoGasto, len(req.Divisoes))
-			for i, d := range req.Divisoes {
-				gasto.Divisoes[i] = model.DivisaoGasto{
-					ID:            uuid.New().String(),
-					TenantID:      tenantID,
-					GastoID:       gastoID,
-					MembroID:      d.MembroID,
-					ValorCentavos: d.ValorCentavos,
-				}
+	// Revalidate split sums when new divisoes are explicitly provided.
+	if len(req.Divisoes) > 0 {
+		// Build new divisoes from the request.
+		gasto.Divisoes = make([]model.DivisaoGasto, len(req.Divisoes))
+		for i, d := range req.Divisoes {
+			gasto.Divisoes[i] = model.DivisaoGasto{
+				ID:            uuid.New().String(),
+				TenantID:      tenantID,
+				GastoID:       gastoID,
+				MembroID:      d.MembroID,
+				ValorCentavos: d.ValorCentavos,
 			}
 		}
 		var sum int64
@@ -702,15 +701,23 @@ func (s *FinanceiroService) UpdateGasto(ctx context.Context, tenantID string, ga
 		if sum != gasto.ValorTotalCentavos {
 			return nil, fmt.Errorf("soma das divisoes (%d) nao confere com o valor total (%d)", sum, gasto.ValorTotalCentavos)
 		}
-	}
 
-	if len(req.Divisoes) > 0 {
-		if err := s.gastoRepo.DeleteDivisoes(ctx, gastoID, tenantID); err != nil {
+		// Delete old DivisaoGasto rows and persist changes atomically.
+		err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+			if err := tx.Where("gasto_id = ? AND tenant_id = ?", gastoID, tenantID).
+				Delete(&model.DivisaoGasto{}).Error; err != nil {
+				return err
+			}
+			return tx.Save(gasto).Error
+		})
+		if err != nil {
 			return nil, err
 		}
-	}
-	if err := s.gastoRepo.Update(ctx, gasto); err != nil {
-		return nil, err
+	} else {
+		// No new divisoes — just persist field changes directly.
+		if err := s.gastoRepo.Update(ctx, gasto); err != nil {
+			return nil, err
+		}
 	}
 
 	_ = s.auditRepo.Create(ctx, &model.AuditLog{
@@ -826,7 +833,7 @@ func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, conta
 		return nil, err
 	}
 	if conta == nil {
-		return nil, fmt.Errorf("conta fixa nao encontrada")
+		return nil, ErrContaFixaNotFound
 	}
 
 	if req.Name != nil {
@@ -836,9 +843,10 @@ func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, conta
 		conta.Icon = *req.Icon
 	}
 	if req.FixedValueCentavos != nil {
-		conta.FixedValueCentavos = req.FixedValueCentavos
+		v := *req.FixedValueCentavos
+		conta.FixedValueCentavos = &v
 	}
-	if req.DefaultSplit != nil {
+	if req.DefaultSplit != nil && len(req.DefaultSplit) > 0 {
 		data, err := json.Marshal(req.DefaultSplit)
 		if err != nil {
 			return nil, fmt.Errorf("erro ao serializar default split: %w", err)
@@ -976,9 +984,7 @@ func (s *FinanceiroService) CreateFatura(ctx context.Context, tenantID string, r
 
 	}
 
-	var fatura *model.Fatura
-
-	fatura = &model.Fatura{
+	fatura := &model.Fatura{
 		ID:                 uuid.New().String(),
 		TenantID:           tenantID,
 		CartaoID:           req.CartaoID,
@@ -990,10 +996,15 @@ func (s *FinanceiroService) CreateFatura(ctx context.Context, tenantID string, r
 	}
 
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return tx.Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "cartao_id"}, {Name: "mes"}, {Name: "ano"}},
-			DoUpdates: clause.AssignmentColumns([]string{"status", "responsavel_id", "data_pagamento_banco"}),
-		}).Create(fatura).Error
+		if err := s.faturaRepo.CreateOrUpdate(ctx, tx, fatura); err != nil {
+			return err
+		}
+		// Re-query the fatura after upsert so the in-memory ID matches the DB row.
+		// Without this, OnConflict DO UPDATE leaves fatura.ID as the newly-generated
+		// UUID instead of the existing row's UUID (GORM does not add RETURNING for
+		// string primary keys without HasDefaultValue).
+		return tx.Where("cartao_id = ? AND mes = ? AND ano = ? AND tenant_id = ?",
+			req.CartaoID, req.Mes, req.Ano, tenantID).First(fatura).Error
 	})
 	if err != nil {
 		return nil, err
@@ -1015,78 +1026,34 @@ func (s *FinanceiroService) CreateFaturaBatch(ctx context.Context, tenantID stri
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 
 		for i := range reqs {
-
 			req := &reqs[i]
 
 			var dataPgto *time.Time
-
 			if req.DataPagamentoBanco != nil && *req.DataPagamentoBanco != "" {
-
 				t, err := time.Parse(time.RFC3339Nano, *req.DataPagamentoBanco)
-
 				if err != nil {
-
 					return fmt.Errorf("data_pagamento_banco inválida %q: %w", *req.DataPagamentoBanco, err)
-
 				}
-
 				dataPgto = &t
-
 			}
 
-			var fatura model.Fatura
+			fatura := model.Fatura{
+				ID:                 uuid.New().String(),
+				TenantID:           tenantID,
+				CartaoID:           req.CartaoID,
+				Mes:                req.Mes,
+				Ano:                req.Ano,
+				ResponsavelID:      req.ResponsavelID,
+				Status:             req.Status,
+				DataPagamentoBanco: dataPgto,
+			}
 
-			if err := tx.Where("cartao_id = ? AND mes = ? AND ano = ? AND tenant_id = ?", req.CartaoID, req.Mes, req.Ano, tenantID).First(&fatura).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			if err := s.faturaRepo.CreateOrUpdate(ctx, tx, &fatura); err != nil {
 				return err
 			}
-
-			if fatura.ID != "" {
-
-				fatura.Status = req.Status
-
-				fatura.ResponsavelID = req.ResponsavelID
-
-				fatura.DataPagamentoBanco = dataPgto
-
-				if err := tx.Save(&fatura).Error; err != nil {
-
-					return err
-
-				}
-
-			} else {
-
-				fatura = model.Fatura{
-
-					ID: uuid.New().String(),
-
-					TenantID: tenantID,
-
-					CartaoID: req.CartaoID,
-
-					Mes: req.Mes,
-
-					Ano: req.Ano,
-
-					ResponsavelID: req.ResponsavelID,
-
-					Status: req.Status,
-
-					DataPagamentoBanco: dataPgto,
-				}
-
-				if err := tx.Create(&fatura).Error; err != nil {
-
-					return err
-
-				}
-
-			}
-
 		}
 
 		return nil
-
 	})
 
 }

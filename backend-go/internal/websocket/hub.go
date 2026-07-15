@@ -19,10 +19,12 @@ type Client struct {
 	writeMu   sync.Mutex // protects concurrent writes to Conn
 	closed    bool
 	closeOnce sync.Once
+	done      chan struct{} // closed when the client is shutting down
 }
 
 func (c *Client) closeConn() {
 	c.closeOnce.Do(func() {
+		close(c.done)
 		c.Conn.Close()
 	})
 }
@@ -151,6 +153,7 @@ func HandleClient(hub *Hub, conn *websocket.Conn, tenantID string) {
 		Conn:     conn,
 		TenantID: tenantID,
 		Send:     make(chan []byte, 256),
+		done:     make(chan struct{}),
 	}
 
 	hub.Register(client)
@@ -171,6 +174,8 @@ func (c *Client) readPump(hub *Hub) {
 		defer ticker.Stop()
 		for {
 			select {
+			case <-c.done:
+				return
 			case <-ticker.C:
 				c.mu.Lock()
 				if c.closed {

@@ -313,6 +313,10 @@ func (h *FinanceiroHandler) UpdateContaFixa(c *gin.Context) {
 
 	conta, err := h.svc.UpdateContaFixa(c.Request.Context(), tenantID, id, &req)
 	if err != nil {
+		if errors.Is(err, service.ErrContaFixaNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "conta fixa nao encontrada"})
+			return
+		}
 		respondInternalError(c, err)
 		return
 	}

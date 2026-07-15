@@ -6,6 +6,7 @@ import (
 
 	"github.com/luansilvadb/financeiro-divi/backend-go/internal/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var ErrRecordNotFound = errors.New("record not found")
@@ -209,6 +210,16 @@ func NewGormFaturaRepo(db *gorm.DB) FaturaRepository {
 
 func (r *GormFaturaRepo) Create(ctx context.Context, f *model.Fatura) error {
 	return r.db.WithContext(ctx).Create(f).Error
+}
+
+func (r *GormFaturaRepo) CreateOrUpdate(ctx context.Context, tx *gorm.DB, f *model.Fatura) error {
+	if tx == nil {
+		tx = r.db
+	}
+	return tx.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "cartao_id"}, {Name: "mes"}, {Name: "ano"}},
+		DoUpdates: clause.AssignmentColumns([]string{"status", "responsavel_id", "data_pagamento_banco"}),
+	}).Create(f).Error
 }
 
 func (r *GormFaturaRepo) GetByID(ctx context.Context, id, tenantID string) (*model.Fatura, error) {

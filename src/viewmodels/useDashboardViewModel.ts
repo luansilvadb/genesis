@@ -143,7 +143,7 @@ export const useDashboardViewModel = (
         toast.show(`Mês de ${NOMES_MESES[mes - 1]} encerrado!`, 'success')
       } catch (e) {
         console.error('Erro ao fechar período:', e)
-        try { await cartoesEFaturas.inicializar() } catch {}
+        try { await cartoesEFaturas.inicializar() } catch { console.error('Falha ao reinicializar após erro de fechamento de período') }
         toast.show('Erro ao encerrar o mês. Algumas faturas podem não ter sido fechadas. Tente novamente.', 'error')
       }
     },
@@ -197,7 +197,7 @@ export const useDashboardViewModel = (
             toast.show(`Mês de ${NOMES_MESES[mes - 1]} reaberto!`, 'success')
         } catch (e) {
             console.error('Erro ao reabrir período:', e)
-            try { await cartoesEFaturas.inicializar() } catch {}
+            try { await cartoesEFaturas.inicializar() } catch { console.error('Falha ao reinicializar após erro de fechamento de período') }
             toast.show('Erro ao reabrir o mês. Algumas faturas podem não ter sido reabertas.', 'error')
         }
     },

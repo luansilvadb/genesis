@@ -53,24 +53,26 @@ func (rl *rateLimiter) allow(ip string) bool {
 	defer rl.mu.Unlock()
 
 	// Prevent unbounded map growth under high traffic.
+	// If the map is full, just clean up the current IP's stale entries
+	// and let the background cleanup goroutine handle the rest.
+	// This avoids an O(n) scan under the mutex that would block all
+	// concurrent requests.
 	const maxVisitors = 10000
 	if len(rl.visitors) >= maxVisitors {
-		// Aggressively evict: clear all stale entries.
 		now := time.Now()
-		for ipKey, timestamps := range rl.visitors {
-			var valid []time.Time
-			for _, ts := range timestamps {
-				if now.Sub(ts) < rl.window {
-					valid = append(valid, ts)
-				}
-			}
-			if len(valid) == 0 {
-				delete(rl.visitors, ipKey)
-			} else {
-				rl.visitors[ipKey] = valid
+		timestamps := rl.visitors[ip]
+		var valid []time.Time
+		for _, ts := range timestamps {
+			if now.Sub(ts) < rl.window {
+				valid = append(valid, ts)
 			}
 		}
-		// If still full, reject the request to protect memory.
+		if len(valid) == 0 {
+			delete(rl.visitors, ip)
+		} else {
+			rl.visitors[ip] = valid
+		}
+		// If still full after cleaning the current IP, reject to protect memory.
 		if len(rl.visitors) >= maxVisitors {
 			return false
 		}

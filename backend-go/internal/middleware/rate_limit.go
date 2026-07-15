@@ -52,6 +52,30 @@ func (rl *rateLimiter) allow(ip string) bool {
 	rl.mu.Lock()
 	defer rl.mu.Unlock()
 
+	// Prevent unbounded map growth under high traffic.
+	const maxVisitors = 10000
+	if len(rl.visitors) >= maxVisitors {
+		// Aggressively evict: clear all stale entries.
+		now := time.Now()
+		for ipKey, timestamps := range rl.visitors {
+			var valid []time.Time
+			for _, ts := range timestamps {
+				if now.Sub(ts) < rl.window {
+					valid = append(valid, ts)
+				}
+			}
+			if len(valid) == 0 {
+				delete(rl.visitors, ipKey)
+			} else {
+				rl.visitors[ipKey] = valid
+			}
+		}
+		// If still full, reject the request to protect memory.
+		if len(rl.visitors) >= maxVisitors {
+			return false
+		}
+	}
+
 	now := time.Now()
 	timestamps := rl.visitors[ip]
 

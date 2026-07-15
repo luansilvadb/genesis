@@ -28,7 +28,11 @@ func TenantRequired(membroRepo repository.MembroRepository) gin.HandlerFunc {
 		}
 
 		membro, err := membroRepo.GetByUserID(c.Request.Context(), tenantID, userIDStr)
-		if err != nil || membro == nil {
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "erro interno ao verificar acesso"})
+			return
+		}
+		if membro == nil {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "acesso negado a este núcleo"})
 			return
 		}

@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"testing"
 	"time"
@@ -403,9 +405,11 @@ func TestAuthService_ResetPassword_Success(t *testing.T) {
 		Nome:  "User",
 	}
 
+	tokenBytes := sha256.Sum256([]byte("valid-reset-token"))
+	hashedToken := hex.EncodeToString(tokenBytes[:])
 	resetRepo.tokens["reset-1"] = &model.PasswordResetToken{
 		ID:        "reset-1",
-		Token:     "valid-reset-token",
+		Token:     hashedToken,
 		UserID:    "user-1",
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
@@ -434,9 +438,11 @@ func TestAuthService_ResetPassword_UserNotFound(t *testing.T) {
 	membroRepo := &mockMembroRepoErr{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoErr{tokens: make(map[string]*model.PasswordResetToken)}
 
+	tokenBytes := sha256.Sum256([]byte("valid-token"))
+	hashedToken := hex.EncodeToString(tokenBytes[:])
 	resetRepo.tokens["reset-1"] = &model.PasswordResetToken{
 		ID:        "reset-1",
-		Token:     "valid-token",
+		Token:     hashedToken,
 		UserID:    "nonexistent-user",
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}

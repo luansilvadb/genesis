@@ -60,10 +60,12 @@ type GastoRepository interface {
 	ListByFatura(ctx context.Context, faturaID, tenantID string) ([]model.Gasto, error)
 	Update(ctx context.Context, gasto *model.Gasto) error
 	Delete(ctx context.Context, id, tenantID string) error
+	DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error
 }
 
 type ContaFixaRepository interface {
 	Create(ctx context.Context, conta *model.ContaFixa) error
+	GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error)
 	ListByTenant(ctx context.Context, tenantID string) ([]model.ContaFixa, error)
 	ListByTenantPaginated(ctx context.Context, tenantID string, offset, limit int) ([]model.ContaFixa, int64, error)
 	Update(ctx context.Context, conta *model.ContaFixa) error

@@ -44,7 +44,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 			log.Printf("tentativa de registro com email existente: %s", req.Email)
 						c.JSON(http.StatusConflict, gin.H{"message": "Nao foi possivel completar o cadastro. Verifique os dados informados e tente novamente."})
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"message": userFacingError(err)})
 		}
 		return
 	}
@@ -71,7 +71,11 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	resp, err := h.authSvc.Login(c.Request.Context(), &req)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		if errors.Is(err, service.ErrInvalidCredentials) {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": userFacingError(err)})
+		}
 		return
 	}
 

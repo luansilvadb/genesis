@@ -243,6 +243,7 @@ func main() {
 					write.DELETE("/cartoes/:id", financeiroHandler.DeleteCartao)
 
 					write.POST("/contas-fixas", financeiroHandler.CreateContaFixa)
+					write.PUT("/contas-fixas/:id", financeiroHandler.UpdateContaFixa)
 					write.DELETE("/contas-fixas/:id", financeiroHandler.DeleteContaFixa)
 
 					write.POST("/faturas", financeiroHandler.CreateFatura)
@@ -314,9 +315,15 @@ func main() {
 		}
 
 		membro, err := membroRepo.GetByUserID(c.Request.Context(), tenantID, userID)
-		if err != nil || membro == nil {
-			log.Printf("websocket: membership denied (user=%s, tenant=%s, source=%s): err=%v, found=%v",
-				userID, tenantID, tokenSource, err, membro != nil)
+		if err != nil {
+			log.Printf("websocket: membership lookup error (user=%s, tenant=%s, source=%s): %v",
+				userID, tenantID, tokenSource, err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "erro interno ao verificar acesso"})
+			return
+		}
+		if membro == nil {
+			log.Printf("websocket: membership denied (user=%s, tenant=%s, source=%s): not a member",
+				userID, tenantID, tokenSource)
 			c.JSON(http.StatusForbidden, gin.H{"message": "acesso negado a este núcleo"})
 			return
 		}

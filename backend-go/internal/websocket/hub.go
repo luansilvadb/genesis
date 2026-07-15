@@ -16,6 +16,7 @@ type Client struct {
 	Send     chan []byte
 
 	mu        sync.Mutex
+	writeMu   sync.Mutex // protects concurrent writes to Conn
 	closed    bool
 	closeOnce sync.Once
 }
@@ -164,25 +165,36 @@ func (c *Client) readPump(hub *Hub) {
 		c.closeConn()
 	}()
 
-	// Periodic ping to keep the connection alive and detect dead peers.
-	ticker := time.NewTicker(pingPeriod)
-	defer ticker.Stop()
+	// Ping ticker in a separate goroutine so pings fire even while ReadMessage blocks.
+	go func() {
+		ticker := time.NewTicker(pingPeriod)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				c.mu.Lock()
+				if c.closed {
+					c.mu.Unlock()
+					return
+				}
+				c.mu.Unlock()
+				c.writeMu.Lock()
+				c.Conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+				if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					c.writeMu.Unlock()
+					return
+				}
+				c.writeMu.Unlock()
+			}
+		}
+	}()
 
 	for {
-		select {
-		case <-ticker.C:
-			c.Conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-			if err := c.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				return
-			}
-		default:
-			_, _, err := c.Conn.ReadMessage()
-			if err != nil {
-				return
-			}
-			// Extend read deadline on each successful read.
-			c.Conn.SetReadDeadline(time.Now().Add(pongWait))
+		_, _, err := c.Conn.ReadMessage()
+		if err != nil {
+			return
 		}
+		c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	}
 }
 
@@ -208,8 +220,11 @@ func (c *Client) writePump() {
 	defer c.closeConn()
 
 	for msg := range c.Send {
+		c.writeMu.Lock()
 		c.Conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-		if err := c.Conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+		err := c.Conn.WriteMessage(websocket.TextMessage, msg)
+		c.writeMu.Unlock()
+		if err != nil {
 			return
 		}
 	}

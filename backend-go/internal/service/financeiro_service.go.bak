@@ -12,7 +12,6 @@ import (
 	"github.com/luansilvadb/financeiro-divi/backend-go/internal/validator"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 	"log"
 	"sync"
 	"time"
@@ -576,7 +575,8 @@ func (s *FinanceiroService) CreateGasto(ctx context.Context, tenantID string, re
 	}
 
 	if req.SettlementDetails != nil {
-		gasto.SettlementDetails = rawMessageToString(req.SettlementDetails)
+		s := string(*req.SettlementDetails)
+		gasto.SettlementDetails = &s
 	}
 
 	for _, d := range req.Divisoes {
@@ -628,62 +628,107 @@ func (s *FinanceiroService) UpdateGasto(ctx context.Context, tenantID string, ga
 		return nil, err
 	}
 	if gasto == nil {
-		return nil, fmt.Errorf("gasto não encontrado")
+		return nil, fmt.Errorf("gasto nÃ£o encontrado")
 	}
 
-	// Apply field changes from the request.
-	if req.Descricao != nil {
-		gasto.Descricao = *req.Descricao
-	}
-	if req.ValorTotalCentavos != nil {
-		gasto.ValorTotalCentavos = *req.ValorTotalCentavos
-	}
-	if req.CompradorID != nil {
-		gasto.CompradorID = *req.CompradorID
-	}
-	if req.FaturaID != nil {
-		gasto.FaturaID = req.FaturaID.Value
-	}
-	if req.Installments != nil {
-		gasto.Installments = *req.Installments
-	}
-	if req.TotalInstallments != nil {
-		gasto.TotalInstallments = *req.TotalInstallments
-	}
-	if req.IsLoan != nil {
-		gasto.IsLoan = *req.IsLoan
-	}
-	if req.BorrowerID != nil {
-		gasto.BorrowerID = req.BorrowerID.Value
-	}
-	if req.Method != nil {
-		gasto.Method = *req.Method
-	}
-	if req.CardOwnerID != nil {
-		gasto.CardOwnerID = req.CardOwnerID.Value
-	}
-	if req.IsPrivate != nil {
-		gasto.IsPrivate = *req.IsPrivate
-	}
-	if req.IsSettlement != nil {
-		gasto.IsSettlement = *req.IsSettlement
-	}
-	if req.SettlementDetails != nil {
-		gasto.SettlementDetails = rawMessageToString(req.SettlementDetails)
-	}
-	if req.GrupoParcelasID != nil {
-		gasto.GrupoParcelasID = req.GrupoParcelasID.Value
-	}
-	if req.RecurringBillID != nil {
-		gasto.RecurringBillID = req.RecurringBillID.Value
-	}
-	if req.SplitMode != nil && *req.SplitMode != "" {
-		gasto.SplitMode = model.SplitMode(*req.SplitMode)
-	}
-
-	// Revalidate split sums and apply new divisoes when relevant fields change.
-	if req.ValorTotalCentavos != nil || req.SplitMode != nil || len(req.Divisoes) > 0 {
+	if s.db == nil {
+		// Fallback path for tests that don't provide a *gorm.DB.
+		// Operations are not wrapped in a transaction; this is acceptable
+		// only for test scenarios with mock repositories.
 		if len(req.Divisoes) > 0 {
+			if err := s.gastoRepo.Update(ctx, gasto); err != nil {
+				return nil, err
+			}
+		}
+		if err := s.gastoRepo.Update(ctx, gasto); err != nil {
+			return nil, err
+		}
+	} else {
+		err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if req.Descricao != nil {
+			gasto.Descricao = *req.Descricao
+		}
+		if req.ValorTotalCentavos != nil {
+			gasto.ValorTotalCentavos = *req.ValorTotalCentavos
+		}
+		if req.CompradorID != nil {
+			gasto.CompradorID = *req.CompradorID
+		}
+		if req.FaturaID != nil {
+			gasto.FaturaID = req.FaturaID.Value
+		}
+		if req.Installments != nil {
+			gasto.Installments = *req.Installments
+		}
+		if req.TotalInstallments != nil {
+			gasto.TotalInstallments = *req.TotalInstallments
+		}
+		if req.IsLoan != nil {
+			gasto.IsLoan = *req.IsLoan
+		}
+		if req.BorrowerID != nil {
+			gasto.BorrowerID = req.BorrowerID.Value
+		}
+		if req.Method != nil {
+			gasto.Method = *req.Method
+		}
+		if req.CardOwnerID != nil {
+			gasto.CardOwnerID = req.CardOwnerID.Value
+		}
+		if req.IsPrivate != nil {
+			gasto.IsPrivate = *req.IsPrivate
+		}
+		if req.IsSettlement != nil {
+			gasto.IsSettlement = *req.IsSettlement
+		}
+		if req.SettlementDetails != nil {
+			s := string(*req.SettlementDetails)
+			gasto.SettlementDetails = &s
+		}
+		if req.GrupoParcelasID != nil {
+			gasto.GrupoParcelasID = req.GrupoParcelasID.Value
+		}
+		if req.RecurringBillID != nil {
+			gasto.RecurringBillID = req.RecurringBillID.Value
+		}
+		if req.SplitMode != nil && *req.SplitMode != "" {
+			gasto.SplitMode = model.SplitMode(*req.SplitMode)
+		}
+
+		if req.ValorTotalCentavos != nil || req.SplitMode != nil || len(req.Divisoes) > 0 {
+			{
+				// Always revalidate — previously this was gated on CUSTOM mode,
+				// which left INCOME/EQUAL splits inconsistent when total changed.
+				divisoes := gasto.Divisoes
+				if len(req.Divisoes) > 0 {
+					divisoes = make([]model.DivisaoGasto, len(req.Divisoes))
+					for i, d := range req.Divisoes {
+						divisoes[i] = model.DivisaoGasto{
+							ID:            uuid.New().String(),
+							TenantID:      tenantID,
+							GastoID:       gastoID,
+							MembroID:      d.MembroID,
+							ValorCentavos: d.ValorCentavos,
+						}
+					}
+				}
+				var sum int64
+				for _, d := range divisoes {
+					sum += d.ValorCentavos
+				}
+				if sum != gasto.ValorTotalCentavos {
+					return fmt.Errorf("soma das divisoes (%d) nao confere com o valor total (%d)", sum, gasto.ValorTotalCentavos)
+				}
+			}
+		}
+
+		if len(req.Divisoes) > 0 {
+			// Delete old DivisaoGasto rows before replacing to prevent orphan accumulation.
+			if err := tx.WithContext(ctx).
+				Where("gasto_id = ? AND tenant_id = ?", gastoID, tenantID).
+				Delete(&model.DivisaoGasto{}).Error; err != nil {
+				return err
+			}
 			gasto.Divisoes = make([]model.DivisaoGasto, len(req.Divisoes))
 			for i, d := range req.Divisoes {
 				gasto.Divisoes[i] = model.DivisaoGasto{
@@ -695,23 +740,13 @@ func (s *FinanceiroService) UpdateGasto(ctx context.Context, tenantID string, ga
 				}
 			}
 		}
-		var sum int64
-		for _, d := range gasto.Divisoes {
-			sum += d.ValorCentavos
-		}
-		if sum != gasto.ValorTotalCentavos {
-			return nil, fmt.Errorf("soma das divisoes (%d) nao confere com o valor total (%d)", sum, gasto.ValorTotalCentavos)
-		}
-	}
 
-	if len(req.Divisoes) > 0 {
-		if err := s.gastoRepo.DeleteDivisoes(ctx, gastoID, tenantID); err != nil {
-			return nil, err
-		}
-	}
-	if err := s.gastoRepo.Update(ctx, gasto); err != nil {
+		return tx.Save(gasto).Error
+	})
+	if err != nil {
 		return nil, err
 	}
+	} // close else block (s.db != nil)
 
 	_ = s.auditRepo.Create(ctx, &model.AuditLog{
 		TenantID: tenantID,
@@ -820,7 +855,7 @@ func (s *FinanceiroService) CreateContaFixa(ctx context.Context, tenantID string
 
 }
 
-func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, contaID string, req *dto.UpdateContaFixaRequest) (*dto.ContaFixaResponse, error) {
+func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, contaID string, req *dto.CreateContaFixaRequest) (*dto.ContaFixaResponse, error) {
 	conta, err := s.contaFixaRepo.GetByID(ctx, contaID, tenantID)
 	if err != nil {
 		return nil, err
@@ -829,16 +864,10 @@ func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, conta
 		return nil, fmt.Errorf("conta fixa nao encontrada")
 	}
 
-	if req.Name != nil {
-		conta.Name = *req.Name
-	}
-	if req.Icon != nil {
-		conta.Icon = *req.Icon
-	}
-	if req.FixedValueCentavos != nil {
-		conta.FixedValueCentavos = req.FixedValueCentavos
-	}
-	if req.DefaultSplit != nil {
+	conta.Name = req.Name
+	conta.Icon = req.Icon
+	conta.FixedValueCentavos = req.FixedValueCentavos
+	if len(req.DefaultSplit) > 0 {
 		data, err := json.Marshal(req.DefaultSplit)
 		if err != nil {
 			return nil, fmt.Errorf("erro ao serializar default split: %w", err)
@@ -854,11 +883,6 @@ func (s *FinanceiroService) UpdateContaFixa(ctx context.Context, tenantID, conta
 		TenantID: tenantID,
 		Acao:     "ATUALIZAR_CONTA_FIXA",
 		Detalhes: "Conta fixa " + conta.Name + " atualizada",
-	})
-
-	s.wsHub.Broadcast(tenantID, dto.WSMessage{
-		Type:    dto.WSTypeFixedBillUpdated,
-		Payload: contaFixaToResponse(conta),
 	})
 
 	return contaFixaToResponse(conta), nil
@@ -978,22 +1002,38 @@ func (s *FinanceiroService) CreateFatura(ctx context.Context, tenantID string, r
 
 	var fatura *model.Fatura
 
-	fatura = &model.Fatura{
-		ID:                 uuid.New().String(),
-		TenantID:           tenantID,
-		CartaoID:           req.CartaoID,
-		Mes:                req.Mes,
-		Ano:                req.Ano,
-		ResponsavelID:      req.ResponsavelID,
-		Status:             req.Status,
-		DataPagamentoBanco: dataPgto,
-	}
-
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		return tx.Clauses(clause.OnConflict{
-			Columns:   []clause.Column{{Name: "cartao_id"}, {Name: "mes"}, {Name: "ano"}},
-			DoUpdates: clause.AssignmentColumns([]string{"status", "responsavel_id", "data_pagamento_banco"}),
-		}).Create(fatura).Error
+		var existing model.Fatura
+		if err := tx.Where("cartao_id = ? AND mes = ? AND ano = ? AND tenant_id = ?", req.CartaoID, req.Mes, req.Ano, tenantID).First(&existing).Error; err != nil {
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return err
+			}
+		}
+
+		if existing.ID != "" {
+			existing.Status = req.Status
+			existing.ResponsavelID = req.ResponsavelID
+			existing.DataPagamentoBanco = dataPgto
+			if err := tx.Save(&existing).Error; err != nil {
+				return err
+			}
+			fatura = &existing
+		} else {
+			fatura = &model.Fatura{
+				ID:                 uuid.New().String(),
+				TenantID:           tenantID,
+				CartaoID:           req.CartaoID,
+				Mes:                req.Mes,
+				Ano:                req.Ano,
+				ResponsavelID:      req.ResponsavelID,
+				Status:             req.Status,
+				DataPagamentoBanco: dataPgto,
+			}
+			if err := tx.Create(fatura).Error; err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -1202,7 +1242,8 @@ func (s *FinanceiroService) CreateGastoBatch(ctx context.Context, tenantID strin
 			}
 
 			if req.SettlementDetails != nil {
-				gasto.SettlementDetails = rawMessageToString(req.SettlementDetails)
+				s := string(*req.SettlementDetails)
+				gasto.SettlementDetails = &s
 			}
 
 			for _, d := range req.Divisoes {

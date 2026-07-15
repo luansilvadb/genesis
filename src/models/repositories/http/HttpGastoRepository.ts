@@ -108,7 +108,7 @@ export class HttpGastoRepository extends HttpBaseRepository implements IGastoRep
       borrowerId: gasto.borrowerId,
       recurringBillId: gasto.recurringBillId,
       isSettlement: gasto.isSettlement,
-      settlementDetails: gasto.settlementDetails,
+      settlementDetails: gasto.settlementDetails ?? null,
       method: gasto.method,
       cardOwnerId: gasto.cardOwner,
       grupoParcelasId: gasto.grupoParcelasId,

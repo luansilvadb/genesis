@@ -3,6 +3,8 @@ package handler
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -309,9 +311,11 @@ func TestResetPasswordHandler_Success(t *testing.T) {
 		Nome:  "User",
 	}
 
+	tokenBytes := sha256.Sum256([]byte("valid-reset-token"))
+	hashedToken := hex.EncodeToString(tokenBytes[:])
 	resetToken := &model.PasswordResetToken{
 		ID:        "reset-1",
-		Token:     "valid-reset-token",
+		Token:     hashedToken,
 		UserID:    "user-1",
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}

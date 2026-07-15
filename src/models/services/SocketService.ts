@@ -26,6 +26,7 @@ export type WSEventType =
   | 'MEMBER_CREATED'
   | 'MEMBER_UPDATED'
   | 'FIXED_BILL_CREATED'
+  | 'FIXED_BILL_UPDATED'
   | 'FIXED_BILL_DELETED'
   | 'PERMISSIONS_UPDATED'
 
@@ -78,6 +79,7 @@ const WS_PAYLOAD_SCHEMAS: Record<WSEventType, z.ZodType> = {
   MEMBER_CREATED: MembroResponseSchema,
   MEMBER_UPDATED: MembroResponseSchema,
   FIXED_BILL_CREATED: ContaFixaResponseSchema,
+  FIXED_BILL_UPDATED: ContaFixaResponseSchema,
   FIXED_BILL_DELETED: DeletePayloadSchema,
   PERMISSIONS_UPDATED: PermissionsUpdatedPayloadSchema,
 } as const
@@ -93,6 +95,7 @@ const EVENT_MAP: Record<WSEventType, AppEventType[]> = {
   MEMBER_CREATED: ['membros_alterados', 'permissoes_alteradas'],
   MEMBER_UPDATED: ['membros_alterados', 'permissoes_alteradas'],
   FIXED_BILL_CREATED: ['contas_fixas_alteradas'],
+  FIXED_BILL_UPDATED: ['contas_fixas_alteradas'],
   FIXED_BILL_DELETED: ['contas_fixas_alteradas'],
   PERMISSIONS_UPDATED: ['permissoes_alteradas'],
 } as const satisfies Record<WSEventType, AppEventType[]>

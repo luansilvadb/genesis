@@ -107,6 +107,13 @@ func (m *mockGastoRepoEdge) ListByTenant(ctx context.Context, tenantID string) (
 	return result, nil
 }
 
+func (m *mockGastoRepoEdge) DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error {
+	if m.err.failCreate {
+		return errors.New("database error")
+	}
+	return nil
+}
+
 type mockContaFixaRepoEdge struct {
 	repository.ContaFixaRepository
 	contas map[string]*model.ContaFixa
@@ -119,6 +126,17 @@ func (m *mockContaFixaRepoEdge) Create(ctx context.Context, c *model.ContaFixa) 
 	}
 	m.contas[c.ID] = c
 	return nil
+}
+
+func (m *mockContaFixaRepoEdge) GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error) {
+	if m.err.failCreate {
+		return nil, errors.New("database error")
+	}
+	c, ok := m.contas[id]
+	if !ok || c.TenantID != tenantID {
+		return nil, nil
+	}
+	return c, nil
 }
 
 type mockValidationRepoEdge struct {

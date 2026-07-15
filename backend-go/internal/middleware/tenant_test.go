@@ -95,7 +95,7 @@ type mockMembroNotFound struct {
 }
 
 func (m *mockMembroNotFound) GetByUserID(ctx context.Context, tenantID, userID string) (*model.MembroCasa, error) {
-	return nil, context.Canceled
+	return nil, nil
 }
 
 func (m *mockMembroNotFound) ListByUserID(ctx context.Context, userID string) ([]model.MembroCasa, error) {

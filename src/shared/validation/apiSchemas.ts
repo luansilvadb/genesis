@@ -38,7 +38,7 @@ export const FaturaResponseSchema = z.object({
   ano: z.number().int(),
   responsavelId: z.string(),
   status: z.enum(['ABERTA', 'FECHADA']),
-  dataPagamentoBanco: z.string().datetime().nullish(),
+  dataPagamentoBanco: z.string().nullish(),
 })
 
 export const FaturaListResponseSchema = z.array(FaturaResponseSchema)

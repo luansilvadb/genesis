@@ -302,6 +302,12 @@ func (r *GormGastoRepo) Delete(ctx context.Context, id, tenantID string) error {
 	})
 }
 
+func (r *GormGastoRepo) DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error {
+	return r.db.WithContext(ctx).
+		Where("gasto_id = ? AND tenant_id = ?", gastoID, tenantID).
+		Delete(&model.DivisaoGasto{}).Error
+}
+
 type GormContaFixaRepo struct{ db *gorm.DB }
 
 func NewGormContaFixaRepo(db *gorm.DB) ContaFixaRepository {
@@ -310,6 +316,18 @@ func NewGormContaFixaRepo(db *gorm.DB) ContaFixaRepository {
 
 func (r *GormContaFixaRepo) Create(ctx context.Context, c *model.ContaFixa) error {
 	return r.db.WithContext(ctx).Create(c).Error
+}
+
+func (r *GormContaFixaRepo) GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error) {
+	var c model.ContaFixa
+	err := r.db.WithContext(ctx).First(&c, "id = ? AND tenant_id = ?", id, tenantID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &c, nil
 }
 
 func (r *GormContaFixaRepo) ListByTenant(ctx context.Context, tenantID string) ([]model.ContaFixa, error) {

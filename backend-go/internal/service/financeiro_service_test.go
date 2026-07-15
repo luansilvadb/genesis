@@ -72,6 +72,10 @@ func (m *mockGastoRepoForFinanceiro) Create(ctx context.Context, g *model.Gasto)
 	return nil
 }
 
+func (m *mockGastoRepoForFinanceiro) DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error {
+	return nil
+}
+
 func (m *mockGastoRepoForFinanceiro) ListByTenant(ctx context.Context, tenantID string) ([]model.Gasto, error) {
 	var result []model.Gasto
 	for _, g := range m.gastos {
@@ -90,6 +94,14 @@ type mockContaFixaRepoForFinanceiro struct {
 func (m *mockContaFixaRepoForFinanceiro) Create(ctx context.Context, c *model.ContaFixa) error {
 	m.contas[c.ID] = c
 	return nil
+}
+
+func (m *mockContaFixaRepoForFinanceiro) GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error) {
+	c, ok := m.contas[id]
+	if !ok || c.TenantID != tenantID {
+		return nil, nil
+	}
+	return c, nil
 }
 
 type mockAuditRepoForFinanceiro struct {

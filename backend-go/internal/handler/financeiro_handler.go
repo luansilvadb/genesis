@@ -289,6 +289,37 @@ func (h *FinanceiroHandler) CreateContaFixa(c *gin.Context) {
 	c.JSON(http.StatusCreated, conta)
 }
 
+// @Summary Update conta fixa
+// @Description Atualiza uma conta fixa existente
+// @Tags Contas Fixas
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "ID da conta fixa"
+// @Param request body dto.UpdateContaFixaRequest true "Dados atualizados"
+// @Success 200 {object} dto.ContaFixaResponse
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/contas-fixas/:id [put]
+func (h *FinanceiroHandler) UpdateContaFixa(c *gin.Context) {
+	tenantID := c.GetString("tenantID")
+	id := c.Param("id")
+
+	var req dto.UpdateContaFixaRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	conta, err := h.svc.UpdateContaFixa(c.Request.Context(), tenantID, id, &req)
+	if err != nil {
+		respondInternalError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, conta)
+}
+
 // @Summary List cartoes
 // @Description Lista todos os cartões do núcleo familiar
 // @Tags Cartões

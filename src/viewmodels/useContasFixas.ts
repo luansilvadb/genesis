@@ -43,10 +43,11 @@ export function useContasFixas() {
     const idx = contasFixas.value.findIndex(c => c.id === template.id)
     if (idx > -1) {
       contasFixas.value[idx] = template
+      await contaFixaRepository.atualizar(template.id, template)
     } else {
       contasFixas.value.push(template)
+      await contaFixaRepository.salvar(template)
     }
-    await contaFixaRepository.salvar(template)
   }
 
   const excluirContaFixa = async (id: string) => {

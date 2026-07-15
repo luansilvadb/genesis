@@ -10,7 +10,8 @@ const gastos = ref<Gasto[]>([])
 export const useCartoesEFaturas = () => {
   const sync = async () => {
     const [c, g] = await Promise.all([cartaoRepository.listarTodos(), gastoRepository.listarTodos()])
-    cartoes.value = c; gastos.value = g
+    cartoes.value = c
+    gastos.value = g
     const hoje = new Date()
     faturas.value = await faturaService.assegurarFaturasAbertas(c, hoje.getMonth() + 1, hoje.getFullYear())
   }

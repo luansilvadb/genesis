@@ -21,6 +21,7 @@ const (
 	WSTypeCardDeleted       = "CARD_DELETED"
 	WSTypeInvoiceUpdated    = "INVOICE_UPDATED"
 	WSTypeFixedBillCreated  = "FIXED_BILL_CREATED"
+	WSTypeFixedBillUpdated  = "FIXED_BILL_UPDATED"
 	WSTypeFixedBillDeleted  = "FIXED_BILL_DELETED"
 	WSTypePermissionsUpdate = "PERMISSIONS_UPDATED"
 )

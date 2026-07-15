@@ -51,6 +51,22 @@ export class HttpContaFixaRepository extends HttpBaseRepository implements ICont
     })
   }
 
+  async atualizar(id: string, conta: ContaFixa): Promise<void> {
+    const body = {
+      name: conta.name,
+      icon: conta.icon,
+      fixedValueCentavos: conta.fixedValueCentavos,
+      defaultSplit: conta.defaultSplit.map(d => ({
+        membroId: d.membroId,
+        valorCentavos: d.valorCentavos
+      }))
+    }
+    await this.validatedRequest(ContaFixaResponseSchema, `/contas-fixas/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body)
+    })
+  }
+
   async excluir(id: string): Promise<void> {
     await this.request(`/contas-fixas/${id}`, {
       method: 'DELETE'

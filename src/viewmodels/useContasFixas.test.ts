@@ -9,6 +9,7 @@ vi.mock('../shared/container', () => ({
   contaFixaRepository: {
     listarTodas: vi.fn(),
     salvar: vi.fn(),
+    atualizar: vi.fn(),
     excluir: vi.fn()
   },
   gastoService: {
@@ -36,6 +37,11 @@ describe('useContasFixas', () => {
 
     vi.mocked(contaFixaRepository.listarTodas).mockImplementation(async () => mockContas)
     vi.mocked(contaFixaRepository.salvar).mockImplementation(async (conta: any) => {
+      const idx = mockContas.findIndex(c => c.id === conta.id)
+      if (idx > -1) mockContas[idx] = conta
+      else mockContas.push(conta)
+    })
+    vi.mocked(contaFixaRepository.atualizar).mockImplementation(async (_id: string, conta: any) => {
       const idx = mockContas.findIndex(c => c.id === conta.id)
       if (idx > -1) mockContas[idx] = conta
       else mockContas.push(conta)

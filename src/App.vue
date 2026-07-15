@@ -31,8 +31,8 @@ const isLancarGastoBloqueado = computed(() => {
   if (!role || role === 'ADMIN') return false
   const perms = tenantPermissions.value[role]
   const defaultAllow = role === 'MORADOR'
-  const allowed = perms ? perms.ALLOW_LANCAR_GASTO : defaultAllow
-  return !allowed
+  const allowed = perms ? (perms.ALLOW_LANCAR_GASTO !== undefined ? perms.ALLOW_LANCAR_GASTO : defaultAllow) : defaultAllow
+  return allowed === false
 })
 
 provide('appState', {

@@ -117,9 +117,7 @@ export class GastoService {
 
     if (!periodo) throw new Error(`Fatura ou período original não encontrado para o gasto ${original.id}`)
 
-    if (idsParaExcluir.length === 1) await this.gastoRepo.excluir(idsParaExcluir[0])
-    else await this.gastoRepo.excluirMuitos(idsParaExcluir)
-
+    // Create replacement gasto(s) FIRST. If this fails, nothing is lost.
     await this.lancarGastoOuEmprestimo({
       flow: original.isSettlement ? 'settlement' : original.isLoan ? 'loan' : 'expense',
       paymentMethod: dados.method,
@@ -141,6 +139,18 @@ export class GastoService {
           }
         : undefined
     })
+
+    // Delete originals AFTER successful recreation.
+    // If this fails, duplicates exist — the caller should sync to detect them.
+    try {
+      if (idsParaExcluir.length === 1) await this.gastoRepo.excluir(idsParaExcluir[0])
+      else await this.gastoRepo.excluirMuitos(idsParaExcluir)
+    } catch (deleteErr) {
+      throw new Error(
+        `Gasto recriado com sucesso, mas falha ao excluir ${idsParaExcluir.length} gasto(s) original(is): ${(deleteErr as Error).message}. ` +
+        `Recarregue a página para evitar duplicatas. IDs: ${idsParaExcluir.join(', ')}`
+      )
+    }
   }
 
   private async salvarParcelasAtualizadas(
@@ -153,7 +163,7 @@ export class GastoService {
     const faturasPersistidas = await this.faturaRepo.listarTodas()
 
     for (const gasto of gastos) {
-      const faturaAtual = gasto.faturaId ? await this.faturaRepo.buscarPorId(gasto.faturaId) : null
+      const faturaAtual = gasto.faturaId ? (faturasPersistidas.find(f => f.id === gasto.faturaId) ?? null) : null
       let faturaId = gasto.faturaId
       if (faturaAtual && cartaoResolvido.cartaoId) {
         const novaFatura = await this.lancamentoService.obterOuCriarFaturaMemoria(
@@ -177,9 +187,37 @@ export class GastoService {
     }
 
     if (faturasParaSalvar.length > 0) await this.faturaRepo.salvarMuitas(faturasParaSalvar)
+
+    // Re-fetch faturas to resolve composite IDs (cartaoId-mes-ano) to real
+    // backend-generated UUIDs so gastos reference valid fatura rows.
+    const faturasReais = await this.faturaRepo.listarTodas()
+    const idRealPorComposto = new Map<string, string>()
+    for (const f of faturasReais) {
+      const chave = `${f.cartaoId}-${f.periodo.mes}-${f.periodo.ano}`
+      idRealPorComposto.set(chave, f.id)
+    }
+    for (const g of gastosParaSalvar) {
+      const partes = g.faturaId?.split('-')
+      if (partes && partes.length >= 3) {
+        const realId = idRealPorComposto.get(g.faturaId!)
+        if (realId) {
+          ;(g as { faturaId: string | null }).faturaId = realId
+        }
+      }
+    }
+
     if (gastosParaSalvar.length > 0) {
+      const erros: { id: string; message: string }[] = []
       for (const g of gastosParaSalvar) {
-        await this.gastoRepo.atualizar(g.id, g)
+        try {
+          await this.gastoRepo.atualizar(g.id, g)
+        } catch (e) {
+          erros.push({ id: g.id, message: (e as Error).message })
+        }
+      }
+      if (erros.length > 0) {
+        const detalhes = erros.map(e => `${e.id}: ${e.message}`).join('; ')
+        throw new Error(`Falha ao atualizar ${erros.length} de ${gastosParaSalvar.length} parcelas: ${detalhes}`)
       }
     }
   }

@@ -65,6 +65,12 @@
           <path d="M34 44 Q38 48 42 44" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
           <path d="M58 44 Q62 48 66 44" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
         </template>
+        <template v-else-if="mood === 'sad'">
+          <circle cx="38" cy="44" r="3" fill="black" />
+          <circle cx="62" cy="44" r="3" fill="black" />
+          <line x1="34" y1="42" x2="40" y2="44" stroke="white" stroke-width="1.2" stroke-linecap="round" />
+          <line x1="60" y1="44" x2="66" y2="42" stroke="white" stroke-width="1.2" stroke-linecap="round" />
+        </template>
       </g>
 
       <!-- Mouth -->
@@ -74,6 +80,7 @@
         <circle v-else-if="mood === 'surprised'" cx="50" cy="65" r="3" fill="black" />
         <path v-else-if="mood === 'excited'" d="M40 60 Q50 72 60 60 L40 60" fill="black" />
         <path v-else-if="mood === 'thinking'" d="M45 65 Q50 62 55 65" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" />
+        <path v-else-if="mood === 'sad'" d="M42 68 Q50 62 58 68" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
       </g>
 
       <!-- Stick limbs (Noodle style) -->
@@ -98,6 +105,10 @@
           <path d="M25 65 Q18 72 15 80" />
           <path d="M75 65 Q82 72 85 80" />
         </template>
+        <template v-else-if="mood === 'sad'">
+          <path d="M22 62 Q18 72 16 82" />
+          <path d="M78 62 Q82 72 84 82" />
+        </template>
         <template v-else>
           <path d="M22 60 Q15 68 12 75" />
           <path d="M78 60 Q85 68 88 75" />
@@ -114,7 +125,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'ember',
-    validator: (v: string) => ['ember', 'meadow', 'sky', 'sunburst', 'flamingo'].includes(v)
+    validator: (v: string) => ['ember', 'meadow', 'sky', 'sunburst', 'flamingo', 'coral'].includes(v)
   },
   size: {
     type: Number,
@@ -123,7 +134,7 @@ const props = defineProps({
   mood: {
     type: String,
     default: 'happy',
-    validator: (v: string) => ['happy', 'chill', 'surprised', 'excited', 'thinking', 'sleeping', 'proud'].includes(v)
+    validator: (v: string) => ['happy', 'chill', 'surprised', 'excited', 'thinking', 'sleeping', 'proud', 'sad'].includes(v)
   }
 });
 
@@ -135,7 +146,8 @@ const fillColor = computed(() => {
     meadow: '#00a83d',
     sky: '#0090ff',
     sunburst: '#ffbb26',
-    flamingo: '#ff58ae'
+    flamingo: '#ff58ae',
+    coral: '#ff6b6b'
   };
   return colors[props.variant] || colors.ember;
 });
@@ -149,7 +161,8 @@ const blobPath = computed(() => {
     sleeping: "M20,52 Q20,17 50,22 Q80,27 85,57 Q90,87 50,82 Q10,77 15,52 Z",
     chill: "M20,50 Q20,15 50,20 Q80,25 85,55 Q90,85 50,80 Q10,75 15,50 Z",
     proud: "M20,49 Q20,14 50,19 Q80,24 85,54 Q90,84 50,79 Q10,74 15,49 Z",
-    surprised: "M20,47 Q20,12 50,17 Q80,22 85,52 Q90,82 50,77 Q10,72 15,47 Z"
+    surprised: "M20,47 Q20,12 50,17 Q80,22 85,52 Q90,82 50,77 Q10,72 15,47 Z",
+    sad: "M20,52 Q20,25 50,30 Q80,35 85,60 Q90,85 50,80 Q10,75 15,52 Z"
   };
   return paths[props.mood] || paths.happy;
 });

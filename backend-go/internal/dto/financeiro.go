@@ -1,6 +1,36 @@
 package dto
 
-import "github.com/luansilvadb/financeiro-divi/backend-go/internal/model"
+import (
+	"encoding/json"
+	"github.com/luansilvadb/financeiro-divi/backend-go/internal/model"
+)
+
+// NullString is a string that tracks whether it was explicitly set in JSON.
+// nil pointer = field not present in JSON.
+// pointer to empty string = field explicitly set to null (clear it).
+type NullString struct {
+	Value *string
+}
+
+func (ns *NullString) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		ns.Value = nil
+		return nil
+	}
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	ns.Value = &s
+	return nil
+}
+
+func (ns NullString) MarshalJSON() ([]byte, error) {
+	if ns.Value == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(*ns.Value)
+}
 
 type CreateTenantRequest struct {
 	Name string `json:"name" binding:"required"`
@@ -37,11 +67,11 @@ type CreateGastoRequest struct {
 	CardOwnerID        *string     `json:"cardOwnerId,omitempty"`
 	IsPrivate          bool        `json:"isPrivate,omitempty"`
 	IsSettlement       bool        `json:"isSettlement,omitempty"`
-	SettlementDetails  *string     `json:"settlementDetails,omitempty"`
-	GrupoParcelasID    *string     `json:"grupoParcelasId,omitempty"`
-	RecurringBillID    *string     `json:"recurringBillId,omitempty"`
-	SplitMode          string      `json:"splitMode,omitempty"`
-	Divisoes           []SplitItem `json:"divisoes,omitempty"`
+	SettlementDetails  *json.RawMessage `json:"settlementDetails,omitempty"`
+	GrupoParcelasID    *string          `json:"grupoParcelasId,omitempty"`
+	RecurringBillID    *string          `json:"recurringBillId,omitempty"`
+	SplitMode          string           `json:"splitMode,omitempty"`
+	Divisoes           []SplitItem      `json:"divisoes,omitempty"`
 }
 
 type SplitItem struct {
@@ -115,6 +145,13 @@ type CreateContaFixaRequest struct {
 	DefaultSplit       []SplitItem `json:"defaultSplit,omitempty"`
 }
 
+type UpdateContaFixaRequest struct {
+	Name               *string     `json:"name,omitempty"`
+	Icon               *string     `json:"icon,omitempty"`
+	FixedValueCentavos *int64      `json:"fixedValueCentavos,omitempty"`
+	DefaultSplit       []SplitItem `json:"defaultSplit,omitempty"`
+}
+
 type ContaFixaResponse struct {
 	ID                 string      `json:"id"`
 	Name               string      `json:"name"`
@@ -149,20 +186,20 @@ type UpdateGastoRequest struct {
 	Descricao          *string     `json:"descricao,omitempty"`
 	ValorTotalCentavos *int64      `json:"valorTotalCentavos,omitempty"`
 	CompradorID        *string     `json:"compradorId,omitempty"`
-	FaturaID           *string     `json:"faturaId,omitempty"`
+	FaturaID           *NullString `json:"faturaId,omitempty"`
 	Installments       *int        `json:"installments,omitempty"`
 	TotalInstallments  *int        `json:"totalInstallments,omitempty"`
 	IsLoan             *bool       `json:"isLoan,omitempty"`
-	BorrowerID         *string     `json:"borrowerId,omitempty"`
+	BorrowerID         *NullString `json:"borrowerId,omitempty"`
 	Method             *string     `json:"method,omitempty" binding:"omitempty,oneof=pix card cash"`
-	CardOwnerID        *string     `json:"cardOwnerId,omitempty"`
+	CardOwnerID        *NullString `json:"cardOwnerId,omitempty"`
 	IsPrivate          *bool       `json:"isPrivate,omitempty"`
-	IsSettlement       *bool       `json:"isSettlement,omitempty"`
-	SettlementDetails  *string     `json:"settlementDetails,omitempty"`
-	GrupoParcelasID    *string     `json:"grupoParcelasId,omitempty"`
-	RecurringBillID    *string     `json:"recurringBillId,omitempty"`
-	SplitMode          *string     `json:"splitMode,omitempty"`
-	Divisoes           []SplitItem `json:"divisoes,omitempty"`
+	IsSettlement       *bool            `json:"isSettlement,omitempty"`
+	SettlementDetails  *json.RawMessage `json:"settlementDetails,omitempty"`
+	GrupoParcelasID    *NullString      `json:"grupoParcelasId,omitempty"`
+	RecurringBillID    *NullString      `json:"recurringBillId,omitempty"`
+	SplitMode          *string          `json:"splitMode,omitempty"`
+	Divisoes           []SplitItem      `json:"divisoes,omitempty"`
 }
 
 type DeleteGastoBatchRequest struct {
@@ -219,9 +256,9 @@ type GastoResponse struct {
 	CardOwnerID        *string     `json:"cardOwnerId,omitempty"`
 	RecurringBillID    *string     `json:"recurringBillId,omitempty"`
 	GrupoParcelasID    *string     `json:"grupoParcelasId,omitempty"`
-	IsSettlement       bool        `json:"isSettlement"`
-	SettlementDetails  *string     `json:"settlementDetails,omitempty"`
-	CreatedAt          string      `json:"createdAt"`
+	IsSettlement       bool             `json:"isSettlement"`
+	SettlementDetails  *json.RawMessage `json:"settlementDetails,omitempty"`
+	CreatedAt          string           `json:"createdAt"`
 	SplitMode          string      `json:"splitMode"`
 	Divisoes           []SplitItem `json:"divisoes,omitempty"`
 }

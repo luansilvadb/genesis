@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -164,7 +165,10 @@ func (s *AuthService) GoogleLogin(ctx context.Context, req *dto.GoogleLoginReque
 
 	user, err := s.usuarioRepo.GetByGoogleID(ctx, payload.Subject)
 	if err != nil {
-		userByEmail, _ := s.usuarioRepo.GetByEmail(ctx, payload.Email)
+		userByEmail, err := s.usuarioRepo.GetByEmail(ctx, payload.Email)
+		if err != nil && !errors.Is(err, repository.ErrRecordNotFound) && !errors.Is(err, ErrUserNotFound) {
+			return nil, fmt.Errorf("erro ao verificar email existente: %w", err)
+		}
 		if userByEmail != nil {
 			userByEmail.GoogleID = &payload.Subject
 			if err = s.usuarioRepo.Update(ctx, userByEmail); err != nil {
@@ -222,8 +226,12 @@ func (s *AuthService) ForgotPassword(ctx context.Context, email string) error {
 		return nil
 	}
 
+	// Hash the token before storage so a DB read doesn't expose active reset tokens.
+	tokenHash := sha256.Sum256([]byte(tokenStr))
+	hashedToken := hex.EncodeToString(tokenHash[:])
+
 	resetToken := &model.PasswordResetToken{
-		Token:     tokenStr,
+		Token:     hashedToken,
 		UserID:    user.ID,
 		ExpiresAt: time.Now().Add(30 * time.Minute),
 	}
@@ -243,7 +251,9 @@ func (s *AuthService) ResetPassword(ctx context.Context, token, newPassword stri
 		return err
 	}
 
-	resetToken, err := s.resetRepo.GetByToken(ctx, token)
+	tokenHash := sha256.Sum256([]byte(token))
+	hashedToken := hex.EncodeToString(tokenHash[:])
+	resetToken, err := s.resetRepo.GetByToken(ctx, hashedToken)
 	if err != nil || resetToken == nil {
 		return ErrInvalidToken
 	}

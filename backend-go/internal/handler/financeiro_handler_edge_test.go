@@ -138,6 +138,10 @@ func (m *mockGastoRepoFHEdge) ListByTenantPaginated(ctx context.Context, tenantI
 	return all[start:end], total, nil
 }
 
+func (m *mockGastoRepoFHEdge) DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error {
+	return nil
+}
+
 type mockContaFixaRepoFHEdge struct {
 	repository.ContaFixaRepository
 	contas map[string]*model.ContaFixa
@@ -146,6 +150,14 @@ type mockContaFixaRepoFHEdge struct {
 func (m *mockContaFixaRepoFHEdge) Create(ctx context.Context, c *model.ContaFixa) error {
 	m.contas[c.ID] = c
 	return nil
+}
+
+func (m *mockContaFixaRepoFHEdge) GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error) {
+	c, ok := m.contas[id]
+	if !ok || c.TenantID != tenantID {
+		return nil, nil
+	}
+	return c, nil
 }
 
 func (m *mockContaFixaRepoFHEdge) ListByTenantPaginated(ctx context.Context, tenantID string, offset, limit int) ([]model.ContaFixa, int64, error) {
@@ -458,12 +470,20 @@ func (m *mockGastoRepoFail) ListByTenantPaginated(ctx context.Context, tenantID 
 	return all[start:end], total, nil
 }
 
+func (m *mockGastoRepoFail) DeleteDivisoes(ctx context.Context, gastoID, tenantID string) error {
+	return nil
+}
+
 type mockContaFixaRepoFail struct {
 	repository.ContaFixaRepository
 }
 
 func (m *mockContaFixaRepoFail) Create(ctx context.Context, c *model.ContaFixa) error {
 	return errors.New("database error")
+}
+
+func (m *mockContaFixaRepoFail) GetByID(ctx context.Context, id, tenantID string) (*model.ContaFixa, error) {
+	return nil, errors.New("database error")
 }
 
 func (m *mockContaFixaRepoFail) ListByTenantPaginated(ctx context.Context, tenantID string, offset, limit int) ([]model.ContaFixa, int64, error) {

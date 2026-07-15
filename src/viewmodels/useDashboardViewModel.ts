@@ -76,7 +76,10 @@ export const useDashboardViewModel = (
     
     confirmarBaixaNetting: async (dados: { from: string; to: string; valor: number; method: 'pix' | 'cash'; descricao: string }) => {
       const fatura = periodosState.faturaPixPeriodoSelecionado.value
-      if (!fatura) return
+      if (!fatura) {
+        toast.show('Não foi possível encontrar uma fatura para este período. Verifique se há cartões configurados.', 'error')
+        return
+      }
       
       ui.isSubmittingPix.value = true
       try {
@@ -119,8 +122,14 @@ export const useDashboardViewModel = (
       await cartoesEFaturas.inicializar() 
     },
     
-    confirmarSalvarTemplate: (t: ContaFixa) => { 
-      contasFixas.salvarContaFixa(t)
+    confirmarSalvarTemplate: async (t: ContaFixa) => {
+      try {
+        await contasFixas.salvarContaFixa(t)
+      } catch (e) {
+        console.error('Erro ao salvar template:', e)
+        toast.show('Erro ao salvar conta fixa. Tente novamente.', 'error')
+        return
+      }
       ui.fecharModal('configurar-conta-fixa')
     },
     
@@ -134,6 +143,7 @@ export const useDashboardViewModel = (
         toast.show(`Mês de ${NOMES_MESES[mes - 1]} encerrado!`, 'success')
       } catch (e) {
         console.error('Erro ao fechar período:', e)
+        try { await cartoesEFaturas.inicializar() } catch {}
         toast.show('Erro ao encerrar o mês. Algumas faturas podem não ter sido fechadas. Tente novamente.', 'error')
       }
     },
@@ -147,7 +157,12 @@ export const useDashboardViewModel = (
       if (t === 'Lançamento') {
         if (i.id.startsWith('audit-settlement-')) {
           const fid = (i as Gasto).faturaId
-          if (fid) return cartoesEFaturas.reabrirFatura(fid)
+          if (fid) {
+              await cartoesEFaturas.reabrirFatura(fid)
+              toast.show('Período reaberto para estorno do acerto.', 'success')
+              return
+          }
+          toast.show('Acertos não possuem fatura associada. Exclua o lançamento diretamente ou reabra o período manualmente.', 'error')
           return
         }
         await gastoService.excluirGasto(i.id)
@@ -170,7 +185,22 @@ export const useDashboardViewModel = (
     },
     
 
-    reabrirPeriodoSelecionado: () => Promise.all(props.faturasFechadas.filter(f => f.periodo.mes === periodoSelecionado.value.mes && f.periodo.ano === periodoSelecionado.value.ano).map(f => cartoesEFaturas.reabrirFatura(f.id))),
+    reabrirPeriodoSelecionado: async () => {
+        const { mes, ano } = periodoSelecionado.value
+        try {
+            await Promise.all(
+                periodosState.faturasPeriodoSelecionado.value
+                    .filter(f => f.status === 'FECHADA')
+                    .map(f => faturaService.reabrirFatura(f.id))
+            )
+            await cartoesEFaturas.inicializar()
+            toast.show(`Mês de ${NOMES_MESES[mes - 1]} reaberto!`, 'success')
+        } catch (e) {
+            console.error('Erro ao reabrir período:', e)
+            try { await cartoesEFaturas.inicializar() } catch {}
+            toast.show('Erro ao reabrir o mês. Algumas faturas podem não ter sido reabertas.', 'error')
+        }
+    },
 
     abrirAuditLogs: async () => {
       if (ui.isLogsLoading.value) return

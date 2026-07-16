@@ -94,9 +94,9 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
       </div>
 
       <!-- Toggles List -->
-      <div class="p-6 divide-y divide-stone/20 space-y-4">
+      <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-x-6 lg:gap-y-5">
         <!-- Lançar Gastos -->
-        <div class="flex items-center justify-between gap-4 pt-1 first:pt-0">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Lançar Gastos e Despesas</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -120,7 +120,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Gerenciar Cartões -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Gerenciar Cartões de Crédito</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -144,7 +144,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Gerenciar Contas Fixas -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Gerenciar Contas Fixas</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -168,7 +168,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Registrar Netting -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Registrar Acertos (Netting)</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -192,7 +192,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Ver Histórico / Audit Logs -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Visualizar Histórico de Auditoria</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -216,7 +216,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Alterar Renda -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Alterar Renda do Perfil</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -240,7 +240,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Alterar Nome -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Alterar Nome de Exibição</h4>
             <p class="text-xs text-ash leading-relaxed">
@@ -264,7 +264,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         </div>
 
         <!-- Encerrar e Reabrir Período -->
-        <div class="flex items-center justify-between gap-4 pt-4">
+        <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Encerrar e Reabrir Período</h4>
             <p class="text-xs text-ash leading-relaxed">

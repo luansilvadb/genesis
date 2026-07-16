@@ -233,7 +233,7 @@ const cancelarNovoMembro = () => {
             </Button>
           </div>
 
-          <div class="space-y-2">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <MembroListItem 
               v-for="(membro, idx) in membros" 
               :key="membro.id"

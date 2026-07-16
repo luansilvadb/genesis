@@ -82,11 +82,7 @@ onMounted(async () => {
       </div>
 
       <!-- ===== MOBILE TABS (< lg): carrossel horizontal ===== -->
-      <div v-if="!isModoFoco" class="lg:hidden shrink-0 relative mb-3">
-        <!-- Fade indicators -->
-        <div class="absolute left-0 top-0 bottom-0 w-5 bg-gradient-to-r from-canvas to-transparent z-20 pointer-events-none rounded-l-2xl" />
-        <div class="absolute right-0 top-0 bottom-0 w-5 bg-gradient-to-r from-transparent to-canvas z-20 pointer-events-none rounded-r-2xl" />
-
+      <div v-if="!isModoFoco" class="lg:hidden shrink-0 mb-3">
         <div class="flex px-3 overflow-x-auto no-scrollbar scroll-smooth gap-1.5">
           <button
             v-for="tab in visibleTabs"
@@ -95,8 +91,8 @@ onMounted(async () => {
             type="button"
             class="shrink-0 px-4 py-2.5 min-h-[44px] rounded-pill font-bold text-xs uppercase tracking-wider cursor-pointer border transition-all duration-300 ease-spring select-none active:scale-95"
             :class="activeTab === tab.key
-              ? 'bg-ember text-white border-ember shadow-[0_2px_10px_rgba(255,62,0,0.2)]'
-              : 'bg-white/80 text-ash border-stone/20 hover:text-charcoal hover:border-stone/40 hover:bg-white'"
+              ? 'bg-ember text-white border-ember'
+              : 'bg-transparent text-ash border-stone/20 hover:text-charcoal hover:border-stone/40 hover:bg-white/60'"
           >
             {{ tab.label }}
           </button>
@@ -109,7 +105,7 @@ onMounted(async () => {
           class="py-2 sm:py-4 lg:py-6"
           :class="isModoFoco
             ? 'px-4 sm:px-6 max-w-2xl mx-auto'
-            : 'px-4 sm:px-6 lg:px-10 xl:px-14 w-full'"
+            : 'px-4 sm:px-6 lg:px-8 xl:px-10 w-full'"
         >
           <PerfilUsuarioTab
             v-if="activeTab === 'perfil'"

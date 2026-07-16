@@ -42,7 +42,7 @@ const iconMap: Record<TabKey, LucideIcon> = {
 </script>
 
 <template>
-  <aside class="hidden lg:flex flex-col w-[248px] shrink-0 h-full bg-white/80 backdrop-blur-sm border-l border-stone/30 overflow-y-auto">
+  <aside class="hidden lg:flex flex-col w-[272px] shrink-0 h-full bg-white/80 backdrop-blur-sm border-l border-stone/30 overflow-y-auto">
     <!-- Cabeçalho do Perfil -->
     <div class="px-5 pt-8 pb-5 border-b border-stone/20">
       <div class="flex items-center gap-3.5">

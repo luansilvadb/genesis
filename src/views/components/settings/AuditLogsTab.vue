@@ -49,9 +49,12 @@ watch(() => props.activeTenantId, async () => {
 
 <template>
   <div class="space-y-6">
-    <div v-if="loading" class="flex flex-col items-center justify-center py-12 space-y-4">
-      <div class="w-8 h-8 border-4 border-ember border-t-transparent rounded-full animate-spin"></div>
-      <p class="text-xs text-ash font-bold uppercase tracking-wider">Carregando...</p>
+    <div v-if="loading" class="flex flex-col items-center justify-center py-16 space-y-5">
+      <div class="relative w-10 h-10">
+        <div class="absolute inset-0 rounded-full border-2 border-stone/30" />
+        <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-ember/50 animate-spin" />
+      </div>
+      <p class="text-[10px] text-ash/50 font-medium uppercase tracking-[0.2em]">Buscando atividades...</p>
     </div>
 
     <div v-else-if="erro" class="flex flex-col items-center justify-center py-16 text-center space-y-4">

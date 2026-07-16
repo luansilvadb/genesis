@@ -131,7 +131,7 @@ const handleRendaInput = (e: Event) => {
 </script>
 
 <template>
-  <div class="space-y-8 animate-in fade-in duration-300">
+  <div class="space-y-6 animate-in fade-in duration-300">
     <!-- Card de Perfil Pessoal -->
     <div v-if="!isModoFoco" class="bg-white border border-stone/30 rounded-2xl shadow-subtle p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-4 flex-1">

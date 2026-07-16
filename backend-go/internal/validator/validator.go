@@ -23,20 +23,7 @@ func ValidatePassword(password string) error {
 		return errors.New("a senha deve ter no máximo 128 caracteres")
 	}
 
-	hasUpper := false
-	hasLower := false
-	hasNumber := false
-	for _, r := range password {
-		if unicode.IsUpper(r) {
-			hasUpper = true
-		}
-		if unicode.IsLower(r) {
-			hasLower = true
-		}
-		if unicode.IsDigit(r) {
-			hasNumber = true
-		}
-	}
+	hasUpper, hasLower, hasNumber := scanCharClasses(password)
 
 	if !hasUpper {
 		return ErrPasswordNoUppercase
@@ -49,6 +36,21 @@ func ValidatePassword(password string) error {
 	}
 
 	return nil
+}
+
+func scanCharClasses(s string) (hasUpper, hasLower, hasNumber bool) {
+	for _, r := range s {
+		if unicode.IsUpper(r) {
+			hasUpper = true
+		}
+		if unicode.IsLower(r) {
+			hasLower = true
+		}
+		if unicode.IsDigit(r) {
+			hasNumber = true
+		}
+	}
+	return
 }
 
 func RegisterGinValidators() {

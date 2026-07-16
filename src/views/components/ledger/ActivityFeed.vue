@@ -27,6 +27,21 @@ const getMembroNome = (id: string) => {
 const sortedGastos = computed(() => {
   return [...props.gastos].sort((a, b) => b.id.localeCompare(a.id))
 })
+
+function badgeLabel(g: Gasto): string {
+  if (g.id.startsWith('forecast-bill-')) return 'Previsão Fixa'
+  if (g.id.startsWith('audit-settlement-')) return 'Rateio'
+  if (g.isLoan) return 'Empréstimo'
+  if (g.isSettlement) return 'Acerto'
+  if (g.method === 'card') return 'Cartão'
+  return 'Pix'
+}
+
+function badgeClass(g: Gasto): Record<string, boolean> {
+  if (g.id.startsWith('forecast-')) return { 'bg-stone text-graphite': true }
+  if (g.id.startsWith('audit-settlement-')) return { 'bg-midnight text-white': true }
+  return { 'bg-ember text-white': true }
+}
 </script>
 
 <template>
@@ -107,19 +122,9 @@ const sortedGastos = computed(() => {
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span 
                   class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md"
-                  :class="{
-                    'bg-ember text-white': !g.id.startsWith('forecast-') && !g.id.startsWith('audit-settlement-'),
-                    'bg-stone text-graphite': g.id.startsWith('forecast-'),
-                    'bg-midnight text-white': g.id.startsWith('audit-settlement-')
-                  }"
+                  :class="badgeClass(g)"
                 >
-                  {{ 
-                    g.id.startsWith('forecast-bill-') ? 'Previsão Fixa' :
-                    g.id.startsWith('audit-settlement-') ? 'Rateio' :
-                    g.isLoan ? 'Empréstimo' : 
-                    g.isSettlement ? 'Acerto' : 
-                    g.method === 'card' ? 'Cartão' : 'Pix' 
-                  }}
+                  {{ badgeLabel(g) }}
                 </span>
                 <span
                   v-if="g.id.startsWith('forecast-bill-')"

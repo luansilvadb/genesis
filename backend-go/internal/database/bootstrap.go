@@ -10,19 +10,12 @@ import (
 )
 
 func EnsureDatabaseExists(databaseURL string) error {
-	u, err := url.Parse(databaseURL)
+	dbName, err := parseDBName(databaseURL)
 	if err != nil {
-		return fmt.Errorf("failed to parse DATABASE_URL: %w", err)
+		return err
 	}
 
-	dbName := strings.TrimPrefix(u.Path, "/")
-	if idx := strings.Index(dbName, "?"); idx != -1 {
-		dbName = dbName[:idx]
-	}
-	if dbName == "" {
-		return fmt.Errorf("could not extract database name from DATABASE_URL")
-	}
-
+	u, _ := url.Parse(databaseURL)
 	host := u.Hostname()
 	port := u.Port()
 	if port == "" {
@@ -57,4 +50,20 @@ func EnsureDatabaseExists(databaseURL string) error {
 	}
 
 	return nil
+}
+
+func parseDBName(databaseURL string) (string, error) {
+	u, err := url.Parse(databaseURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse DATABASE_URL: %w", err)
+	}
+
+	dbName := strings.TrimPrefix(u.Path, "/")
+	if idx := strings.Index(dbName, "?"); idx != -1 {
+		dbName = dbName[:idx]
+	}
+	if dbName == "" {
+		return "", fmt.Errorf("could not extract database name from DATABASE_URL")
+	}
+	return dbName, nil
 }

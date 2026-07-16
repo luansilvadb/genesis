@@ -61,26 +61,33 @@ function calcularValoresPessoais(g: Gasto, membroId: string): { pagos: number; c
 /** Ajusta saldos de pendências para um gasto privado (loan ou settlement). */
 function acumularSaldosPessoais(g: Gasto, membroId: string, saldos: Record<string, number>): void {
   if (g.isLoan) {
-    const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
-    if (vp.centavos <= 0) return
-    const v = vp.centavos
-    if (g.compradorId === membroId && g.borrowerId && g.borrowerId !== membroId)
-      saldos[g.borrowerId] = (saldos[g.borrowerId] || 0) + v
-    if (g.compradorId !== membroId && g.borrowerId === membroId)
-      saldos[g.compradorId] = (saldos[g.compradorId] || 0) - v
+    acumularSaldoEmprestimo(g, membroId, saldos)
     return
   }
-
   if (g.isSettlement && g.settlementDetails) {
-    const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
-    if (vp.centavos <= 0) return
-    const v = vp.centavos
-    const { fromMemberId, toMemberId } = g.settlementDetails
-    if (fromMemberId === membroId && toMemberId !== membroId)
-      saldos[toMemberId] = (saldos[toMemberId] || 0) + v
-    if (fromMemberId !== membroId && toMemberId === membroId)
-      saldos[fromMemberId] = (saldos[fromMemberId] || 0) - v
+    acumularSaldoAcerto(g, membroId, saldos)
   }
+}
+
+function acumularSaldoEmprestimo(g: Gasto, membroId: string, saldos: Record<string, number>): void {
+  const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
+  if (vp.centavos <= 0) return
+  const v = vp.centavos
+  if (g.compradorId === membroId && g.borrowerId && g.borrowerId !== membroId)
+    saldos[g.borrowerId] = (saldos[g.borrowerId] || 0) + v
+  if (g.compradorId !== membroId && g.borrowerId === membroId)
+    saldos[g.compradorId] = (saldos[g.compradorId] || 0) - v
+}
+
+function acumularSaldoAcerto(g: Gasto, membroId: string, saldos: Record<string, number>): void {
+  const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
+  if (vp.centavos <= 0) return
+  const v = vp.centavos
+  const { fromMemberId, toMemberId } = g.settlementDetails!
+  if (fromMemberId === membroId && toMemberId !== membroId)
+    saldos[toMemberId] = (saldos[toMemberId] || 0) + v
+  if (fromMemberId !== membroId && toMemberId === membroId)
+    saldos[fromMemberId] = (saldos[fromMemberId] || 0) - v
 }
 
 // ── API pública ──

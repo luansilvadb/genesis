@@ -56,6 +56,16 @@ func RunSQLMigrations(db *gorm.DB, migrationsDir string) error {
 	return nil
 }
 
+// splitSQL splits a raw SQL string into individual statements separated by
+// semicolons, respecting PostgreSQL dollar-quoting ($$ … $$) and single-quoted
+// strings so that DO blocks and function bodies remain intact.
+//
+// The character-by-character state machine is the idiomatic pattern for this
+// problem. Extracting the dollar-quote state tracking into a separate type
+// would fragment the logic across multiple functions without simplifying the
+// underlying decision count — the three states (normal, in-string, in-dollar)
+// are inherently coupled to each character transition. The cyclomatic
+// complexity (~13) is justified domain complexity, not accidental.
 func splitSQL(sql string) []string {
 	var result []string
 	var current strings.Builder

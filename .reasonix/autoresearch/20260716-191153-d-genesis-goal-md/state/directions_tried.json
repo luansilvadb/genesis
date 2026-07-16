@@ -1,0 +1,30 @@
+[
+  {
+    "fingerprint": "now-let-me-provide-the-autoresearch-evidence-for-complet-f5c46b32",
+    "summary": "Now let me provide the AutoResearch evidence for completion.",
+    "first_seen_iteration": 1,
+    "last_seen_iteration": 1,
+    "count": 1
+  },
+  {
+    "fingerprint": "all-phases-are-complete-let-me-provide-the-autoresearch-bbb24a5c",
+    "summary": "All phases are complete. Let me provide the AutoResearch evidence for both open criteria and wrap up.",
+    "first_seen_iteration": 2,
+    "last_seen_iteration": 2,
+    "count": 1
+  },
+  {
+    "fingerprint": "goal-complete-refatora-o-divi-5ca53cf7",
+    "summary": "## ✅ Goal Complete — Refatoração DIVI",
+    "first_seen_iteration": 3,
+    "last_seen_iteration": 3,
+    "count": 1
+  },
+  {
+    "fingerprint": "all-fresh-verifications-pass-let-me-provide-the-final-ev-fdfb1685",
+    "summary": "All fresh verifications pass. Let me provide the final evidence.",
+    "first_seen_iteration": 4,
+    "last_seen_iteration": 4,
+    "count": 1
+  }
+]

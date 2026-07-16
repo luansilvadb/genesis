@@ -50,6 +50,12 @@ const handleTabChange = (tab: Tab) => {
   }
 }
 
+const dashboardRef = ref<InstanceType<typeof DashboardSaldos> | null>(null)
+
+const handleOpenPeriodo = () => {
+  dashboardRef.value?.abrirHistorico()
+}
+
 const handleFabClick = () => {
   if (isMonthClosed.value) {
     toast.show('Este mês está encerrado. Reabra o período para fazer novos lançamentos.', 'error')
@@ -73,6 +79,7 @@ const handleSalvarTransacao = () => {
   <div class="max-w-[75rem] mx-auto px-4 md:px-6 pt-2 md:pt-4 pb-20 md:pb-24 relative">
     <main class="relative z-10">
       <DashboardSaldos
+        ref="dashboardRef"
         :membros="state.membros.value"
         :faturasAbertas="state.faturasAbertas.value"
         :faturasFechadas="state.faturasFechadas.value"
@@ -121,6 +128,7 @@ const handleSalvarTransacao = () => {
       :is-read-only="state.isLancarGastoBloqueado.value"
       @update:model-value="handleTabChange"
       @click-fab="handleFabClick"
+      @open-periodo="handleOpenPeriodo"
     />
   </div>
 </template>

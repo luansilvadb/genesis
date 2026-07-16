@@ -1,14 +1,14 @@
 import { Membro } from '../entities/Membro'
 
 export interface RolePermissions {
-  ALLOW_LANCAR_GASTO: boolean
-  ALLOW_GERENCIAR_CARTOES: boolean
-  ALLOW_GERENCIAR_CONTAS_FIXAS: boolean
-  ALLOW_REGISTRAR_NETTING: boolean
-  ALLOW_VER_AUDIT_LOGS: boolean
-  ALLOW_FECHAR_PERIODO: boolean
-  ALLOW_ALTERAR_RENDA: boolean
-  ALLOW_ALTERAR_NOME: boolean
+  ALLOW_LANCAR_GASTO?: boolean
+  ALLOW_GERENCIAR_CARTOES?: boolean
+  ALLOW_GERENCIAR_CONTAS_FIXAS?: boolean
+  ALLOW_REGISTRAR_NETTING?: boolean
+  ALLOW_VER_AUDIT_LOGS?: boolean
+  ALLOW_FECHAR_PERIODO?: boolean
+  ALLOW_ALTERAR_RENDA?: boolean
+  ALLOW_ALTERAR_NOME?: boolean
 }
 
 export interface MembroPatch {

@@ -13,7 +13,7 @@ const localStorageMock = (() => {
   }
 })()
 
-Object.defineProperty(global, 'localStorage', { value: localStorageMock })
+Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock })
 
 class TestRepository extends HttpBaseRepository {
   async getTest(url: string): Promise<unknown> {

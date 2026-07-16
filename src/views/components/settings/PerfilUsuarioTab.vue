@@ -186,12 +186,12 @@ const handleRendaInput = (e: Event) => {
                 <X class="w-4 h-4" />
               </button>
             </div>
-            <p class="text-[9px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
+            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
           </div>
 
           <!-- Bloco de Renda -->
           <div v-if="!editandoRenda" class="flex items-center gap-2">
-            <span class="text-[11px] text-graphite/70 font-semibold uppercase tracking-wider">Renda:</span>
+            <span class="text-xs text-graphite/70 font-semibold uppercase tracking-wider">Renda:</span>
             <span class="text-xs font-bold text-charcoal">
               {{ currentMembro?.rendaCentavos ? formatarCentavosParaBRL(currentMembro.rendaCentavos) : 'Não informada' }}
             </span>
@@ -234,14 +234,14 @@ const handleRendaInput = (e: Event) => {
                 <X class="w-4 h-4" />
               </button>
             </div>
-            <p class="text-[9px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
+            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
           </div>
         </div>
       </div>
       <Button 
         @click="handleLogout" 
         variant="secondary" 
-        class="w-full md:w-auto text-[10px] font-bold uppercase tracking-widest h-10 px-5 transition-all duration-300 active:scale-95"
+        class="w-full md:w-auto text-xs font-bold uppercase tracking-widest h-10 px-5 transition-all duration-300 active:scale-95"
       >
         Sair da Conta
       </Button>

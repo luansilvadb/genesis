@@ -2,7 +2,7 @@
 import SkeletonBlock from './SkeletonBlock.vue'
 
 interface Props {
-  variant?: 'hoje' | 'faturas'
+  variant?: 'hoje'
 }
 
 const props = withDefaults(defineProps<Props>(), {

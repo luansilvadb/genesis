@@ -9,7 +9,6 @@ import type { Fatura } from '../../models/entities/Fatura'
 import type { Cartao } from '../../models/entities/Cartao'
 import ContasFixasPanel from '../components/ledger/ContasFixasPanel.vue'
 import ActivityFeed from '../components/ledger/ActivityFeed.vue'
-import DetalhamentoSaldosCard from '../components/ledger/dashboard/DetalhamentoSaldosCard.vue'
 import DashboardHeader from '../components/ledger/dashboard/DashboardHeader.vue'
 import UnifiedBalancePanel from '../components/ledger/dashboard/UnifiedBalancePanel.vue'
 import NettingPanel from '../components/ledger/dashboard/NettingPanel.vue'
@@ -32,7 +31,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const emit = defineEmits(['periodoStatusChanged'])
+const emit = defineEmits(['periodoStatusChanged', 'navigate-home', 'navigate-pessoal'])
 
 const vm = useDashboardViewModel(props, emit)
 
@@ -97,11 +96,10 @@ const abrirAuditLogs = () => {
 
 const isHoje = computed(() => !props.activeTab || props.activeTab === 'hoje')
 const isPessoal = computed(() => props.activeTab === 'pessoal')
-const isFaturas = computed(() => props.activeTab === 'faturas')
 const membrosAtivos = computed(() => props.membros.filter(m => m.ativo !== false))
 
 const transitionName = ref('tab-slide-right')
-const tabOrder: Tab[] = ['hoje', 'pessoal', 'faturas']
+const tabOrder: Tab[] = ['hoje', 'pessoal']
 
 watch(() => props.activeTab, (newTab, oldTab) => {
   const newIndex = tabOrder.indexOf(newTab || 'hoje')
@@ -116,7 +114,11 @@ watch(() => props.activeTab, (newTab, oldTab) => {
 
 defineExpose({
   isDropdownAbertosOpen: vm.isDropdownAbertosOpen,
-  periodoSelecionado: vm.periodoSelecionado
+  periodoSelecionado: vm.periodoSelecionado,
+  currentMonthName,
+  currentYear,
+  faturaSelecionadaFechada,
+  abrirHistorico: () => vm.abrirModal('historico'),
 })
 </script>
 
@@ -124,7 +126,7 @@ defineExpose({
   <div class="space-y-12">
     <SkeletonMimic
       v-if="props.isLoading"
-      :variant="props.activeTab === 'faturas' ? 'faturas' : 'hoje'"
+      :variant="'hoje'"
       key="skeleton"
       data-testid="skeleton-mimic"
     />
@@ -139,6 +141,8 @@ defineExpose({
         @open-historico="vm.abrirModal('historico')"
         @open-casas="vm.abrirModal('casas')"
         @open-audit-logs="abrirAuditLogs"
+        @navigate-home="emit('navigate-home')"
+        @navigate-pessoal="emit('navigate-pessoal')"
       />
 
       <!-- Container Estabilizado -->
@@ -205,16 +209,6 @@ defineExpose({
               :membros="props.membros"
               :gastos="gastosPrivadosFiltrados"
             />
-          </div>
-
-          <div v-else-if="isFaturas" key="faturas" class="space-y-12 pb-2">
-            <div class="space-y-4">
-              <DetalhamentoSaldosCard
-                :membros="membrosVisiveis"
-                :gastos="gastosFaturaSelecionada"
-                :saldosUnificados="saldosUnificadosAtivos"
-              />
-            </div>
           </div>
         </Transition>
       </div>

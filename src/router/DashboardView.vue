@@ -7,8 +7,6 @@ import BottomSheet from '../views/components/ui/BottomSheet.vue'
 import Drawer from '../views/components/ui/Drawer.vue'
 import BottomTabBar, { type Tab } from '../views/components/ui/BottomTabBar.vue'
 import { useToast } from '../composables/useToast'
-import { mensagemErro } from '../shared/utils/mensagemErro'
-import { logger } from '../shared/utils/logger'
 import { ref, type Ref } from 'vue'
 import type { Membro } from '../models/entities/Membro'
 import type { Cartao } from '../models/entities/Cartao'
@@ -64,14 +62,10 @@ const handleFabClick = () => {
   currentView.value = 'wizard'
 }
 
-const handleSalvarTransacao = async () => {
-  try {
-    await state.sincronizarDados()
-    currentView.value = 'dashboard'
-  } catch (error: unknown) {
-    logger.error('Erro ao recarregar cartões após salvar transação:', error)
-    toast.show(mensagemErro(error, 'Erro ao sincronizar dados com o servidor'), 'error')
-  }
+const handleSalvarTransacao = () => {
+  // Fecha o wizard imediatamente — o socket 'gastos_alterados' dispara
+  // a sincronização em background (~300ms), sem bloquear a UI.
+  currentView.value = 'dashboard'
 }
 </script>
 
@@ -88,6 +82,8 @@ const handleSalvarTransacao = async () => {
         :is-read-only="state.isReadOnly.value"
         @openSettings="currentView = 'settings'"
         @periodoStatusChanged="handlePeriodoStatusChanged"
+        @navigate-home="activeTab = 'hoje'"
+        @navigate-pessoal="activeTab = 'pessoal'"
       />
     </main>
 

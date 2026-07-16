@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['salvar', 'cancelar'])
 
 const { cartoes, faturasFechadas, inicializar: inicializarCartoes } = useCartoesEFaturas()
-const { currentMembro } = useMembros()
+const { currentMembro, carregar: recarregarMembros } = useMembros()
 const toast = useToast()
 
 const isSubmitting = ref(false)
@@ -246,7 +246,16 @@ function resolveSplitMode(flow: string | null, isPrivate: boolean, splitType: st
 const handleGravar = async () => {
   isSubmitting.value = true
   try {
-    const currentMembroId = currentMembro.value?.id
+    let currentMembroId = currentMembro.value?.id
+    if (!currentMembroId) {
+      // Tenta recarregar os membros antes de desistir
+      try {
+        await recarregarMembros()
+        currentMembroId = currentMembro.value?.id
+      } catch {
+        // ignora erro de recarga
+      }
+    }
     if (!currentMembroId) {
       toast.show('Erro: membro atual não identificado. Recarregue a página.', 'error')
       return

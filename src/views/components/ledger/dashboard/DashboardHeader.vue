@@ -1,23 +1,19 @@
 <!-- src/views/components/ledger/dashboard/DashboardHeader.vue -->
 <script setup lang="ts">
 import { useTemplateRef, onMounted, onUnmounted } from 'vue'
-import { CheckCircle2, Home, Bell, Calendar } from 'lucide-vue-next'
+import { Home, Wallet } from 'lucide-vue-next'
 import IllustrationMascot from '../../ui/IllustrationMascot.vue'
 import AppBar from '../../ui/AppBar.vue'
 import type { TenantSummary } from '../../../../models/services/TenantSessionService'
 
 defineProps<{
-  currentYear: string | number
-  currentMonthName: string
-  faturaSelecionadaFechada: boolean
   isAuthed: boolean
   activeTenantObj: TenantSummary | null
-  podeVerLogs?: boolean
 }>()
 
 const emit = defineEmits<{
-  (e: 'openHistorico'): void
-  (e: 'openAuditLogs'): void
+  (e: 'navigate-home'): void
+  (e: 'navigate-pessoal'): void
 }>()
 
 // ─── DOM Refs (Direct DOM Mutation Pattern) ───────────────────────────────────
@@ -147,26 +143,20 @@ onUnmounted(() => {
     CSS transitions nessas propriedades estão removidas — exceto one-shot snap transition.
   -->
   <AppBar ref="appBarRef" class="mb-4">
-    <!-- Slot Esquerdo: Seletor de Mês -->
+    <!-- Slot Esquerdo: Botão Casa (navega para tab "hoje") -->
     <template #left>
       <button
         ref="leftBtnRef"
         class="flex items-center gap-2.5 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember focus-visible:ring-offset-4 rounded-2xl px-3 py-1.5 cursor-pointer active:scale-95 origin-left border border-stone/20"
-        aria-haspopup="dialog"
-        aria-label="Selecionar período"
-        @click="$emit('openHistorico')"
+        aria-label="Ir para Casa"
+        @click="$emit('navigate-home')"
       >
-        <div class="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center group-hover:bg-ember/10 group-hover:text-ember order-first transition-colors duration-300">
-          <Calendar class="w-4 h-4 group-hover:scale-110 transition-transform duration-500 ease-jelly" aria-hidden="true" />
+        <div class="w-8 h-8 rounded-full bg-ember/10 flex items-center justify-center group-hover:bg-ember/20 group-hover:text-ember transition-colors duration-300">
+          <Home class="w-4 h-4 text-ember group-hover:scale-110 transition-transform duration-500 ease-jelly" aria-hidden="true" />
         </div>
         <div ref="leftLabelRef" class="flex flex-col left-label-stack">
-          <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 flex items-center gap-1 whitespace-nowrap text-ash/60 group-hover:text-ember transition-colors duration-300">
-            {{ currentYear }}
-          </span>
-          <div class="flex items-center gap-1 whitespace-nowrap">
-            <span class="text-base font-bold tracking-tight leading-none text-charcoal group-hover:text-ember transition-colors duration-300">{{ currentMonthName }}</span>
-            <CheckCircle2 v-if="faturaSelecionadaFechada" class="w-2.5 h-2.5 text-meadow animate-in zoom-in-50 duration-300" aria-label="Mês encerrado" />
-          </div>
+          <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 text-ash/60 group-hover:text-ember transition-colors duration-300">Navegar</span>
+          <span class="text-base font-bold tracking-tight leading-none text-charcoal group-hover:text-ember transition-colors duration-300">Casa</span>
         </div>
       </button>
     </template>
@@ -235,19 +225,17 @@ onUnmounted(() => {
     <!-- Slot Direito: Notificações / Atividade -->
     <template #right>
       <button
-        v-if="podeVerLogs !== false"
         ref="rightBtnRef"
         class="flex items-center gap-2.5 text-right group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ember focus-visible:ring-offset-4 rounded-2xl px-3 py-1.5 cursor-pointer active:scale-95 origin-right border border-stone/20"
-        aria-label="Ver atividade"
-        title="Ver atividade"
-        @click="emit('openAuditLogs')"
+        aria-label="Ir para gastos pessoais"
+        @click="emit('navigate-pessoal')"
       >
         <div ref="rightLabelRef" class="flex flex-col text-right right-label-stack">
-          <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 text-ash/60 group-hover:text-ember whitespace-nowrap transition-colors duration-300">Logs</span>
-          <span class="text-xs font-bold text-charcoal leading-none whitespace-nowrap">Atividade</span>
+          <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 text-ash/60 group-hover:text-ember whitespace-nowrap transition-colors duration-300">Navegar</span>
+          <span class="text-xs font-bold text-charcoal leading-none whitespace-nowrap">Pessoal</span>
         </div>
         <div class="w-8 h-8 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-ember/10 group-hover:text-ember transition-colors duration-300">
-          <Bell class="w-4 h-4 group-hover:scale-110 group-active:rotate-[-12deg] transition-transform duration-500 ease-jelly" aria-hidden="true" />
+          <Wallet class="w-4 h-4 group-hover:scale-110 transition-transform duration-500 ease-jelly" aria-hidden="true" />
         </div>
       </button>
     </template>

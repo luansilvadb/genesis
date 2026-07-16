@@ -25,7 +25,9 @@ export class LancamentoService {
       throw new Error('Um ou mais participantes da divisão possuem ID inválido.')
     }
     const total = Dinheiro.deReais(dados.valor)
-    const todosCartoes = await this.cartaoRepo.listarTodos()
+    const todosCartoes = dados.paymentMethod === 'card'
+      ? await this.cartaoRepo.listarTodos()
+      : []
     const { cartaoId, cardOwner: resolvedCardOwner, responsavelFaturaId } = resolverCartao(
       dados.paymentMethod,
       dados.cardOwnerId,

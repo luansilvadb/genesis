@@ -82,7 +82,7 @@ describe('DashboardSaldos loading', () => {
 
     expect(wrapper.find('[data-testid="skeleton-mimic"]').exists()).toBe(false)
 
-    await wrapper.setProps({ activeTab: 'faturas' })
+    await wrapper.setProps({ activeTab: 'pessoal' })
     await vi.advanceTimersByTimeAsync(700)
 
     expect(wrapper.find('[data-testid="skeleton-mimic"]').exists()).toBe(false)

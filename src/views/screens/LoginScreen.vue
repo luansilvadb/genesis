@@ -30,8 +30,12 @@ const { loading, errorMsg: errorMsgAsync, run } = useAsync()
 const housePreview = ref<InvitePreview | null>(null)
 const selectedMembroNome = ref('')
 const showPassword = ref(false)
+const googleLoginActive = ref(false)
+const googleInicializado = ref(false)
 
 const inicializarGoogleSignIn = () => {
+  if (googleInicializado.value) return
+  logger.info('Inicializando Google Sign-In. Origem:', window.location.origin)
   const google = (window as unknown as { google: { accounts: { id: { initialize: Function; renderButton: Function } } } }).google
   if (typeof google === 'undefined' || !google.accounts) {
     logger.error('Google SDK não foi carregado corretamente.')
@@ -47,18 +51,25 @@ const inicializarGoogleSignIn = () => {
   google.accounts.id.initialize({
     client_id: clientId,
     callback: async (response: any) => {
-      const success = await run(
-        () => handleGoogleLogin(response.credential),
-        'Ocorreu um erro ao autenticar com o Google'
-      )
-      if (success) {
-        emit('auth-success')
-      } else if (errorMsgAsync.value) {
-        errorMsg.value = errorMsgAsync.value
+      googleLoginActive.value = true
+      errorMsg.value = ''
+      try {
+        const result = await handleGoogleLogin(response.credential)
+        if (result) {
+          emit('auth-success')
+        }
+        // Se falhar, o errorMsg já foi definido dentro de handleGoogleLogin.
+        // Não sobrescrevemos com errorMsgAsync vazio, preservando a mensagem do viewmodel.
+      } catch (err) {
+        // Se handleGoogleLogin lançar exceção, capturamos e exibimos
+        errorMsg.value = 'Ocorreu um erro inesperado ao autenticar com o Google.'
+        logger.error('Erro no callback Google:', err)
+      } finally {
+        googleLoginActive.value = false
       }
     },
     auto_select: false,
-    itp_support: true,
+    itp_support: false,
   })
 
   const btnContainer = document.getElementById('google-signin-btn')
@@ -73,6 +84,7 @@ const inicializarGoogleSignIn = () => {
       width: btnContainer.clientWidth || 320
     })
   }
+  googleInicializado.value = true
 }
 
 onMounted(async () => {
@@ -298,8 +310,12 @@ const onSubmit = async () => {
           </div>
 
           <!-- Google Sign-In Button Container -->
-          <div class="w-full flex justify-center">
-            <div id="google-signin-btn" class="w-full min-h-[44px]"></div>
+          <div class="w-full flex flex-col items-center gap-3">
+            <div v-if="googleLoginActive" class="flex items-center gap-2 text-sm text-graphite font-medium py-2">
+              <span class="animate-spin inline-block w-4 h-4 border-2 border-ember/30 border-t-ember rounded-full" aria-hidden="true"></span>
+              <span>Conectando com Google...</span>
+            </div>
+            <div v-show="!googleLoginActive" id="google-signin-btn" class="w-full min-h-[44px]"></div>
           </div>
         </form>
       </Transition>

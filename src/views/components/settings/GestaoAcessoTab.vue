@@ -172,14 +172,14 @@ const cancelarNovoMembro = () => {
           <h3 class="text-heading-sm text-charcoal flex items-center gap-2">
             Editar <span class="text-ember">Morador</span>
           </h3>
-          <p class="text-[10px] text-ash font-medium mt-0.5 uppercase tracking-wider">Gerencie {{ membroSelecionado?.nome }}</p>
+          <p class="text-xs text-ash font-medium mt-0.5 uppercase tracking-wider">Gerencie {{ membroSelecionado?.nome }}</p>
         </div>
       </div>
 
       <div class="p-6 space-y-6">
         <!-- Papel na Casa (Role sistêmica) -->
         <div class="space-y-2">
-          <label class="text-[10px] font-bold uppercase tracking-widest text-graphite block ml-1">Papel na Casa</label>
+          <label class="text-xs font-bold uppercase tracking-widest text-graphite block ml-1">Papel na Casa</label>
           <select v-model="roleSelecionada" :disabled="!podeEditarRole"
             class="w-full p-3.5 rounded-2xl border border-stone bg-white outline-none font-bold text-charcoal">
             <option value="ADMIN">Administrador</option>
@@ -187,13 +187,13 @@ const cancelarNovoMembro = () => {
             <option value="VISUALIZADOR">Visualizador</option>
           </select>
           <!-- Descrição contextual por role -->
-          <p v-if="roleSelecionada === 'VISUALIZADOR'" class="text-[10px] text-ash ml-1">
+          <p v-if="roleSelecionada === 'VISUALIZADOR'" class="text-xs text-ash ml-1">
             Exemplos: filho dependente, ex-parceiro em transição, contador externo.
           </p>
         </div>
 
         <div class="space-y-2">
-          <label class="text-[10px] font-bold uppercase tracking-widest text-graphite block ml-1">Renda Mensal (R$)</label>
+          <label class="text-xs font-bold uppercase tracking-widest text-graphite block ml-1">Renda Mensal (R$)</label>
           <input
             v-model="rendaSelecionadaText"
             type="text"
@@ -210,8 +210,8 @@ const cancelarNovoMembro = () => {
         </div>
 
         <div class="flex gap-2.5 pt-2">
-          <Button variant="secondary" @click="cancelarEdicao" class="flex-1 font-bold uppercase tracking-widest text-[10px] h-12">Cancelar</Button>
-          <Button variant="primary" @click="handleSalvarEdicao" :disabled="salvando" :loading="salvando" class="flex-1 font-bold uppercase tracking-widest text-[10px] h-12">Salvar</Button>
+          <Button variant="secondary" @click="cancelarEdicao" class="flex-1 font-bold uppercase tracking-widest text-xs h-12">Cancelar</Button>
+          <Button variant="primary" @click="handleSalvarEdicao" :disabled="salvando" :loading="salvando" class="flex-1 font-bold uppercase tracking-widest text-xs h-12">Salvar</Button>
         </div>
       </div>
     </div>
@@ -222,7 +222,7 @@ const cancelarNovoMembro = () => {
             <User class="w-5 h-5 text-ember" />
             Quem mora aqui
           </h3>
-          <p class="text-[11px] text-ash font-medium mt-1 uppercase tracking-wider">Lista de membros ativos e suspensos</p>
+          <p class="text-xs text-ash font-medium mt-1 uppercase tracking-wider">Lista de membros ativos e suspensos</p>
         </div>
 
         <div class="p-4 space-y-4">

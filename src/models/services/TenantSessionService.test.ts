@@ -206,7 +206,9 @@ describe('TenantSessionService', () => {
       service = new TenantSessionService()
       fetchMock.mockRejectedValueOnce(new Error('Network error'))
 
-      await expect(service.inicializarSessao()).rejects.toThrow('Network error')
+      // Não deve mais lançar — o erro é logado e o fluxo continua.
+      // O token JWT permanece salvo; o usuário pode recarregar os tenants depois.
+      await expect(service.inicializarSessao()).resolves.toBeUndefined()
 
       expect(service.isAuthenticated()).toBe(true)
       expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Falha ao carregar sessão do usuário:'), expect.any(Error))

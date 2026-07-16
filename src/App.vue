@@ -73,30 +73,25 @@ const assegurarDadosIniciais = async () => {
 const inicializarSocket = (tenantId: string) => {
   socketService.conectar(tenantId)
 
-  let debounceTimerGastos: ReturnType<typeof setTimeout> | null = null
-  let debounceTimerCartoes: ReturnType<typeof setTimeout> | null = null
-  let debounceTimerFaturas: ReturnType<typeof setTimeout> | null = null
+  let syncDebounceTimer: ReturnType<typeof setTimeout> | null = null
+  let syncing = false
 
-  socketService.on('gastos_alterados', () => {
-    if (debounceTimerGastos) clearTimeout(debounceTimerGastos)
-    debounceTimerGastos = setTimeout(async () => {
-      await sincronizarDados()
+  const agendarSync = () => {
+    if (syncDebounceTimer) clearTimeout(syncDebounceTimer)
+    syncDebounceTimer = setTimeout(async () => {
+      if (syncing) return
+      syncing = true
+      try {
+        await sincronizarDados()
+      } finally {
+        syncing = false
+      }
     }, 300)
-  })
+  }
 
-  socketService.on('cartoes_alterados', () => {
-    if (debounceTimerCartoes) clearTimeout(debounceTimerCartoes)
-    debounceTimerCartoes = setTimeout(async () => {
-      await sincronizarDados()
-    }, 300)
-  })
-
-  socketService.on('faturas_alteradas', () => {
-    if (debounceTimerFaturas) clearTimeout(debounceTimerFaturas)
-    debounceTimerFaturas = setTimeout(async () => {
-      await sincronizarDados()
-    }, 300)
-  })
+  socketService.on('gastos_alterados', agendarSync)
+  socketService.on('cartoes_alterados', agendarSync)
+  socketService.on('faturas_alteradas', agendarSync)
 
   socketService.on('membros_alterados', async () => await recarregarMembros())
   socketService.on('contas_fixas_alteradas', async () => await inicializarContasFixas())
@@ -105,12 +100,18 @@ const inicializarSocket = (tenantId: string) => {
 
 const handleAuthSuccess = async () => {
   isAuthed.value = true
-  hasTenant.value = !!tenantSessionService.getActiveTenantId()
+  const tenantId = tenantSessionService.getActiveTenantId()
+  hasTenant.value = !!tenantId
+  logger.info('Auth success - redirecionando:', { hasTenant: hasTenant.value, tenantId })
   if (hasTenant.value) {
-    await assegurarDadosIniciais()
-    router.push('/dashboard')
+    try {
+      await assegurarDadosIniciais()
+    } catch (err) {
+      logger.error('Erro ao carregar dados iniciais após login:', err)
+    }
+    await router.push('/dashboard')
   } else {
-    router.push('/select-tenant')
+    await router.push('/select-tenant')
   }
 }
 

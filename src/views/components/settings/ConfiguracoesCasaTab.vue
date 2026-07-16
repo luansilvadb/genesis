@@ -55,7 +55,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
           <Shield class="w-5 h-5 text-ember" />
           Permissões da Casa
         </h3>
-        <p class="text-[11px] text-ash font-medium mt-1 uppercase tracking-wider">
+        <p class="text-xs text-ash font-medium mt-1 uppercase tracking-wider">
           Defina o que cada papel de membro pode gerenciar na casa
         </p>
       </div>
@@ -87,7 +87,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <ShieldAlert class="w-5 h-5 text-ember shrink-0 mt-0.5" />
         <div class="space-y-1">
           <h4 class="text-xs font-bold text-charcoal">Configuração por papel de acesso</h4>
-          <p class="text-[11px] text-ash leading-relaxed">
+          <p class="text-xs text-ash leading-relaxed">
             As restrições abaixo aplicam-se aos membros que possuem a Role selecionada. Administradores possuem soberania absoluta e mantêm acesso irrestrito a todas as funcionalidades do sistema, independentemente destas configurações.
           </p>
         </div>
@@ -99,7 +99,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-1 first:pt-0">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Lançar Gastos e Despesas</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite lançar novos gastos comuns, parcelados e compras em cartões de crédito.
             </p>
           </div>
@@ -123,7 +123,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Gerenciar Cartões de Crédito</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite cadastrar novos cartões de crédito e excluir os cartões existentes da moradia.
             </p>
           </div>
@@ -147,7 +147,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Gerenciar Contas Fixas</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite criar novos modelos de contas fixas e excluir/estornar lançamentos automáticos.
             </p>
           </div>
@@ -171,7 +171,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Registrar Acertos (Netting)</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite dar baixa e registrar pagamentos de netting no painel de fechamento do mês.
             </p>
           </div>
@@ -195,7 +195,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Visualizar Histórico de Auditoria</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite acessar a gaveta de logs de auditoria e ver quem executou cada ação na moradia.
             </p>
           </div>
@@ -219,7 +219,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Alterar Renda do Perfil</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite que os membros editem o valor de sua renda no perfil de morador.
             </p>
           </div>
@@ -243,7 +243,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Alterar Nome de Exibição</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite que os membros alterem o seu nome de exibição no perfil de morador.
             </p>
           </div>
@@ -267,7 +267,7 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <div class="flex items-center justify-between gap-4 pt-4">
           <div class="space-y-1">
             <h4 class="text-xs font-bold text-charcoal">Encerrar e Reabrir Período</h4>
-            <p class="text-[11px] text-ash leading-relaxed">
+            <p class="text-xs text-ash leading-relaxed">
               Permite que os membros encerrem o mês atual ou reabram períodos já fechados.
             </p>
           </div>

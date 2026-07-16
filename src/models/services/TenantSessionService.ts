@@ -325,8 +325,9 @@ export class TenantSessionService {
         this.setActiveTenant(this.tenants[0].id)
       }
     } catch (err) {
+      // Não relançamos a exceção para não quebrar o fluxo de login.
+      // O token JWT já foi salvo; o usuário pode recarregar os tenants depois.
       logger.error('Falha ao carregar sessão do usuário:', err)
-      throw err
     }
   }
 }

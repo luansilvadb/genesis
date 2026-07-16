@@ -150,25 +150,13 @@ func (h *FinanceiroHandler) UpdateGasto(c *gin.Context) {
 // @Router /api/membros [get]
 func (h *FinanceiroHandler) ListMembros(c *gin.Context) {
 	tenantID := c.GetString("tenantID")
-
-	var params dto.PaginationParams
-	if err := c.ShouldBindQuery(&params); err == nil && params.Paginated {
-		params.Normalize()
-		membros, total, err := h.svc.ListMembrosPaginated(c.Request.Context(), tenantID, params.Offset(), params.PageSize)
-		if err != nil {
-			respondInternalError(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, dto.NewPaginatedResponse(membros, total, params))
-		return
-	}
-
-	membros, err := h.svc.ListMembros(c.Request.Context(), tenantID)
-	if err != nil {
-		respondInternalError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, membros)
+	ctx := c.Request.Context()
+	respondListOrPaginated(c,
+		func() ([]dto.MembroResponse, error) { return h.svc.ListMembros(ctx, tenantID) },
+		func(offset, limit int) ([]dto.MembroResponse, int64, error) {
+			return h.svc.ListMembrosPaginated(ctx, tenantID, offset, limit)
+		},
+	)
 }
 
 // @Summary Create cartão
@@ -239,25 +227,13 @@ func (h *FinanceiroHandler) CreateGasto(c *gin.Context) {
 // @Router /api/gastos [get]
 func (h *FinanceiroHandler) ListGastos(c *gin.Context) {
 	tenantID := c.GetString("tenantID")
-
-	var params dto.PaginationParams
-	if err := c.ShouldBindQuery(&params); err == nil && params.Paginated {
-		params.Normalize()
-		gastos, total, err := h.svc.ListGastosPaginated(c.Request.Context(), tenantID, params.Offset(), params.PageSize)
-		if err != nil {
-			respondInternalError(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, dto.NewPaginatedResponse(gastos, total, params))
-		return
-	}
-
-	gastos, err := h.svc.ListGastos(c.Request.Context(), tenantID)
-	if err != nil {
-		respondInternalError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gastos)
+	ctx := c.Request.Context()
+	respondListOrPaginated(c,
+		func() ([]dto.GastoResponse, error) { return h.svc.ListGastos(ctx, tenantID) },
+		func(offset, limit int) ([]dto.GastoResponse, int64, error) {
+			return h.svc.ListGastosPaginated(ctx, tenantID, offset, limit)
+		},
+	)
 }
 
 // @Summary Create conta fixa
@@ -386,28 +362,13 @@ func (h *FinanceiroHandler) DeleteCartao(c *gin.Context) {
 // @Router /api/contas-fixas [get]
 func (h *FinanceiroHandler) ListContasFixas(c *gin.Context) {
 	tenantID := c.GetString("tenantID")
-
-	var params dto.PaginationParams
-	if err := c.ShouldBindQuery(&params); err == nil && params.Paginated {
-		params.Normalize()
-		contas, total, err := h.svc.ListContasFixasPaginated(c.Request.Context(), tenantID, params.Offset(), params.PageSize)
-		if err != nil {
-			respondInternalError(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, dto.NewPaginatedResponse(contas, total, params))
-		return
-	}
-
-	contas, err := h.svc.ListContasFixas(c.Request.Context(), tenantID)
-	if err != nil {
-		respondInternalError(c, err)
-		return
-	}
-	if contas == nil {
-		contas = []dto.ContaFixaResponse{}
-	}
-	c.JSON(http.StatusOK, contas)
+	ctx := c.Request.Context()
+	respondListOrPaginated(c,
+		func() ([]dto.ContaFixaResponse, error) { return h.svc.ListContasFixas(ctx, tenantID) },
+		func(offset, limit int) ([]dto.ContaFixaResponse, int64, error) {
+			return h.svc.ListContasFixasPaginated(ctx, tenantID, offset, limit)
+		},
+	)
 }
 
 // @Summary Delete conta fixa
@@ -676,23 +637,11 @@ func (h *FinanceiroHandler) RecordValidationEvent(c *gin.Context) {
 // @Router /api/audit-logs [get]
 func (h *FinanceiroHandler) GetAuditLogs(c *gin.Context) {
 	tenantID := c.GetString("tenantID")
-
-	var params dto.PaginationParams
-	if err := c.ShouldBindQuery(&params); err == nil && params.Paginated {
-		params.Normalize()
-		logs, total, err := h.svc.GetAuditLogsPaginated(c.Request.Context(), tenantID, params.Offset(), params.PageSize)
-		if err != nil {
-			respondInternalError(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, dto.NewPaginatedResponse(logs, total, params))
-		return
-	}
-
-	logs, err := h.svc.GetAuditLogs(c.Request.Context(), tenantID)
-	if err != nil {
-		respondInternalError(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, logs)
+	ctx := c.Request.Context()
+	respondListOrPaginated(c,
+		func() ([]model.AuditLog, error) { return h.svc.GetAuditLogs(ctx, tenantID) },
+		func(offset, limit int) ([]model.AuditLog, int64, error) {
+			return h.svc.GetAuditLogsPaginated(ctx, tenantID, offset, limit)
+		},
+	)
 }

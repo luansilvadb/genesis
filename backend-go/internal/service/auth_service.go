@@ -79,17 +79,26 @@ func NewAuthService(
 	}
 }
 
+// checkEmailAvailable returns nil when the email is free, ErrEmailAlreadyExists
+// when already taken, or a wrapped error on unexpected database failures.
+func (s *AuthService) checkEmailAvailable(ctx context.Context, email string) error {
+	existing, err := s.usuarioRepo.GetByEmail(ctx, email)
+	if err != nil && !errors.Is(err, repository.ErrRecordNotFound) && !errors.Is(err, ErrUserNotFound) {
+		return fmt.Errorf("erro ao verificar email: %w", err)
+	}
+	if existing != nil {
+		return ErrEmailAlreadyExists
+	}
+	return nil
+}
+
 func (s *AuthService) Register(ctx context.Context, req *dto.RegisterRequest) (*dto.AuthResponse, error) {
 	if err := validator.ValidatePassword(req.Password); err != nil {
 		return nil, err
 	}
 
-	existing, err := s.usuarioRepo.GetByEmail(ctx, req.Email)
-	if err != nil && !errors.Is(err, repository.ErrRecordNotFound) && !errors.Is(err, ErrUserNotFound) {
-		return nil, fmt.Errorf("erro ao verificar email: %w", err)
-	}
-	if existing != nil {
-		return nil, ErrEmailAlreadyExists
+	if err := s.checkEmailAvailable(ctx, req.Email); err != nil {
+		return nil, err
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -108,9 +117,7 @@ func (s *AuthService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, err
 	}
 
-	if req.InviteCode != nil && *req.InviteCode != "" {
-		s.joinTenantByInvite(ctx, user, *req.InviteCode)
-	}
+	s.maybeJoinByInvite(ctx, user, req.InviteCode)
 
 	token, err := s.generateToken(user.ID, user.Email)
 	if err != nil {
@@ -171,9 +178,7 @@ func (s *AuthService) GoogleLogin(ctx context.Context, req *dto.GoogleLoginReque
 		return nil, err
 	}
 
-	if req.InviteCode != nil && *req.InviteCode != "" {
-		s.joinTenantByInvite(ctx, user, *req.InviteCode)
-	}
+	s.maybeJoinByInvite(ctx, user, req.InviteCode)
 
 	token, err := s.generateToken(user.ID, user.Email)
 	if err != nil {
@@ -516,6 +521,14 @@ func (s *AuthService) GetInvitePreview(ctx context.Context, inviteCode string) (
 	}
 
 	return preview, nil
+}
+
+// maybeJoinByInvite attempts to join a tenant by invite code when one is
+// provided. A nil or empty invite is silently ignored.
+func (s *AuthService) maybeJoinByInvite(ctx context.Context, user *model.Usuario, inviteCode *string) {
+	if inviteCode != nil && *inviteCode != "" {
+		s.joinTenantByInvite(ctx, user, *inviteCode)
+	}
 }
 
 func (s *AuthService) joinTenantByInvite(ctx context.Context, user *model.Usuario, inviteCode string) {

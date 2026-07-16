@@ -54,3 +54,6 @@ skills-lock.json
 **/.codewhale/*
 !**/.codewhale/constitution.json
 .deepseek/
+
+#Goals
+GOAL.md

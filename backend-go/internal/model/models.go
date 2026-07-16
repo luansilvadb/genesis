@@ -7,6 +7,28 @@ import (
 	"gorm.io/gorm"
 )
 
+// ── Enums ────────────────────────────────────────────────────────────────────
+
+type Role string
+
+const (
+	RoleAdmin        Role = "ADMIN"
+	RoleMorador      Role = "MORADOR"
+	RoleVisualizador Role = "VISUALIZADOR"
+)
+
+type SplitMode string
+
+const (
+	SplitModeEqual  SplitMode = "EQUAL"
+	SplitModeIncome SplitMode = "INCOME"
+	SplitModeCustom SplitMode = "CUSTOM"
+)
+
+type ValidationEventType string
+
+// ── Models ───────────────────────────────────────────────────────────────────
+
 type Tenant struct {
 	ID              string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	Name            string    `gorm:"not null" json:"name"`

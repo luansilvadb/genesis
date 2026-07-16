@@ -258,17 +258,7 @@ func (s *FinanceiroService) UpdatePermissions(ctx context.Context, tenantID stri
 	result := clonePermissionsMap(defaults, tenantPerms)
 	rolePerms := result[role]
 
-	// Persist tenant permission overrides to the database so they survive restarts.
-	if data, err := json.Marshal(tenantPerms); err == nil {
-		tenant, tenantErr := s.tenantRepo.GetByID(ctx, tenantID)
-		if tenantErr == nil && tenant != nil {
-			jsonStr := string(data)
-			tenant.PermissionsJSON = &jsonStr
-			if saveErr := s.tenantRepo.Update(ctx, tenant); saveErr != nil {
-				log.Printf("ERROR: failed to persist permissions for tenant %s: %v", tenantID, saveErr)
-			}
-		}
-	}
+	s.persistPermissionsJSON(ctx, tenantID, tenantPerms)
 
 	s.wsHub.Broadcast(tenantID, dto.WSMessage{
 		Type:    dto.WSTypePermissionsUpdate,
@@ -276,6 +266,26 @@ func (s *FinanceiroService) UpdatePermissions(ctx context.Context, tenantID stri
 	})
 
 	return result
+}
+
+// persistPermissionsJSON serializes the tenant permissions map and persists it
+// to the database. Errors are logged but not returned — permission persistence
+// is best-effort (in-memory state takes precedence).
+func (s *FinanceiroService) persistPermissionsJSON(ctx context.Context, tenantID string, tenantPerms map[string]dto.RolePermissions) {
+	data, err := json.Marshal(tenantPerms)
+	if err != nil {
+		log.Printf("ERROR: failed to marshal permissions for tenant %s: %v", tenantID, err)
+		return
+	}
+	tenant, tenantErr := s.tenantRepo.GetByID(ctx, tenantID)
+	if tenantErr != nil || tenant == nil {
+		return
+	}
+	jsonStr := string(data)
+	tenant.PermissionsJSON = &jsonStr
+	if saveErr := s.tenantRepo.Update(ctx, tenant); saveErr != nil {
+		log.Printf("ERROR: failed to persist permissions for tenant %s: %v", tenantID, saveErr)
+	}
 }
 
 // ── Gasto defaults & model building ─────────────────────────────────────────
@@ -453,21 +463,7 @@ func (s *FinanceiroService) UpdateMembro(ctx context.Context, tenantID string, m
 		return nil, fmt.Errorf("membro não encontrado")
 	}
 
-	if req.Nome != nil {
-		membro.Nome = *req.Nome
-	}
-	if req.Avatar != nil {
-		membro.Avatar = *req.Avatar
-	}
-	if req.Ativo != nil {
-		membro.Ativo = *req.Ativo
-	}
-	if req.Role != nil {
-		membro.Role = model.Role(*req.Role)
-	}
-	if req.RendaCentavos != nil {
-		membro.RendaCentavos = req.RendaCentavos
-	}
+	applyMembroFieldUpdates(membro, req)
 
 	if err := s.membroRepo.Update(ctx, membro); err != nil {
 		return nil, err
@@ -481,6 +477,18 @@ func (s *FinanceiroService) UpdateMembro(ctx context.Context, tenantID string, m
 		Payload: resp,
 	})
 	return resp, nil
+}
+
+// applyMembroFieldUpdates applies non-nil partial-update fields from the
+// request onto the membro model, preserving unset fields.
+func applyMembroFieldUpdates(m *model.MembroCasa, req *dto.UpdateMembroRequest) {
+	setIfNotNil(&m.Nome, req.Nome)
+	setIfNotNil(&m.Avatar, req.Avatar)
+	setIfNotNil(&m.Ativo, req.Ativo)
+	if req.Role != nil {
+		m.Role = model.Role(*req.Role)
+	}
+	setPtrIfNotNil(&m.RendaCentavos, req.RendaCentavos)
 }
 
 func (s *FinanceiroService) ListMembros(ctx context.Context, tenantID string) ([]dto.MembroResponse, error) {

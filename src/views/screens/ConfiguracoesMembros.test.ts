@@ -266,11 +266,11 @@ describe('ConfiguracoesMembros', () => {
     })
 
     // Estado inicial: Modo Foco inativo
-    expect(wrapper.find('h2.text-display').exists()).toBe(true)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(true)
     expect(wrapper.text()).toContain('Perfil dos Usuários')
     expect(wrapper.text()).toContain('Meu Perfil')
     expect(wrapper.text()).toContain('Sair da Conta')
-    expect(wrapper.text()).toContain('Fechar')
+    expect(wrapper.text()).toContain('Voltar ao Dashboard')
 
     // Ativar o Modo Foco
     const configuracoesCartoes = wrapper.findComponent({ name: 'ConfiguracoesCartoes' })
@@ -278,22 +278,22 @@ describe('ConfiguracoesMembros', () => {
     await flushPromises()
 
     // Elementos devem sumir
-    expect(wrapper.find('h2.text-display').exists()).toBe(false)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('Perfil dos Usuários')
     expect(wrapper.text()).not.toContain('Meu Perfil')
     expect(wrapper.text()).not.toContain('Sair da Conta')
-    expect(wrapper.text()).not.toContain('Fechar')
+    expect(wrapper.text()).not.toContain('Voltar ao Dashboard')
 
     // Desativar o Modo Foco
     await configuracoesCartoes.vm.$emit('focus-change', false)
     await flushPromises()
 
     // Elementos devem reaparecer
-    expect(wrapper.find('h2.text-display').exists()).toBe(true)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(true)
     expect(wrapper.text()).toContain('Perfil dos Usuários')
     expect(wrapper.text()).toContain('Meu Perfil')
     expect(wrapper.text()).toContain('Sair da Conta')
-    expect(wrapper.text()).toContain('Fechar')
+    expect(wrapper.text()).toContain('Voltar ao Dashboard')
   })
 
   it('deve ocultar cabecalho, abas, card de perfil e rodape ao abrir a edicao de morador (Modo Foco)', async () => {
@@ -320,9 +320,9 @@ describe('ConfiguracoesMembros', () => {
     await flushPromises()
 
     // Estado inicial: Modo Foco inativo
-    expect(wrapper.find('h2.text-display').exists()).toBe(true)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(true)
     expect(wrapper.text()).toContain('Perfil dos Usuários')
-    expect(wrapper.text()).toContain('Fechar')
+    expect(wrapper.text()).toContain('Voltar ao Dashboard')
 
     // Clicar em um membro para editar (abrir edicaoMembro/mostrarBottomSheet)
     const items = wrapper.findAll('.cursor-pointer')
@@ -331,9 +331,9 @@ describe('ConfiguracoesMembros', () => {
     await flushPromises()
 
     // Elementos devem sumir devido ao Modo Foco na edição
-    expect(wrapper.find('h2.text-display').exists()).toBe(false)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(false)
     expect(wrapper.text()).not.toContain('Perfil dos Usuários')
-    expect(wrapper.text()).not.toContain('Fechar')
+    expect(wrapper.text()).not.toContain('Voltar ao Dashboard')
 
     // Clicar no botão Cancelar da edição para fechar
     const botaoCancelar = wrapper.findAll('button').find(b => b.text().includes('Cancelar'))
@@ -341,8 +341,8 @@ describe('ConfiguracoesMembros', () => {
     await flushPromises()
 
     // Elementos devem reaparecer
-    expect(wrapper.find('h2.text-display').exists()).toBe(true)
+    expect(wrapper.find('h2.text-heading-sm').exists()).toBe(true)
     expect(wrapper.text()).toContain('Perfil dos Usuários')
-    expect(wrapper.text()).toContain('Fechar')
+    expect(wrapper.text()).toContain('Voltar ao Dashboard')
   })
 })

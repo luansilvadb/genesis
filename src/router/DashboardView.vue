@@ -113,7 +113,7 @@ const handleSalvarTransacao = () => {
     <Drawer
       :model-value="currentView === 'settings'"
       @update:model-value="(val: boolean) => { if (!val) currentView = 'dashboard' }"
-      width-class="md:max-w-[480px]"
+      width-class="md:max-w-[560px] lg:max-w-[860px] xl:max-w-[1000px]"
       content-class="p-0 h-full"
     >
       <ConfiguracoesMembros

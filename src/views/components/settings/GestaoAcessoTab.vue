@@ -147,7 +147,7 @@ const cancelarNovoMembro = () => {
 </script>
 
 <template>
-  <div class="space-y-8 animate-in fade-in duration-300">
+  <div class="space-y-6 animate-in fade-in duration-300">
     <!-- Modo Foco para Novo Morador -->
     <div v-if="novoMembroFormAberto" class="bg-white border border-stone/30 rounded-2xl shadow-subtle overflow-hidden">
       <MembroFormBottomSheet 
@@ -215,7 +215,7 @@ const cancelarNovoMembro = () => {
         </div>
       </div>
     </div>
-    <div v-else class="space-y-8">
+    <div v-else class="space-y-6">
       <div class="bg-white border border-stone/30 rounded-2xl shadow-subtle overflow-hidden">
         <div class="px-6 pt-6 pb-2">
           <h3 class="text-heading-sm text-charcoal flex items-center gap-2">
@@ -233,7 +233,7 @@ const cancelarNovoMembro = () => {
             </Button>
           </div>
 
-          <div class="space-y-2">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
             <MembroListItem 
               v-for="(membro, idx) in membros" 
               :key="membro.id"

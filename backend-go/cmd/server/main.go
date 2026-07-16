@@ -180,7 +180,7 @@ func runMigrations(db *gorm.DB) {
 
 func setupServices(cfg *config.Config, db *gorm.DB, r repos, wsHub *ws.Hub) (*service.AuthService, *service.FinanceiroService) {
 	emailSvc := service.NewEmailService(cfg)
-	authSvc := service.NewAuthService(cfg, db, r.usuarioRepo, r.tenantRepo, r.membroRepo, r.resetRepo, emailSvc)
+	authSvc := service.NewAuthService(cfg, db, r.usuarioRepo, r.tenantRepo, r.membroRepo, r.resetRepo, emailSvc, wsHub)
 	financeiroSvc := service.NewFinanceiroService(
 		db,
 		r.membroRepo, r.cartaoRepo, r.faturaRepo, r.gastoRepo,

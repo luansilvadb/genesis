@@ -203,7 +203,7 @@ func TestAuthService_Register_RepoError(t *testing.T) {
 	membroRepo := &mockMembroRepoErr{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoErr{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.Register(context.Background(), &dto.RegisterRequest{
 		Email:    "test@example.com",
@@ -226,7 +226,7 @@ func TestAuthService_GoogleLogin_Success_NewUser(t *testing.T) {
 	membroRepo := &mockMembroRepoErr{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoErr{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	svc.SetGoogleTokenVerifier(&testGoogleTokenVerifier{clientID: cfg.GoogleOAuthID})
 
 	claims := jwt.MapClaims{
@@ -271,7 +271,7 @@ func TestAuthService_GoogleLogin_Success_ExistingByGoogleID(t *testing.T) {
 		GoogleID: &googleID,
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	svc.SetGoogleTokenVerifier(&testGoogleTokenVerifier{clientID: cfg.GoogleOAuthID})
 
 	claims := jwt.MapClaims{
@@ -314,7 +314,7 @@ func TestAuthService_GoogleLogin_Success_ExistingByEmail(t *testing.T) {
 		Nome:  "Existing User",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	svc.SetGoogleTokenVerifier(&testGoogleTokenVerifier{clientID: cfg.GoogleOAuthID})
 
 	claims := jwt.MapClaims{
@@ -356,7 +356,7 @@ func TestAuthService_ForgotPassword_Success(t *testing.T) {
 		Nome:  "User",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, emailSvc)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, emailSvc, nil)
 
 	err := svc.ForgotPassword(context.Background(), "user@example.com")
 	if err == nil {
@@ -384,7 +384,7 @@ func TestAuthService_ForgotPassword_CreateTokenError(t *testing.T) {
 		Nome:  "User",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ForgotPassword(context.Background(), "user@example.com")
 	if err == nil {
@@ -414,7 +414,7 @@ func TestAuthService_ResetPassword_Success(t *testing.T) {
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ResetPassword(context.Background(), "valid-reset-token", "newSecurePass123")
 	if err != nil {
@@ -447,7 +447,7 @@ func TestAuthService_ResetPassword_UserNotFound(t *testing.T) {
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ResetPassword(context.Background(), "valid-token", "NewPass123")
 	if err != ErrUserNotFound {
@@ -462,7 +462,7 @@ func TestAuthService_CreateTenant_UserNotFound(t *testing.T) {
 	membroRepo := &mockMembroRepoErr{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoErr{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.CreateTenant(context.Background(), "House", "nonexistent-user")
 	if err == nil {
@@ -486,7 +486,7 @@ func TestAuthService_CreateTenant_RepoError(t *testing.T) {
 		Nome:  "Admin",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.CreateTenant(context.Background(), "House", "user-1")
 	if err == nil {
@@ -513,7 +513,7 @@ func TestAuthService_GoogleLogin_UpdateError(t *testing.T) {
 		Nome:  "Existing User",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	claims := jwt.MapClaims{
 		"sub":   "new-google-sub",
@@ -554,7 +554,7 @@ func TestAuthService_ResetPassword_RepoError(t *testing.T) {
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ResetPassword(context.Background(), "valid-reset-token", "newSecurePass123")
 	if err == nil {
@@ -576,7 +576,7 @@ func TestAuthService_CreateTenant_MembroRepoError(t *testing.T) {
 		Nome:  "Admin",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, failMembroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, failMembroRepo, resetRepo, nil, nil)
 
 	_, err := svc.CreateTenant(context.Background(), "House", "user-1")
 	if err == nil {
@@ -597,7 +597,7 @@ func TestAuthService_JoinTenant_UserNotFound(t *testing.T) {
 		InviteCode: "INVITE123",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.JoinTenant(context.Background(), "INVITE123", "nonexistent-user")
 	if err != ErrUserNotFound {
@@ -627,7 +627,7 @@ func TestAuthService_JoinTenant_MembroCreateFails(t *testing.T) {
 		Nome:  "User",
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.JoinTenant(context.Background(), "INVITE123", "user-1")
 	if err == nil {
@@ -658,7 +658,7 @@ func TestAuthService_ResetPassword_UpdateError(t *testing.T) {
 		ExpiresAt: time.Now().Add(1 * time.Hour),
 	}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ResetPassword(context.Background(), "valid-reset-token", "newSecurePass123")
 	if err == nil {

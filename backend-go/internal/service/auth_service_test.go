@@ -148,7 +148,7 @@ func TestAuthService_Register_Success(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	resp, err := svc.Register(context.Background(), &dto.RegisterRequest{
 		Email:    "test@example.com",
@@ -176,7 +176,7 @@ func TestAuthService_Register_DuplicateEmail(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, _ = svc.Register(context.Background(), &dto.RegisterRequest{
 		Email:    "dup@example.com",
@@ -202,7 +202,7 @@ func TestAuthService_Login_Success(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, _ = svc.Register(context.Background(), &dto.RegisterRequest{
 		Email:    "login@test.com",
@@ -231,7 +231,7 @@ func TestAuthService_Login_InvalidCredentials(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.Login(context.Background(), &dto.LoginRequest{
 		Email:    "nonexistent@example.com",
@@ -250,7 +250,7 @@ func TestAuthService_Login_WrongPassword(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, _ = svc.Register(context.Background(), &dto.RegisterRequest{
 		Email:    "wrongpass@test.com",
@@ -275,7 +275,7 @@ func TestAuthService_Login_NilPasswordHash(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	user := &model.Usuario{
 		Email: "google-only@test.com",
@@ -300,7 +300,7 @@ func TestAuthService_GoogleLogin_InvalidCredential(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_, err := svc.GoogleLogin(context.Background(), &dto.GoogleLoginRequest{Credential: "invalid-credential"})
 
@@ -316,7 +316,7 @@ func TestAuthService_ForgotPassword_NonExistentUser(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ForgotPassword(context.Background(), "nonexistent@test.com")
 
@@ -332,7 +332,7 @@ func TestAuthService_ResetPassword_InvalidToken(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	err := svc.ResetPassword(context.Background(), "invalid-token", "NewPass123")
 
@@ -348,7 +348,7 @@ func TestAuthService_ResetPassword_ExpiredToken(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_ = usuarioRepo.Create(context.Background(), &model.Usuario{
 		Email: "user@test.com",
@@ -375,7 +375,7 @@ func TestAuthService_CreateTenant_Success(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	user := &model.Usuario{Email: "admin@test.com", Nome: "Admin"}
 	_ = usuarioRepo.Create(context.Background(), user)
@@ -413,7 +413,7 @@ func TestAuthService_JoinTenant_Success(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	_ = tenantRepo.Create(context.Background(), &model.Tenant{
 		Name:       "Existing House",
@@ -440,7 +440,7 @@ func TestAuthService_JoinTenant_InvalidCode(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	user := &model.Usuario{Email: "user@test.com", Nome: "User"}
 	_ = usuarioRepo.Create(context.Background(), user)
@@ -461,7 +461,7 @@ func TestAuthService_GenerateToken_Valid(t *testing.T) {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	svc := NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 
 	tokenStr, err := svc.generateToken("user-id", "user@test.com")
 	if err != nil {

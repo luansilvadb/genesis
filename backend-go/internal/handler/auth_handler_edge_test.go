@@ -159,7 +159,7 @@ func setupAuthHandlerWithConfig(cfg *config.Config) *AuthHandler {
 	membroRepo := &mockMembroRepoEdge{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoEdge{tokens: make(map[string]*model.PasswordResetToken)}
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	return NewAuthHandler(authSvc)
 }
 
@@ -169,7 +169,7 @@ func setupGoogleAuthHandler(cfg *config.Config) *AuthHandler {
 	membroRepo := &mockMembroRepoEdge{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepoEdge{tokens: make(map[string]*model.PasswordResetToken)}
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	authSvc.SetGoogleTokenVerifier(&testGoogleTokenVerifierEdge{clientID: cfg.GoogleOAuthID})
 	return NewAuthHandler(authSvc)
 }
@@ -278,7 +278,7 @@ func TestForgotPasswordHandler_WithUserReturns500(t *testing.T) {
 		Nome:  "User",
 	}
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, emailSvc)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, emailSvc, nil)
 	handler := NewAuthHandler(authSvc)
 
 	r := gin.New()
@@ -321,7 +321,7 @@ func TestResetPasswordHandler_Success(t *testing.T) {
 	}
 	resetRepo.tokens["reset-1"] = resetToken
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	handler := NewAuthHandler(authSvc)
 
 	r := gin.New()
@@ -383,7 +383,7 @@ func TestCreateTenantHandler_ServiceError(t *testing.T) {
 	resetRepo := &mockResetRepoEdge{tokens: make(map[string]*model.PasswordResetToken)}
 	cfg := &config.Config{JWTSecret: "test-secret"}
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	handler := NewAuthHandler(authSvc)
 
 	r := gin.New()

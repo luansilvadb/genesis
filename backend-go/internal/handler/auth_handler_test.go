@@ -161,7 +161,7 @@ func setupTestHandler() *AuthHandler {
 	membroRepo := &mockMembroRepo{membros: make(map[string]*model.MembroCasa)}
 	resetRepo := &mockResetRepo{tokens: make(map[string]*model.PasswordResetToken)}
 
-	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil)
+	authSvc := service.NewAuthService(cfg, nil, usuarioRepo, tenantRepo, membroRepo, resetRepo, nil, nil)
 	return NewAuthHandler(authSvc)
 }
 

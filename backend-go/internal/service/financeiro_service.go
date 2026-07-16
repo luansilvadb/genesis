@@ -985,7 +985,7 @@ func (s *FinanceiroService) CreateFatura(ctx context.Context, tenantID string, r
 }
 
 func (s *FinanceiroService) CreateFaturaBatch(ctx context.Context, tenantID string, reqs []dto.CreateFaturaRequest) error {
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		for i := range reqs {
 			req := &reqs[i]
 
@@ -1011,6 +1011,16 @@ func (s *FinanceiroService) CreateFaturaBatch(ctx context.Context, tenantID stri
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+
+	// Notifica clientes sobre faturas alteradas (batch)
+	s.wsHub.Broadcast(tenantID, dto.WSMessage{
+		Type:    dto.WSTypeInvoiceUpdated,
+		Payload: map[string]interface{}{"action": "batch-updated"},
+	})
+	return nil
 }
 
 func (s *FinanceiroService) ListFaturas(ctx context.Context, tenantID string) ([]model.Fatura, error) {

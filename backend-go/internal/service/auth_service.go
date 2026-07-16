@@ -53,6 +53,7 @@ type AuthService struct {
 	emailSvc      *EmailService
 	googleVerif   GoogleTokenVerifier
 	googleVerifMu sync.RWMutex
+	wsHub         WSHub
 }
 
 func NewAuthService(
@@ -63,6 +64,7 @@ func NewAuthService(
 	membroRepo repository.MembroRepository,
 	resetRepo repository.PasswordResetTokenRepository,
 	emailSvc *EmailService,
+	wsHub WSHub,
 ) *AuthService {
 	return &AuthService{
 		cfg:         cfg,
@@ -73,6 +75,7 @@ func NewAuthService(
 		resetRepo:   resetRepo,
 		emailSvc:    emailSvc,
 		googleVerif: newDefaultGoogleTokenVerifier(),
+		wsHub:       wsHub,
 	}
 }
 
@@ -516,6 +519,8 @@ func (s *AuthService) joinTenantByInvite(ctx context.Context, user *model.Usuari
 			existing.Ativo = true
 			if err := s.membroRepo.Update(ctx, existing); err != nil {
 				log.Printf("joinTenantByInvite: error reactivating member %s: %v", existing.ID, err)
+			} else {
+				s.broadcastMemberChange(tenant.ID, existing)
 			}
 		}
 		return
@@ -532,6 +537,8 @@ func (s *AuthService) joinTenantByInvite(ctx context.Context, user *model.Usuari
 
 	if err := s.membroRepo.Create(ctx, membro); err != nil {
 		log.Printf("joinTenantByInvite: error creating member for user %s in tenant %s: %v", user.ID, tenant.ID, err)
+	} else {
+		s.broadcastMemberChange(tenant.ID, membro)
 	}
 }
 
@@ -556,6 +563,7 @@ func (s *AuthService) JoinTenant(ctx context.Context, inviteCode, userID string)
 			if err := s.membroRepo.Update(ctx, existing); err != nil {
 				return nil, err
 			}
+			s.broadcastMemberChange(tenant.ID, existing)
 			return tenant, nil
 		}
 		return nil, errors.New("você já é membro deste núcleo")
@@ -574,5 +582,29 @@ func (s *AuthService) JoinTenant(ctx context.Context, inviteCode, userID string)
 		return nil, err
 	}
 
+	s.broadcastMemberChange(tenant.ID, membro)
+
 	return tenant, nil
+}
+
+// broadcastMemberChange envia um evento WebSocket para notificar outros membros
+// do tenant sobre a entrada ou reativação de um membro.
+func (s *AuthService) broadcastMemberChange(tenantID string, m *model.MembroCasa) {
+	if s.wsHub == nil {
+		return
+	}
+	resp := dto.MembroResponse{
+		ID:     m.ID,
+		Nome:   m.Nome,
+		Avatar: m.Avatar,
+		Role:   string(m.Role),
+		Ativo:  m.Ativo,
+	}
+	if m.UserID != nil {
+		resp.UserID = *m.UserID
+	}
+	s.wsHub.Broadcast(tenantID, dto.WSMessage{
+		Type:    dto.WSTypeMemberCreated,
+		Payload: resp,
+	})
 }

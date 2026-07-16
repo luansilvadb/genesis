@@ -24,7 +24,7 @@ func (s *EmailService) SendPasswordReset(email, token string) error {
 		return ErrSMTPNotConfigured
 	}
 
-	link := s.cfg.FrontendURL + "/reset-password?token=" + url.QueryEscape(token)
+	link := s.cfg.FrontendURL + "/#/reset-password?token=" + url.QueryEscape(token)
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", s.cfg.SMTPUser)

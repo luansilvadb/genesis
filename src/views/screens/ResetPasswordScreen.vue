@@ -13,6 +13,11 @@ const props = defineProps<{
 const emit = defineEmits(['reset-success'])
 const router = useRouter()
 
+// Salva o token localmente antes de limpar a URL,
+// pois router.replace({ query: {} }) faz o Vue Router
+// reavaliar a prop para string vazia.
+const savedToken = ref(props.token)
+
 const newPassword = ref('')
 const { loading, errorMsg, run } = useAsync()
 const showPassword = ref(false)
@@ -34,7 +39,7 @@ const onSubmit = async () => {
   }
 
   const success = await run(
-    () => tenantSessionService.resetPassword(props.token, newPassword.value),
+    () => tenantSessionService.resetPassword(savedToken.value, newPassword.value),
     'Erro inesperado'
   )
 

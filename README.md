@@ -79,7 +79,7 @@ go run ./cmd/server/   # API em http://localhost:3000
 
 ---
 
-## 🧪 Testes
+## Testes
 
 ### Frontend
 

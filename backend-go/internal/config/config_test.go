@@ -23,8 +23,8 @@ func TestLoadDefaults(t *testing.T) {
 	if cfg.SMTPPort != 587 {
 		t.Errorf("expected SMTP port 587, got %d", cfg.SMTPPort)
 	}
-	if cfg.SMTPUseTLS != true {
-		t.Errorf("expected SMTP TLS to be true by default")
+	if cfg.SMTPUseTLS != false {
+		t.Errorf("expected SMTP TLS to be false by default (STARTTLS on port 587)")
 	}
 	if cfg.FrontendURL != "http://localhost:5173" {
 		t.Errorf("expected frontend URL http://localhost:5173, got %s", cfg.FrontendURL)

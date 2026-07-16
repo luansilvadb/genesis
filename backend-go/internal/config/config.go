@@ -54,7 +54,7 @@ func Load() *Config {
 		SMTPPort:   smtpPort,
 		SMTPUser:   getEnv("SMTP_USER", ""),
 		SMTPPass:   getEnv("SMTP_PASS", ""),
-		SMTPUseTLS: getEnv("SMTP_USE_TLS", "true") == "true",
+		SMTPUseTLS: getEnv("SMTP_USE_TLS", "false") == "true",
 
 		FrontendURL:   getEnv("FRONTEND_URL", "http://localhost:5173"),
 		GoogleOAuthID: getEnv("GOOGLE_CLIENT_ID", ""),

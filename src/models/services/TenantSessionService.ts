@@ -244,7 +244,8 @@ export class TenantSessionService {
         'Authorization': `Bearer ${this.jwtToken}`,
         ...obterHeadersCsrf(),
       },
-      body: JSON.stringify({ name: nome })
+      body: JSON.stringify({ name: nome }),
+      credentials: 'include',
     })
 
     if (!response.ok) {
@@ -273,7 +274,8 @@ export class TenantSessionService {
         'Authorization': `Bearer ${this.jwtToken}`,
         ...obterHeadersCsrf(),
       },
-      body: JSON.stringify({ inviteCode })
+      body: JSON.stringify({ inviteCode }),
+      credentials: 'include',
     })
 
     if (!response.ok) {
@@ -299,7 +301,8 @@ export class TenantSessionService {
       const response = await fetch(`${this.baseUrl}auth/me`, {
         headers: {
           'Authorization': `Bearer ${this.jwtToken}`
-        }
+        },
+        credentials: 'include',
       })
 
       // Captura o token CSRF do header para requisições POST subsequentes

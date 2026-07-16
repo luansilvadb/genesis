@@ -24,7 +24,6 @@ vi.mock('../../viewmodels/useDashboardViewModel', () => ({
     estornarContaFixa: vi.fn(),
     totalLancamentosPeriodoSelecionado: ref(1),
     reabrirPeriodoSelecionado: vi.fn(),
-    isDropdownAbertosOpen: ref(false),
     periodoSelecionado: ref(null),
     abrirModal: vi.fn()
   })

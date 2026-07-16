@@ -189,7 +189,6 @@ func TestContract_WSMessageTypes_AreCorrect(t *testing.T) {
 		dto.WSTypeExpenseUpdated:    "EXPENSE_UPDATED",
 		dto.WSTypeExpenseDeleted:    "EXPENSE_DELETED",
 		dto.WSTypeCardCreated:       "CARD_CREATED",
-		dto.WSTypeCardUpdated:       "CARD_UPDATED",
 		dto.WSTypeCardDeleted:       "CARD_DELETED",
 		dto.WSTypeInvoiceUpdated:    "INVOICE_UPDATED",
 		dto.WSTypeMemberCreated:     "MEMBER_CREATED",

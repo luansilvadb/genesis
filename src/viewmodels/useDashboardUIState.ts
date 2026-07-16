@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import { formatarMesAno } from '../shared/utils/meses'
 import type { Gasto } from '../models/entities/Gasto'
 import type { ContaFixa } from '../models/entities/ContaFixa'
 import type { Fatura } from '../models/entities/Fatura'
@@ -14,13 +13,10 @@ export function useDashboardUIState() {
 
   const gastoParaAjustar = ref<Gasto | null>(null)
   const billSelecionada = ref<ContaFixa | null>(null)
-  const nomeNovoPeriodo = ref('')
-  const isDropdownAbertosOpen = ref(false)
   const isSubmittingPix = ref(false)
   const isSubmittingAjusteGasto = ref(false)
   const isSubmittingLancarBill = ref(false)
   const isSubmittingSalvarTemplate = ref(false)
-  const isSubmittingEstorno = ref(false)
   const itemParaEstornar = ref<Gasto | ContaFixa | null>(null)
   const itemTypeParaEstornar = ref('')
   const nettingTarget = ref<TransferenciaNetting | null>(null)
@@ -30,8 +26,9 @@ export function useDashboardUIState() {
 
   return {
     modalStack, abrirModal, fecharModal, isModalNoTopo,
-    gastoParaAjustar, billSelecionada, nomeNovoPeriodo,
-    isDropdownAbertosOpen, isSubmittingPix, isSubmittingAjusteGasto, isSubmittingLancarBill, isSubmittingSalvarTemplate, isSubmittingEstorno, itemParaEstornar, itemTypeParaEstornar,
+    gastoParaAjustar, billSelecionada,
+    isSubmittingPix, isSubmittingAjusteGasto, isSubmittingLancarBill, isSubmittingSalvarTemplate,
+    itemParaEstornar, itemTypeParaEstornar,
     nettingTarget,
     auditLogs, isLogsLoading,
     abrirConfirmacaoEstornoGasto: (g: Gasto) => { itemParaEstornar.value = g; itemTypeParaEstornar.value = 'Lançamento'; abrirModal('confirmacao-estorno') },
@@ -41,8 +38,7 @@ export function useDashboardUIState() {
     abrirNovoBill: () => { billSelecionada.value = null; abrirModal('configurar-conta-fixa') },
     abrirAjustarGasto: (g: Gasto) => { gastoParaAjustar.value = g; abrirModal('ajustar-gasto') },
     abrirBottomSheetNetting: (t: TransferenciaNetting) => { nettingTarget.value = t; abrirModal('acerto-netting') },
-    abrirNovoPeriodoBottomSheet: (f: Fatura | null) => {
-      nomeNovoPeriodo.value = f ? formatarMesAno((f.periodo.mes % 12) + 1, f.periodo.mes === 12 ? f.periodo.ano + 1 : f.periodo.ano) : ''
+    abrirNovoPeriodoBottomSheet: (_f: Fatura | null) => {
       abrirModal('novo-periodo')
     }
   }

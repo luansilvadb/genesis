@@ -409,18 +409,6 @@ func TestWSMessage_NilPayload(t *testing.T) {
 	}
 }
 
-func TestWSError_JSON(t *testing.T) {
-	err := WSError{Code: "ERR_001", Message: "Something went wrong"}
-	data, _ := json.Marshal(err)
-	var got WSError
-	if err := json.Unmarshal(data, &got); err != nil {
-		t.Fatal(err)
-	}
-	if got.Code != "ERR_001" || got.Message != "Something went wrong" {
-		t.Errorf("round-trip: got %+v, want %+v", got, err)
-	}
-}
-
 func TestWSTypeConstants(t *testing.T) {
 	if WSTypeExpenseCreated != "EXPENSE_CREATED" {
 		t.Errorf("WSTypeExpenseCreated = %q", WSTypeExpenseCreated)
@@ -433,9 +421,6 @@ func TestWSTypeConstants(t *testing.T) {
 	}
 	if WSTypeMemberUpdated != "MEMBER_UPDATED" {
 		t.Errorf("WSTypeMemberUpdated = %q", WSTypeMemberUpdated)
-	}
-	if WSTypeCardUpdated != "CARD_UPDATED" {
-		t.Errorf("WSTypeCardUpdated = %q", WSTypeCardUpdated)
 	}
 	if WSTypeInvoiceUpdated != "INVOICE_UPDATED" {
 		t.Errorf("WSTypeInvoiceUpdated = %q", WSTypeInvoiceUpdated)

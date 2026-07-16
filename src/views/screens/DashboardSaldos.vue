@@ -113,7 +113,6 @@ watch(() => props.activeTab, (newTab, oldTab) => {
 })
 
 defineExpose({
-  isDropdownAbertosOpen: vm.isDropdownAbertosOpen,
   periodoSelecionado: vm.periodoSelecionado,
   currentMonthName,
   currentYear,

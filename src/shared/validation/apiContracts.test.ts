@@ -18,7 +18,6 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import {
   MembroResponseSchema,
-  MembroListResponseSchema,
   MembroFlexibleListResponseSchema,
   CartaoResponseSchema,
   CartaoFlexibleListResponseSchema,
@@ -147,11 +146,6 @@ const paginatedFixture = {
 describe('Contract: Fixtures → Zod Schemas', () => {
   it('MembroResponseSchema valida fixture de membro', () => {
     const result = MembroResponseSchema.safeParse(membroFixture)
-    expect(result.success).toBe(true)
-  })
-
-  it('MembroListResponseSchema valida array de membros', () => {
-    const result = MembroListResponseSchema.safeParse([membroFixture])
     expect(result.success).toBe(true)
   })
 

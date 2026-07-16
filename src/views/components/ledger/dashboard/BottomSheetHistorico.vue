@@ -58,6 +58,7 @@ const {
 const modoConfirmacao = ref(false)
 const isSubmitting = ref(false)
 const itemSelecionadoRef = ref<HTMLElement | null>(null)
+const dropdownContainerRef = ref<HTMLElement | null>(null)
 const isDropdownAbertosOpen = ref(false)
 
 const temContaFixaPendente = computed(() => contasFixas.value.some(
@@ -74,7 +75,13 @@ watch(() => props.visible, (v) => {
 watch(isDropdownAbertosOpen, async (aberto) => {
   if (aberto) {
     await nextTick()
-    itemSelecionadoRef.value?.scrollIntoView({ block: 'nearest' })
+    if (itemSelecionadoRef.value) {
+      itemSelecionadoRef.value.scrollIntoView({ block: 'nearest' })
+    } else {
+      // Período selecionado não está na lista de abertos (ex: foi arquivado).
+      // A lista já está ordenada por proximidade — o topo é o mês mais relevante.
+      dropdownContainerRef.value?.scrollTo({ top: 0 })
+    }
   }
 })
 
@@ -177,11 +184,12 @@ const handleSelecionarPeriodo = (mes: number, ano: number) => {
             class="w-full px-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-sm text-charcoal cursor-pointer flex justify-between items-center transition-all hover:bg-stone/30"
           >
             <span class="flex items-center gap-2.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-meadow animate-pulse" />
+              <Lock v-if="faturaSelecionadaFechada" class="w-3.5 h-3.5 text-graphite opacity-50 shrink-0" />
+              <span v-else class="w-2.5 h-2.5 rounded-full bg-meadow animate-pulse shrink-0" />
               <span class="block truncate">
-                {{ (periodoSelecionado && faturasFechadas.every(f => f.periodo.mes !== periodoSelecionado.mes || f.periodo.ano !== periodoSelecionado.ano))
+                {{ periodoSelecionado
                   ? formatarMesAno(periodoSelecionado.mes, periodoSelecionado.ano)
-                  : 'Selecionar mês aberto...'
+                  : 'Selecionar mês...'
                 }}
               </span>
             </span>
@@ -189,7 +197,7 @@ const handleSelecionarPeriodo = (mes: number, ano: number) => {
           </div>
           
           <transition name="dropdown-slide">
-            <div v-if="isDropdownAbertosOpen" class="absolute left-0 w-full mt-1.5 max-h-48 overflow-y-auto bg-card border border-stone rounded-xl shadow-xl z-50 py-2 custom-scrollbar">
+            <div v-if="isDropdownAbertosOpen" ref="dropdownContainerRef" class="absolute left-0 w-full mt-1.5 max-h-48 overflow-y-auto bg-card border border-stone rounded-xl shadow-xl z-50 py-2 custom-scrollbar">
               <div 
                 v-for="op in mesesAbertosOpcoes" 
                 :key="op.nome" 

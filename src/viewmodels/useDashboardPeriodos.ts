@@ -97,8 +97,13 @@ export function useDashboardPeriodos(
     const anoAtual = hoje.getFullYear()
 
     const faturasAbertas = getFaturasAbertas() || []
+    const faturasFechadas = getFaturasFechadas() || []
+    // Última fatura fechada = mais recente (assumindo ordem cronológica de criação)
+    const faturaFechadaRecente = faturasFechadas.length > 0
+      ? faturasFechadas[faturasFechadas.length - 1]
+      : undefined
     const faturaProxima = findNearestInvoice(faturasAbertas, mesAtual, anoAtual)
-      ?? getFaturasFechadas()?.[0]
+      ?? faturaFechadaRecente
 
     const fallback = faturaProxima?.periodo
       ? { mes: faturaProxima.periodo.mes, ano: faturaProxima.periodo.ano }
@@ -171,9 +176,18 @@ export function useDashboardPeriodos(
 
   const listaMesesSeletor = computed(() => {
     const hoje = new Date()
+    const mesAtual = hoje.getMonth() + 1
+    const anoAtual = hoje.getFullYear()
     const list = []
-    for (let i = -12; i <= 12; i++) {
-      const d = new Date(hoje.getFullYear(), hoje.getMonth() + i, 1)
+    // Ordenação: futuro primeiro (+1..+12), depois mês atual (0), depois passado (-1..-12).
+    // Quando o período selecionado foi arquivado e o scroll cai no topo,
+    // o primeiro item visível sempre é o próximo mês à frente — nunca um passado.
+    const offsets: number[] = []
+    for (let i = 1; i <= 12; i++) offsets.push(i)   // futuro
+    offsets.push(0)                                   // atual
+    for (let i = -1; i >= -12; i--) offsets.push(i)  // passado
+    for (const offset of offsets) {
+      const d = new Date(anoAtual, mesAtual - 1 + offset, 1)
       const mesIdx = d.getMonth() + 1
       const anoIdx = d.getFullYear()
       const estaFechada = getFaturasFechadas().some(f => f.periodo.mes === mesIdx && f.periodo.ano === anoIdx)
@@ -188,7 +202,11 @@ export function useDashboardPeriodos(
   })
 
   const mesesAbertosOpcoes = computed(() => listaMesesSeletor.value.filter(item => item.status === 'ABERTA'))
-  const mesesTrancadosOpcoes = computed(() => listaMesesSeletor.value.filter(item => item.status === 'FECHADA'))
+  const mesesTrancadosOpcoes = computed(() =>
+    listaMesesSeletor.value
+      .filter(item => item.status === 'FECHADA')
+      .sort((a, b) => a.ano !== b.ano ? a.ano - b.ano : a.mes - b.mes)
+  )
 
   const currentMonthName = computed(() => {
     const fat = faturaAtivaVisualizada.value

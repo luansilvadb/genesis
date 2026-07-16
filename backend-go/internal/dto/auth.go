@@ -5,7 +5,6 @@ type RegisterRequest struct {
 	Nome       string  `json:"nome" binding:"required"`
 	Password   string  `json:"password" binding:"required,min=8"`
 	InviteCode *string `json:"inviteCode,omitempty"`
-	MembroID   *string `json:"membroId,omitempty"`
 }
 
 type LoginRequest struct {
@@ -16,7 +15,6 @@ type LoginRequest struct {
 type GoogleLoginRequest struct {
 	Credential string  `json:"credential" binding:"required"`
 	InviteCode *string `json:"inviteCode,omitempty"`
-	MembroID   *string `json:"membroId,omitempty"`
 }
 
 type AuthResponse struct {

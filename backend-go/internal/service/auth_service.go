@@ -166,28 +166,9 @@ func (s *AuthService) GoogleLogin(ctx context.Context, req *dto.GoogleLoginReque
 		return nil, ErrInvalidCredentials
 	}
 
-	user, err := s.usuarioRepo.GetByGoogleID(ctx, payload.Subject)
+	user, err := s.resolveGoogleUser(ctx, payload)
 	if err != nil {
-		userByEmail, lookupErr := s.usuarioRepo.GetByEmail(ctx, payload.Email)
-		if lookupErr != nil && !errors.Is(lookupErr, repository.ErrRecordNotFound) && !errors.Is(lookupErr, ErrUserNotFound) {
-			return nil, fmt.Errorf("erro ao verificar email existente: %w", lookupErr)
-		}
-		if userByEmail != nil {
-			userByEmail.GoogleID = &payload.Subject
-			if err = s.usuarioRepo.Update(ctx, userByEmail); err != nil {
-				return nil, err
-			}
-			user = userByEmail
-		} else {
-			user = &model.Usuario{
-				Email:    payload.Email,
-				Nome:     payload.Name,
-				GoogleID: &payload.Subject,
-			}
-			if err = s.usuarioRepo.Create(ctx, user); err != nil {
-				return nil, err
-			}
-		}
+		return nil, err
 	}
 
 	if req.InviteCode != nil && *req.InviteCode != "" {
@@ -207,6 +188,41 @@ func (s *AuthService) GoogleLogin(ctx context.Context, req *dto.GoogleLoginReque
 			Nome:  user.Nome,
 		},
 	}, nil
+}
+
+// resolveGoogleUser finds an existing user by Google ID, or links/creates one
+// by email when this is the first Google login for that email address.
+func (s *AuthService) resolveGoogleUser(ctx context.Context, payload *GoogleTokenPayload) (*model.Usuario, error) {
+	user, err := s.usuarioRepo.GetByGoogleID(ctx, payload.Subject)
+	if err == nil {
+		return user, nil
+	}
+
+	// Google ID not found — try matching by email
+	userByEmail, lookupErr := s.usuarioRepo.GetByEmail(ctx, payload.Email)
+	if lookupErr != nil && !errors.Is(lookupErr, repository.ErrRecordNotFound) && !errors.Is(lookupErr, ErrUserNotFound) {
+		return nil, fmt.Errorf("erro ao verificar email existente: %w", lookupErr)
+	}
+
+	if userByEmail != nil {
+		// Existing user without Google link — attach Google ID
+		userByEmail.GoogleID = &payload.Subject
+		if err := s.usuarioRepo.Update(ctx, userByEmail); err != nil {
+			return nil, err
+		}
+		return userByEmail, nil
+	}
+
+	// Brand-new user via Google
+	user = &model.Usuario{
+		Email:    payload.Email,
+		Nome:     payload.Name,
+		GoogleID: &payload.Subject,
+	}
+	if err := s.usuarioRepo.Create(ctx, user); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (s *AuthService) ForgotPassword(ctx context.Context, email string) error {

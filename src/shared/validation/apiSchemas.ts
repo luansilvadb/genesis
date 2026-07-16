@@ -18,8 +18,6 @@ export const MembroResponseSchema = z.object({
   createdAt: z.string().optional(),
 })
 
-export const MembroListResponseSchema = z.array(MembroResponseSchema)
-
 // --- Cartao ---
 export const CartaoResponseSchema = z.object({
   id: z.string(),

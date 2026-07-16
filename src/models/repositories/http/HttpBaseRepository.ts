@@ -98,19 +98,14 @@ export class HttpBaseRepository {
   // -----------------------------------------------------------------------
 
   protected async request<T>(url: string, options: RequestInit = {}): Promise<T> {
-    return this.executeRequest<T>(url, options, false)
+    return this.sendRequest<T>(url, options, false)
   }
 
-  /**
-   * Internal implementation that supports a single CSRF retry.
-   * Do NOT call directly — use request() which delegates here.
-   */
-  private async executeRequest<T>(
-    url: string,
-    options: RequestInit,
-    csrfRetry: boolean,
-  ): Promise<T> {
-    const headers = new Headers(options.headers)
+  // ── Request pipeline (split for lower cyclomatic complexity) ──────────
+
+  /** Builds Headers for an outgoing request, attaching auth, tenant, and CSRF. */
+  private buildHeaders(method: string, baseHeaders?: HeadersInit): Headers {
+    const headers = new Headers(baseHeaders)
     headers.set('Content-Type', 'application/json')
 
     if (this.token) {
@@ -121,41 +116,57 @@ export class HttpBaseRepository {
       headers.set('X-Tenant-ID', this.tenantId)
     }
 
-    // Attach CSRF token header for mutating methods
-    const method = (options.method || 'GET').toUpperCase()
     if (isMutatingMethod(method)) {
-      const token = this.getCsrfToken()
-      if (token) {
-        headers.set('X-CSRF-Token', token)
+      const csrf = this.getCsrfToken()
+      if (csrf) {
+        headers.set('X-CSRF-Token', csrf)
       }
     }
 
-    // Remover barra inicial se existir para evitar barra dupla com a baseUrl que agora termina em /
-    const cleanUrl = url.startsWith('/') ? url.slice(1) : url
+    return headers
+  }
 
+  /**
+   * Dispatches the actual fetch with a 15s timeout, translating network
+   * errors into user-facing messages.
+   */
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+  ): Promise<Response> {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
 
-    let response: Response
     try {
-      response = await fetch(`${this.baseUrl}${cleanUrl}`, {
-        ...options,
-        headers,
-        signal: controller.signal,
-        credentials: 'include',
-      })
+      return await fetch(url, { ...options, signal: controller.signal, credentials: 'include' })
     } catch (err: unknown) {
-      clearTimeout(timeoutId)
       if (err instanceof DOMException && err.name === 'AbortError') {
         throw new Error('A requisição excedeu o tempo limite. Verifique sua conexão e tente novamente.')
       }
       logger.error(`Falha de conexão para ${url}:`, err)
       throw new Error('Não foi possível se conectar ao servidor do DIVI. Certifique-se de que a API está ativa e que há conexão com a internet.')
+    } finally {
+      clearTimeout(timeoutId)
     }
+  }
 
-    clearTimeout(timeoutId)
-
-    // Capture CSRF token from GET response headers for future mutating requests
+  /**
+   * Handles HTTP response status codes. Returns the parsed JSON body on
+   * success, or throws with a descriptive error message on failure.
+   *
+   * Special cases:
+   * - 403 with CSRF message → triggers token renewal + single retry
+   * - 401 → clears session and dispatches divi:auth-expired
+   * - 204 → returns null
+   */
+  private async handleResponse<T>(
+    response: Response,
+    url: string,
+    options: RequestInit,
+    csrfRetry: boolean,
+  ): Promise<T> {
+    // Capture CSRF token from successful GET responses for future mutating requests
+    const method = (options.method || 'GET').toUpperCase()
     if (method === 'GET' && response.ok) {
       const newToken = response.headers?.get('X-CSRF-Token') ?? null
       if (newToken) {
@@ -163,31 +174,12 @@ export class HttpBaseRepository {
       }
     }
 
-    // Handle 403 CSRF errors with automatic token renewal and single retry
     if (response.status === 403) {
-      const errBody = await response.json().catch(() => ({}))
-      if (/csrf token/i.test(errBody.message || '')) {
-        limparCsrfToken()
-        if (!csrfRetry) {
-          logger.warn('CSRF token expirado ou ausente, renovando...')
-          await this.refreshCsrfToken()
-          return this.executeRequest<T>(url, options, true)
-        }
-        throw new Error(errBody.message || `Erro HTTP: ${response.status} ${response.statusText}`)
-      }
-      // Non-CSRF 403 (e.g. real permission error) — propagate
-      throw new Error(errBody.message || `Erro HTTP: ${response.status} ${response.statusText}`)
+      return this.handle403<T>(response, url, options, csrfRetry)
     }
 
     if (!response.ok) {
-      if (response.status === 401) {
-        localStorage.removeItem('divi_jwt_token')
-        localStorage.removeItem('divi_active_tenant_id')
-        window.dispatchEvent(new CustomEvent('divi:auth-expired'))
-        throw new Error('Sessão expirada. Faça login novamente.')
-      }
-      const errBody = await response.json().catch(() => ({}))
-      throw new Error(errBody.message || `Erro HTTP: ${response.status} ${response.statusText}`)
+      return this.handleErrorResponse<T>(response)
     }
 
     if (response.status === 204) {
@@ -195,6 +187,56 @@ export class HttpBaseRepository {
     }
 
     return response.json()
+  }
+
+  /** Handles 403 responses with CSRF token renewal and single retry. */
+  private async handle403<T>(
+    response: Response,
+    url: string,
+    options: RequestInit,
+    csrfRetry: boolean,
+  ): Promise<T> {
+    const errBody = await response.json().catch(() => ({}))
+    if (/csrf token/i.test(errBody.message || '')) {
+      limparCsrfToken()
+      if (!csrfRetry) {
+        logger.warn('CSRF token expirado ou ausente, renovando...')
+        await this.refreshCsrfToken()
+        return this.sendRequest<T>(url, options, true)
+      }
+    }
+    throw new Error(errBody.message || `Erro HTTP: ${response.status} ${response.statusText}`)
+  }
+
+  /** Handles non-403 error responses. 401 triggers auth-expired cleanup. */
+  private async handleErrorResponse<T>(response: Response): Promise<T> {
+    if (response.status === 401) {
+      localStorage.removeItem('divi_jwt_token')
+      localStorage.removeItem('divi_active_tenant_id')
+      window.dispatchEvent(new CustomEvent('divi:auth-expired'))
+      throw new Error('Sessão expirada. Faça login novamente.')
+    }
+    const errBody = await response.json().catch(() => ({}))
+    throw new Error(errBody.message || `Erro HTTP: ${response.status} ${response.statusText}`)
+  }
+
+  /** Core request implementation: build headers → fetch → handle response. */
+  private async sendRequest<T>(
+    url: string,
+    options: RequestInit,
+    csrfRetry: boolean,
+  ): Promise<T> {
+    const method = (options.method || 'GET').toUpperCase()
+    const headers = this.buildHeaders(method, options.headers)
+
+    const cleanUrl = url.startsWith('/') ? url.slice(1) : url
+
+    const response = await this.fetchWithTimeout(`${this.baseUrl}${cleanUrl}`, {
+      ...options,
+      headers,
+    })
+
+    return this.handleResponse<T>(response, url, options, csrfRetry)
   }
 
   /**

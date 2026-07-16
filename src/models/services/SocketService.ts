@@ -20,7 +20,6 @@ type WSEventType =
   | 'EXPENSE_UPDATED'
   | 'EXPENSE_DELETED'
   | 'CARD_CREATED'
-  | 'CARD_UPDATED'
   | 'CARD_DELETED'
   | 'INVOICE_UPDATED'
   | 'MEMBER_CREATED'
@@ -73,7 +72,6 @@ const WS_PAYLOAD_SCHEMAS: Record<WSEventType, z.ZodType> = {
   EXPENSE_UPDATED: GastoResponseSchema,
   EXPENSE_DELETED: ExpenseDeletedPayloadSchema,
   CARD_CREATED: CartaoResponseSchema,
-  CARD_UPDATED: CartaoResponseSchema,
   CARD_DELETED: DeletePayloadSchema,
   INVOICE_UPDATED: FaturaResponseSchema,
   MEMBER_CREATED: MembroResponseSchema,
@@ -89,7 +87,6 @@ const EVENT_MAP: Record<WSEventType, AppEventType[]> = {
   EXPENSE_UPDATED: ['gastos_alterados'],
   EXPENSE_DELETED: ['gastos_alterados'],
   CARD_CREATED: ['cartoes_alterados'],
-  CARD_UPDATED: ['cartoes_alterados'],
   CARD_DELETED: ['cartoes_alterados'],
   INVOICE_UPDATED: ['faturas_alteradas'],
   MEMBER_CREATED: ['membros_alterados', 'permissoes_alteradas'],

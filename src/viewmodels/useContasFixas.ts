@@ -6,7 +6,6 @@ import { logger } from '../shared/utils/logger'
 import { contaFixaRepository, gastoService, tenantSessionService } from '../shared/container'
 
 const contasFixas = ref<ContaFixa[]>([])
-const inicializado = ref(false)
 let promiseInicializacao: Promise<void> | null = null
 
 export function useContasFixas() {
@@ -18,7 +17,6 @@ export function useContasFixas() {
 
     if (tenantSessionService.isAuthenticated() && !tenantSessionService.getActiveTenantId()) {
       contasFixas.value = []
-      inicializado.value = true
       return
     }
 
@@ -83,9 +81,7 @@ export function useContasFixas() {
 
   const resetar = () => {
     contasFixas.value = []
-    inicializado.value = false
   }
-
 
   return {
     contasFixas,

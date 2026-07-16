@@ -1,7 +1,6 @@
 import { ref } from 'vue'
 import type { Gasto } from '../models/entities/Gasto'
 import type { ContaFixa } from '../models/entities/ContaFixa'
-import type { Fatura } from '../models/entities/Fatura'
 import type { AuditLogDto } from '../models/repositories/http/HttpAuditLogRepository'
 import type { TransferenciaNetting } from '../models/services/NettingService'
 
@@ -38,7 +37,7 @@ export function useDashboardUIState() {
     abrirNovoBill: () => { billSelecionada.value = null; abrirModal('configurar-conta-fixa') },
     abrirAjustarGasto: (g: Gasto) => { gastoParaAjustar.value = g; abrirModal('ajustar-gasto') },
     abrirBottomSheetNetting: (t: TransferenciaNetting) => { nettingTarget.value = t; abrirModal('acerto-netting') },
-    abrirNovoPeriodoBottomSheet: (_f: Fatura | null) => {
+    abrirNovoPeriodoBottomSheet: () => {
       abrirModal('novo-periodo')
     }
   }

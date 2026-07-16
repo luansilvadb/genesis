@@ -180,20 +180,25 @@ const handleConfirm = () => {
 </script>
 
 <template>
-  <BottomSheet :model-value="props.visible" @update:model-value="val => { if (!val) emit('cancel') }">
+  <BottomSheet
+    :model-value="props.visible"
+    @update:model-value="val => { if (!val) emit('cancel') }"
+  >
     <template #title>
-      <h3 class="text-3xl font-display text-charcoal leading-tight">Corrigir <span class="text-ember">Lançamento</span></h3>
+      <h3 class="text-3xl font-display text-charcoal leading-tight">
+        Corrigir <span class="text-ember">Lançamento</span>
+      </h3>
     </template>
 
     <div class="space-y-6 pt-2">
       <div class="space-y-2">
         <label class="block text-[10px] font-bold uppercase text-graphite tracking-widest ml-1">Descrição</label>
         <input 
-          type="text" 
           v-model="descInput" 
+          type="text" 
           class="w-full px-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-sm text-charcoal focus:border-ember transition-all" 
           placeholder="Ex: Supermercado"
-        />
+        >
       </div>
 
       <div class="space-y-2">
@@ -202,51 +207,79 @@ const handleConfirm = () => {
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-graphite text-sm font-bold">R$</span>
           <input 
             :value="valorFormatado"
-            @input="handleValorInput"
             type="text"
             inputmode="numeric"
             class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-sm text-charcoal focus:border-ember transition-all"
             placeholder="0,00"
-          />
+            @input="handleValorInput"
+          >
         </div>
       </div>
 
-      <div v-if="!props.gasto?.isLoan" class="space-y-2">
+      <div
+        v-if="!props.gasto?.isLoan"
+        class="space-y-2"
+      >
         <label class="block text-[10px] font-bold uppercase text-graphite tracking-widest ml-1">Método / Cartão</label>
         <div class="grid grid-cols-3 gap-2">
           <button 
-            @click="selectMethod('pix', null)"
             class="flex flex-col items-center gap-2 py-3 rounded-xl transition-all duration-200 cursor-pointer"
             :class="activeMethod === 'pix' ? 'border-2 border-charcoal bg-white text-charcoal font-bold shadow-sm' : 'border-2 border-transparent bg-stone hover:bg-ash/20 text-charcoal'"
+            @click="selectMethod('pix', null)"
           >
-            <Wallet class="w-4 h-4" aria-hidden="true" />
+            <Wallet
+              class="w-4 h-4"
+              aria-hidden="true"
+            />
             <span class="text-[9px] font-bold uppercase tracking-wider">Pix</span>
           </button>
           <button 
             v-for="c in props.cartoes"
             :key="c.id"
-            @click="selectMethod('card', c.id)"
             class="flex flex-col items-center gap-2 py-3 rounded-xl transition-all duration-200 cursor-pointer"
             :class="activeMethod === 'card' && activeCardOwner === c.id ? 'border-2 border-charcoal bg-white text-charcoal font-bold shadow-sm' : 'border-2 border-transparent bg-stone hover:bg-ash/20 text-charcoal'"
+            @click="selectMethod('card', c.id)"
           >
-            <CreditCard class="w-4 h-4" aria-hidden="true" />
+            <CreditCard
+              class="w-4 h-4"
+              aria-hidden="true"
+            />
             <span class="text-[9px] font-bold uppercase tracking-wider">{{ c.nome }}</span>
           </button>
         </div>
       </div>
 
-      <div v-if="activeMethod === 'card' || props.gasto?.isLoan" class="space-y-2">
+      <div
+        v-if="activeMethod === 'card' || props.gasto?.isLoan"
+        class="space-y-2"
+      >
         <label class="block text-[10px] font-bold uppercase text-graphite tracking-widest ml-1">Parcelamento</label>
         <div class="flex items-center justify-between gap-3 p-3 rounded-xl border border-stone bg-canvas shadow-subtle">
-          <button type="button" @click="ajustarParcelas(-1)" class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 text-charcoal flex items-center justify-center transition-colors border-none cursor-pointer">
-            <Minus class="w-4 h-4" aria-hidden="true" />
+          <button
+            type="button"
+            class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 text-charcoal flex items-center justify-center transition-colors border-none cursor-pointer"
+            @click="ajustarParcelas(-1)"
+          >
+            <Minus
+              class="w-4 h-4"
+              aria-hidden="true"
+            />
           </button>
           <div class="text-center">
             <span class="text-lg font-bold text-charcoal tracking-tight">{{ installmentsInput }}x</span>
-            <p class="text-[10px] font-semibold text-graphite">{{ infoParcelamento }}</p>
+            <p class="text-[10px] font-semibold text-graphite">
+              {{ infoParcelamento }}
+            </p>
           </div>
-          <button type="button" @click="ajustarParcelas(1)" class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 text-charcoal flex items-center justify-center transition-colors border-none cursor-pointer">
-            <Plus class="w-4 h-4" aria-hidden="true" />
+          <button
+            type="button"
+            class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 text-charcoal flex items-center justify-center transition-colors border-none cursor-pointer"
+            @click="ajustarParcelas(1)"
+          >
+            <Plus
+              class="w-4 h-4"
+              aria-hidden="true"
+            />
           </button>
         </div>
       </div>
@@ -259,48 +292,86 @@ const handleConfirm = () => {
           <button 
             v-for="m in props.membros"
             :key="m.id"
-            @click="quemPaga = m.id"
             class="group py-3 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all duration-300 cursor-pointer flex flex-col items-center gap-2"
             :class="quemPaga === m.id ? 'border-2 border-charcoal bg-white shadow-sm scale-[1.02] text-charcoal' : 'border-2 border-transparent bg-stone hover:bg-stone/80 text-charcoal'"
+            @click="quemPaga = m.id"
           >
-            <MembroAvatar :nome="m.nome" size="sm" :variant="quemPaga === m.id ? 'ember' : 'sky'" />
+            <MembroAvatar
+              :nome="m.nome"
+              size="sm"
+              :variant="quemPaga === m.id ? 'ember' : 'sky'"
+            />
             <span class="truncate max-w-full px-1">{{ m.nome }}</span>
           </button>
         </div>
       </div>
 
-      <div v-if="!props.gasto?.isLoan" class="space-y-2">
+      <div
+        v-if="!props.gasto?.isLoan"
+        class="space-y-2"
+      >
         <label class="block text-[10px] font-bold uppercase text-graphite tracking-widest ml-1">Dividir com</label>
         <div class="grid grid-cols-3 gap-2">
           <button 
             v-for="m in props.membros"
             :key="m.id"
-            @click="toggleSplit(m.id)"
             class="group relative py-3 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all duration-300 flex flex-col items-center gap-2 border-none cursor-pointer"
             :class="selectedSplit.includes(m.id) ? 'bg-white shadow-subtle scale-[1.02] text-charcoal' : 'bg-stone/50 text-graphite opacity-60 hover:opacity-100'"
+            @click="toggleSplit(m.id)"
           >
-            <MembroAvatar :nome="m.nome" size="sm" :variant="selectedSplit.includes(m.id) ? 'meadow' : 'sky'" />
+            <MembroAvatar
+              :nome="m.nome"
+              size="sm"
+              :variant="selectedSplit.includes(m.id) ? 'meadow' : 'sky'"
+            />
             <span class="truncate max-w-full px-1">{{ m.nome }}</span>
-            <div v-if="selectedSplit.includes(m.id)" class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300">
+            <div
+              v-if="selectedSplit.includes(m.id)"
+              class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300"
+            >
               <Check class="w-3.5 h-3.5 text-meadow" />
             </div>
           </button>
         </div>
       </div>
 
-      <div v-if="!props.gasto?.isLoan" class="flex gap-4 p-4 rounded-xl bg-meadow/5 border border-meadow/20 text-meadow">
-        <Info class="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
+      <div
+        v-if="!props.gasto?.isLoan"
+        class="flex gap-4 p-4 rounded-xl bg-meadow/5 border border-meadow/20 text-meadow"
+      >
+        <Info
+          class="w-5 h-5 shrink-0 mt-0.5"
+          aria-hidden="true"
+        />
         <div class="space-y-1">
-          <p class="text-[10px] font-bold uppercase tracking-widest">Resumo do Rateio</p>
-          <p class="text-xs font-semibold leading-relaxed">{{ calculatedSharesDesc }}</p>
+          <p class="text-[10px] font-bold uppercase tracking-widest">
+            Resumo do Rateio
+          </p>
+          <p class="text-xs font-semibold leading-relaxed">
+            {{ calculatedSharesDesc }}
+          </p>
         </div>
       </div>
     </div>
 
     <template #footer>
       <div class="grid grid-cols-2 gap-3">
-        <Button variant="secondary" class="font-bold uppercase tracking-widest text-[10px] h-12" @click="emit('cancel')">Voltar</Button>
-        <Button variant="primary" class="font-bold uppercase tracking-widest text-[10px] h-12" @click="handleConfirm" :disabled="!descInput.trim() || valorInput <= 0 || props.loading" :loading="props.loading">Salvar Alterações</Button>
+        <Button
+          variant="secondary"
+          class="font-bold uppercase tracking-widest text-[10px] h-12"
+          @click="emit('cancel')"
+        >
+          Voltar
+        </Button>
+        <Button
+          variant="primary"
+          class="font-bold uppercase tracking-widest text-[10px] h-12"
+          :disabled="!descInput.trim() || valorInput <= 0 || props.loading"
+          :loading="props.loading"
+          @click="handleConfirm"
+        >
+          Salvar Alterações
+        </Button>
       </div>
     </template>
   </BottomSheet>

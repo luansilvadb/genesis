@@ -5,11 +5,11 @@ import { useMembros } from '../../../viewmodels/useMembros'
 import { useToast } from '../../../composables/useToast'
 import { mensagemErro } from '../../../shared/utils/mensagemErro'
 
-const props = defineProps<{
+defineProps<{
   activeTenantId: string | null
 }>()
 
-const emit = defineEmits(['focus-change'])
+defineEmits(['focus-change'])
 
 const { tenantPermissions, atualizarPermissions } = useMembros()
 const toast = useToast()
@@ -64,18 +64,18 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
       <div class="px-6 pt-6">
         <div class="flex gap-2 p-1 bg-parchment/60 border border-stone/30 rounded-xl">
           <button 
-            @click="activeRole = 'MORADOR'"
             type="button"
             class="flex-1 py-2 px-3 text-xs font-bold rounded-lg border-none cursor-pointer transition-all duration-200"
             :class="activeRole === 'MORADOR' ? 'bg-charcoal text-white shadow-subtle' : 'bg-transparent text-ash hover:text-charcoal hover:bg-stone/10'"
+            @click="activeRole = 'MORADOR'"
           >
             Morador
           </button>
           <button 
-            @click="activeRole = 'VISUALIZADOR'"
             type="button"
             class="flex-1 py-2 px-3 text-xs font-bold rounded-lg border-none cursor-pointer transition-all duration-200"
             :class="activeRole === 'VISUALIZADOR' ? 'bg-charcoal text-white shadow-subtle' : 'bg-transparent text-ash hover:text-charcoal hover:bg-stone/10'"
+            @click="activeRole = 'VISUALIZADOR'"
           >
             Visualizador
           </button>
@@ -86,7 +86,9 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
       <div class="p-4 mx-6 mt-6 bg-parchment border border-stone rounded-2xl flex items-start gap-3">
         <ShieldAlert class="w-5 h-5 text-ember shrink-0 mt-0.5" />
         <div class="space-y-1">
-          <h4 class="text-xs font-bold text-charcoal">Configuração por papel de acesso</h4>
+          <h4 class="text-xs font-bold text-charcoal">
+            Configuração por papel de acesso
+          </h4>
           <p class="text-xs text-ash leading-relaxed">
             As restrições abaixo aplicam-se aos membros que possuem a Role selecionada. Administradores possuem soberania absoluta e mantêm acesso irrestrito a todas as funcionalidades do sistema, independentemente destas configurações.
           </p>
@@ -98,19 +100,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Lançar Gastos -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Lançar Gastos e Despesas</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Lançar Gastos e Despesas
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite lançar novos gastos comuns, parcelados e compras em cartões de crédito.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_LANCAR_GASTO')"
             :disabled="salvando[`${activeRole}-ALLOW_LANCAR_GASTO`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_LANCAR_GASTO ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_LANCAR_GASTO`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_LANCAR_GASTO')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -122,19 +126,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Gerenciar Cartões -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Gerenciar Cartões de Crédito</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Gerenciar Cartões de Crédito
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite cadastrar novos cartões de crédito e excluir os cartões existentes da moradia.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_GERENCIAR_CARTOES')"
             :disabled="salvando[`${activeRole}-ALLOW_GERENCIAR_CARTOES`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_GERENCIAR_CARTOES ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_GERENCIAR_CARTOES`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_GERENCIAR_CARTOES')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -146,19 +152,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Gerenciar Contas Fixas -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Gerenciar Contas Fixas</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Gerenciar Contas Fixas
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite criar novos modelos de contas fixas e excluir/estornar lançamentos automáticos.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_GERENCIAR_CONTAS_FIXAS')"
             :disabled="salvando[`${activeRole}-ALLOW_GERENCIAR_CONTAS_FIXAS`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_GERENCIAR_CONTAS_FIXAS ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_GERENCIAR_CONTAS_FIXAS`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_GERENCIAR_CONTAS_FIXAS')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -170,19 +178,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Registrar Netting -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Registrar Acertos (Netting)</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Registrar Acertos (Netting)
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite dar baixa e registrar pagamentos de netting no painel de fechamento do mês.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_REGISTRAR_NETTING')"
             :disabled="salvando[`${activeRole}-ALLOW_REGISTRAR_NETTING`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_REGISTRAR_NETTING ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_REGISTRAR_NETTING`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_REGISTRAR_NETTING')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -194,19 +204,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Ver Histórico / Audit Logs -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Visualizar Histórico de Auditoria</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Visualizar Histórico de Auditoria
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite acessar a gaveta de logs de auditoria e ver quem executou cada ação na moradia.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_VER_AUDIT_LOGS')"
             :disabled="salvando[`${activeRole}-ALLOW_VER_AUDIT_LOGS`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_VER_AUDIT_LOGS ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_VER_AUDIT_LOGS`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_VER_AUDIT_LOGS')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -218,19 +230,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Alterar Renda -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Alterar Renda do Perfil</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Alterar Renda do Perfil
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite que os membros editem o valor de sua renda no perfil de morador.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_ALTERAR_RENDA')"
             :disabled="salvando[`${activeRole}-ALLOW_ALTERAR_RENDA`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_ALTERAR_RENDA ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_ALTERAR_RENDA`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_ALTERAR_RENDA')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -242,19 +256,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Alterar Nome -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Alterar Nome de Exibição</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Alterar Nome de Exibição
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite que os membros alterem o seu nome de exibição no perfil de morador.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_ALTERAR_NOME')"
             :disabled="salvando[`${activeRole}-ALLOW_ALTERAR_NOME`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_ALTERAR_NOME ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_ALTERAR_NOME`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_ALTERAR_NOME')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"
@@ -266,19 +282,21 @@ const togglePermission = async (key: 'ALLOW_LANCAR_GASTO' | 'ALLOW_GERENCIAR_CAR
         <!-- Encerrar e Reabrir Período -->
         <div class="flex items-start justify-between gap-4 pb-4 border-b border-stone/20 lg:pb-5">
           <div class="space-y-1">
-            <h4 class="text-xs font-bold text-charcoal">Encerrar e Reabrir Período</h4>
+            <h4 class="text-xs font-bold text-charcoal">
+              Encerrar e Reabrir Período
+            </h4>
             <p class="text-xs text-ash leading-relaxed">
               Permite que os membros encerrem o mês atual ou reabram períodos já fechados.
             </p>
           </div>
           <button
-            @click="togglePermission('ALLOW_FECHAR_PERIODO')"
             :disabled="salvando[`${activeRole}-ALLOW_FECHAR_PERIODO`]"
             class="w-11 h-6 rounded-full p-0.5 border-none cursor-pointer transition-colors focus:outline-none shrink-0"
             :class="[
               (tenantPermissions[activeRole]?.ALLOW_FECHAR_PERIODO ?? (activeRole === 'MORADOR')) ? 'bg-meadow' : 'bg-stone',
               salvando[`${activeRole}-ALLOW_FECHAR_PERIODO`] ? 'opacity-50 cursor-not-allowed' : ''
             ]"
+            @click="togglePermission('ALLOW_FECHAR_PERIODO')"
           >
             <div
               class="bg-white w-5 h-5 rounded-full shadow-subtle transform transition-transform"

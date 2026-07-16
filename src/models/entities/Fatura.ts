@@ -5,7 +5,7 @@ export interface FaturaPeriodo {
   ano: number
 }
 
-export interface FaturaProps {
+interface FaturaProps {
   id: string
   cartaoId: string
   periodo: FaturaPeriodo

@@ -11,7 +11,10 @@
     </Transition>
 
     <!-- Wrapper centradora do BottomSheet para alinhamento horizontal no desktop -->
-    <Transition name="slide-up" @after-leave="onTransitionLeave">
+    <Transition
+      name="slide-up"
+      @after-leave="onTransitionLeave"
+    >
       <div
         v-if="modelValue"
         class="fixed inset-0 z-[999] flex justify-center items-end p-0 pointer-events-none"
@@ -37,39 +40,72 @@
           </div>
 
           <!-- Header -->
-          <div v-if="title || $slots.header || $slots.title || subtitle || $slots.subtitle" class="flex items-start justify-between px-6 pt-2 pb-6 shrink-0">
+          <div
+            v-if="title || $slots.header || $slots.title || subtitle || $slots.subtitle"
+            class="flex items-start justify-between px-6 pt-2 pb-6 shrink-0"
+          >
             <div class="flex-1 min-w-0 pr-4">
               <slot name="header">
                 <slot name="title">
-                  <h2 v-if="title" class="text-3xl font-display text-charcoal leading-[1.1] tracking-tight">{{ title }}</h2>
+                  <h2
+                    v-if="title"
+                    class="text-3xl font-display text-charcoal leading-[1.1] tracking-tight"
+                  >
+                    {{ title }}
+                  </h2>
                 </slot>
                 <slot name="subtitle">
-                  <p v-if="subtitle" class="text-sm text-graphite font-medium mt-2 leading-relaxed opacity-80">{{ subtitle }}</p>
+                  <p
+                    v-if="subtitle"
+                    class="text-sm text-graphite font-medium mt-2 leading-relaxed opacity-80"
+                  >
+                    {{ subtitle }}
+                  </p>
                 </slot>
               </slot>
             </div>
             <button
               v-if="showClose"
               class="w-12 h-12 rounded-full bg-stone/50 flex items-center justify-center text-ash transition-all hover:bg-stone hover:text-charcoal cursor-pointer border-none focus-visible:ring-2 focus-visible:ring-ember focus-visible:outline-none shrink-0 -mt-1"
-              @click="close"
               aria-label="Fechar"
+              @click="close"
             >
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-6 h-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
           <!-- Divider -->
-          <div v-if="(title || $slots.header || $slots.title) && showDivider" class="h-px bg-stone/60 mx-6 shrink-0" />
+          <div
+            v-if="(title || $slots.header || $slots.title) && showDivider"
+            class="h-px bg-stone/60 mx-6 shrink-0"
+          />
 
           <!-- Content -->
-          <div ref="contentEl" :class="['overflow-y-auto flex-1 custom-scrollbar', contentClass]" @scroll.passive="onContentScroll">
+          <div
+            ref="contentEl"
+            :class="['overflow-y-auto flex-1 custom-scrollbar', contentClass]"
+            @scroll.passive="onContentScroll"
+          >
             <slot />
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="p-6 pt-4 border-t border-stone shrink-0 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+          <div
+            v-if="$slots.footer"
+            class="p-6 pt-4 border-t border-stone shrink-0 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.03)]"
+          >
             <slot name="footer" />
           </div>
         </div>

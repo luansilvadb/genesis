@@ -18,7 +18,7 @@ export function obterPeriodoSelecionado(fallbackPeriodo?: Periodo): Periodo {
           return { mes: Number(parsed.mes), ano: Number(parsed.ano) }
         }
       }
-    } catch (_) {}
+    } catch { /* JSON inválido no localStorage — ignora e usa fallback */ }
   }
   if (fallbackPeriodo) return fallbackPeriodo
   return { mes: new Date().getMonth() + 1, ano: new Date().getFullYear() }

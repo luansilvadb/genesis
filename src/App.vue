@@ -184,10 +184,21 @@ onUnmounted(() => {
 
 <template>
   <div class="divi-app-root min-h-screen bg-canvas">
-    <Transition name="fade" mode="out-in">
-      <div v-if="isInitializing" class="min-h-screen bg-canvas flex flex-col items-center justify-center p-8 space-y-12 animate-in fade-in duration-200">
+    <Transition
+      name="fade"
+      mode="out-in"
+    >
+      <div
+        v-if="isInitializing"
+        class="min-h-screen bg-canvas flex flex-col items-center justify-center p-8 space-y-12 animate-in fade-in duration-200"
+      >
         <div class="flex flex-col items-center space-y-4">
-          <IllustrationMascot variant="ember" :size="80" mood="happy" class="animate-wobble" />
+          <IllustrationMascot
+            variant="ember"
+            :size="80"
+            mood="happy"
+            class="animate-wobble"
+          />
           <h1 class="text-display text-5xl md:text-6xl text-charcoal">
             DIVI<span class="text-ember">.</span>
           </h1>
@@ -196,15 +207,28 @@ onUnmounted(() => {
           <div class="h-1 bg-stone rounded-full overflow-hidden">
             <div class="h-full bg-ember/40 animate-loading-bar" />
           </div>
-          <p class="text-[10px] font-bold text-ash uppercase tracking-[0.25em] text-center">Iniciando aventura</p>
+          <p class="text-[10px] font-bold text-ash uppercase tracking-[0.25em] text-center">
+            Iniciando aventura
+          </p>
         </div>
       </div>
 
-      <div v-else-if="hasError" class="min-h-screen bg-canvas flex flex-col items-center justify-center p-8 space-y-8">
-        <IllustrationMascot variant="coral" :size="80" mood="sad" />
+      <div
+        v-else-if="hasError"
+        class="min-h-screen bg-canvas flex flex-col items-center justify-center p-8 space-y-8"
+      >
+        <IllustrationMascot
+          variant="coral"
+          :size="80"
+          mood="sad"
+        />
         <div class="text-center space-y-2">
-          <h2 class="text-heading text-charcoal">Algo deu errado</h2>
-          <p class="text-body text-graphite">{{ errorMessage }}</p>
+          <h2 class="text-heading text-charcoal">
+            Algo deu errado
+          </h2>
+          <p class="text-body text-graphite">
+            {{ errorMessage }}
+          </p>
         </div>
         <button
           class="px-6 py-3 rounded-full bg-midnight text-white font-bold text-sm transition-all duration-200 hover:scale-105 active:scale-95"
@@ -214,10 +238,16 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <div v-else class="min-h-screen bg-canvas text-graphite font-sans selection:bg-ember/20">
+      <div
+        v-else
+        class="min-h-screen bg-canvas text-graphite font-sans selection:bg-ember/20"
+      >
         <ToastNotification />
         <router-view v-slot="{ Component }">
-          <Transition name="fade" mode="out-in">
+          <Transition
+            name="fade"
+            mode="out-in"
+          >
             <component
               :is="Component"
               @auth-success="handleAuthSuccess"

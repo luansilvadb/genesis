@@ -116,16 +116,24 @@ const salvar = () => {
 <template>
   <BottomSheet 
     :model-value="visible" 
-    @update:model-value="val => { if (!val) $emit('cancel') }" 
-    subtitle="Gerencie modelos de gastos recorrentes."
+    subtitle="Gerencie modelos de gastos recorrentes." 
     max-height="90dvh"
+    @update:model-value="val => { if (!val) $emit('cancel') }"
   >
     <template #title>
-      <h3 v-if="!modoSelecaoIcone" class="text-3xl font-display text-charcoal leading-tight">Configurar <span class="text-ember">Conta Fixa</span></h3>
-      <div v-else class="flex items-center gap-3">
+      <h3
+        v-if="!modoSelecaoIcone"
+        class="text-3xl font-display text-charcoal leading-tight"
+      >
+        Configurar <span class="text-ember">Conta Fixa</span>
+      </h3>
+      <div
+        v-else
+        class="flex items-center gap-3"
+      >
         <button 
-          @click="modoSelecaoIcone = false" 
-          class="w-10 h-10 rounded-full bg-stone hover:bg-stone/80 text-charcoal flex items-center justify-center cursor-pointer transition-all border-none focus:outline-none"
+          class="w-10 h-10 rounded-full bg-stone hover:bg-stone/80 text-charcoal flex items-center justify-center cursor-pointer transition-all border-none focus:outline-none" 
+          @click="modoSelecaoIcone = false"
         >
           <ArrowLeft class="w-5 h-5" />
         </button>
@@ -136,7 +144,10 @@ const salvar = () => {
     </template>
 
     <!-- Estado do Formulário Principal -->
-    <div v-if="!modoSelecaoIcone" class="space-y-6 pt-2">
+    <div
+      v-if="!modoSelecaoIcone"
+      class="space-y-6 pt-2"
+    >
       <!-- Nome -->
       <div class="space-y-2">
         <label class="block text-[10px] font-bold uppercase tracking-widest text-graphite ml-1">Nome do Talão / Categoria</label>
@@ -145,15 +156,15 @@ const salvar = () => {
           type="text" 
           class="w-full px-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-charcoal focus:border-ember transition-all text-sm" 
           placeholder="Ex: Aluguel, Internet..."
-        />
+        >
       </div>
 
       <!-- Card do Emoji Representativo (Clicável) -->
       <div class="space-y-2">
         <label class="block text-[10px] font-bold uppercase tracking-widest text-graphite ml-1">Emoji Representativo</label>
         <button 
-          @click="modoSelecaoIcone = true"
           class="flex items-center gap-3 p-3.5 w-full rounded-2xl border border-stone bg-canvas hover:bg-stone/50 transition-all text-left group cursor-pointer"
+          @click="modoSelecaoIcone = true"
         >
           <div class="w-12 h-12 rounded-xl bg-white border border-stone flex items-center justify-center text-2xl shadow-subtle group-hover:scale-105 transition-transform shrink-0">
             {{ icon }}
@@ -173,12 +184,12 @@ const salvar = () => {
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-graphite text-sm font-bold">R$</span>
           <input 
             :value="fixedValueFormatado"
-            @input="handleFixedValueInput"
             type="text"
             inputmode="numeric"
-            class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-charcoal focus:border-ember transition-all text-sm" 
+            class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-charcoal focus:border-ember transition-all text-sm"
             placeholder="0,00" 
-          />
+            @input="handleFixedValueInput" 
+          >
         </div>
       </div>
 
@@ -189,13 +200,20 @@ const salvar = () => {
           <button 
             v-for="m in membros" 
             :key="m.id"
-            @click="toggleSplit(m.id)"
             class="group relative py-3 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all duration-300 border-none cursor-pointer flex flex-col items-center gap-2"
             :class="defaultSplit.includes(m.id) ? 'bg-white shadow-subtle scale-[1.02] text-charcoal' : 'bg-stone/50 text-graphite opacity-60 hover:opacity-100'"
+            @click="toggleSplit(m.id)"
           >
-            <MembroAvatar :nome="m.nome" size="sm" :variant="defaultSplit.includes(m.id) ? 'meadow' : 'sky'" />
+            <MembroAvatar
+              :nome="m.nome"
+              size="sm"
+              :variant="defaultSplit.includes(m.id) ? 'meadow' : 'sky'"
+            />
             <span class="truncate max-w-full px-1">{{ m.nome }}</span>
-            <div v-if="defaultSplit.includes(m.id)" class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300">
+            <div
+              v-if="defaultSplit.includes(m.id)"
+              class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300"
+            >
               <Check class="w-3.5 h-3.5 text-meadow" />
             </div>
           </button>
@@ -204,12 +222,15 @@ const salvar = () => {
     </div>
 
     <!-- Estado de Seleção de Ícone -->
-    <div v-else class="space-y-6 pt-2 animate-in fade-in slide-in-from-right-3 duration-350">
+    <div
+      v-else
+      class="space-y-6 pt-2 animate-in fade-in slide-in-from-right-3 duration-350"
+    >
       <!-- Opção: Emoji Personalizado (Teclado Livre) -->
       <div class="space-y-3">
         <button 
-          @click="showingCustomInput = !showingCustomInput"
           class="w-full flex items-center justify-between p-4 rounded-xl border border-stone bg-white hover:bg-stone/30 transition-all text-left cursor-pointer group shadow-sm border-none"
+          @click="showingCustomInput = !showingCustomInput"
         >
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-stone/50 flex items-center justify-center shrink-0">
@@ -217,14 +238,22 @@ const salvar = () => {
             </div>
             <div>
               <span class="text-xs font-bold text-charcoal block">Emoji Personalizado</span>
-              <p class="text-[10px] text-ash font-medium mt-0.5">Use o teclado ou cole o caractere que desejar</p>
+              <p class="text-[10px] text-ash font-medium mt-0.5">
+                Use o teclado ou cole o caractere que desejar
+              </p>
             </div>
           </div>
-          <ChevronRight class="w-4 h-4 text-ash transition-transform duration-300" :class="{ 'rotate-90': showingCustomInput }" />
+          <ChevronRight
+            class="w-4 h-4 text-ash transition-transform duration-300"
+            :class="{ 'rotate-90': showingCustomInput }"
+          />
         </button>
 
         <!-- Campo de Input Customizado Expansível -->
-        <div v-if="showingCustomInput" class="p-4 rounded-xl border border-stone bg-stone/20 space-y-3 animate-in fade-in slide-in-from-top-2 duration-250">
+        <div
+          v-if="showingCustomInput"
+          class="p-4 rounded-xl border border-stone bg-stone/20 space-y-3 animate-in fade-in slide-in-from-top-2 duration-250"
+        >
           <div class="flex flex-col sm:flex-row gap-2">
             <input 
               v-model="customIconInput" 
@@ -233,12 +262,12 @@ const salvar = () => {
               class="w-full sm:flex-grow px-3.5 py-3 rounded-lg border border-stone bg-white outline-none font-bold text-charcoal focus:border-ember text-sm shadow-subtle"
               maxlength="4"
               @keyup.enter="confirmarCustomIcon"
-            />
+            >
             <Button 
               variant="primary" 
               class="w-full sm:w-auto px-4 text-[10px] uppercase font-bold tracking-widest h-[46px] shrink-0" 
-              @click="confirmarCustomIcon"
               :disabled="!customIconInput.trim()"
+              @click="confirmarCustomIcon"
             >
               Confirmar
             </Button>
@@ -257,9 +286,9 @@ const salvar = () => {
           <button 
             v-for="e in allEmojis" 
             :key="e"
-            @click="selecionarIcone(e)"
             class="text-2xl w-12 h-12 flex items-center justify-center rounded-xl bg-white border border-stone/30 hover:bg-stone/50 active:scale-90 transition-all cursor-pointer shadow-sm"
             :class="icon === e ? 'bg-ember/10 border-ember scale-110 shadow-subtle ring-2 ring-ember/20' : ''"
+            @click="selecionarIcone(e)"
           >
             {{ e }}
           </button>
@@ -268,16 +297,33 @@ const salvar = () => {
     </div>
 
     <!-- Rodapé (Apenas na Tela Principal) -->
-    <template #footer v-if="!modoSelecaoIcone">
+    <template
+      v-if="!modoSelecaoIcone"
+      #footer
+    >
       <div class="flex flex-col gap-3">
         <div class="flex gap-3">
-          <Button variant="secondary" class="flex-1 font-bold uppercase tracking-widest text-[10px] h-12" @click="$emit('cancel')">Cancelar</Button>
-          <Button variant="primary" class="flex-[2] font-bold uppercase tracking-widest text-[10px] h-12" @click="salvar" :disabled="!name || props.loading" :loading="props.loading">Salvar Configuração</Button>
+          <Button
+            variant="secondary"
+            class="flex-1 font-bold uppercase tracking-widest text-[10px] h-12"
+            @click="$emit('cancel')"
+          >
+            Cancelar
+          </Button>
+          <Button
+            variant="primary"
+            class="flex-[2] font-bold uppercase tracking-widest text-[10px] h-12"
+            :disabled="!name || props.loading"
+            :loading="props.loading"
+            @click="salvar"
+          >
+            Salvar Configuração
+          </Button>
         </div>
         <button 
           v-if="bill"
-          @click="$emit('delete', bill)" 
-          class="w-full py-2 text-[10px] font-bold uppercase tracking-widest text-coral hover:bg-coral/5 rounded-lg transition-all border-none bg-transparent cursor-pointer"
+          class="w-full py-2 text-[10px] font-bold uppercase tracking-widest text-coral hover:bg-coral/5 rounded-lg transition-all border-none bg-transparent cursor-pointer" 
+          @click="$emit('delete', bill)"
         >
           Excluir Modelo de Conta
         </button>

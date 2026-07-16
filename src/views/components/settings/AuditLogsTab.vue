@@ -9,7 +9,7 @@ const props = defineProps<{
   activeTenantId: string | null
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   (e: 'focusChange', active: boolean): void
 }>()
 
@@ -49,25 +49,53 @@ watch(() => props.activeTenantId, async () => {
 
 <template>
   <div class="space-y-6">
-    <div v-if="loading" class="flex flex-col items-center justify-center py-16 space-y-5">
+    <div
+      v-if="loading"
+      class="flex flex-col items-center justify-center py-16 space-y-5"
+    >
       <div class="relative w-10 h-10">
         <div class="absolute inset-0 rounded-full border-2 border-stone/30" />
         <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-ember/50 animate-spin" />
       </div>
-      <p class="text-[10px] text-ash/50 font-medium uppercase tracking-[0.2em]">Buscando atividades...</p>
+      <p class="text-[10px] text-ash/50 font-medium uppercase tracking-[0.2em]">
+        Buscando atividades...
+      </p>
     </div>
 
-    <div v-else-if="erro" class="flex flex-col items-center justify-center py-16 text-center space-y-4">
-      <IllustrationMascot variant="coral" :size="80" mood="confused" class="opacity-45" />
-      <p class="text-xs text-coral font-bold">{{ erro }}</p>
+    <div
+      v-else-if="erro"
+      class="flex flex-col items-center justify-center py-16 text-center space-y-4"
+    >
+      <IllustrationMascot
+        variant="coral"
+        :size="80"
+        mood="confused"
+        class="opacity-45"
+      />
+      <p class="text-xs text-coral font-bold">
+        {{ erro }}
+      </p>
     </div>
 
-    <div v-else-if="logs.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-4">
-      <IllustrationMascot variant="sky" :size="80" mood="chill" class="opacity-45" />
-      <p class="text-xs text-ash font-bold italic max-w-[240px]">Nenhuma atividade registrada na casa ainda.</p>
+    <div
+      v-else-if="logs.length === 0"
+      class="flex flex-col items-center justify-center py-16 text-center space-y-4"
+    >
+      <IllustrationMascot
+        variant="sky"
+        :size="80"
+        mood="chill"
+        class="opacity-45"
+      />
+      <p class="text-xs text-ash font-bold italic max-w-[240px]">
+        Nenhuma atividade registrada na casa ainda.
+      </p>
     </div>
 
-    <div v-else class="space-y-6">
+    <div
+      v-else
+      class="space-y-6"
+    >
       <div
         v-for="log in logs"
         :key="log.id"

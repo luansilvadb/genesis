@@ -176,16 +176,16 @@ onUnmounted(() => {
 <template>
   <div 
     ref="cardRef"
-    @pointerdown="onPointerDown"
-    @pointerup="onPointerUp"
-    @pointerleave="onPointerLeave"
-    @pointercancel="onPointerLeave"
     class="relative overflow-hidden group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 select-none"
     :class="[
       gasto ? 'bg-meadow/5 border-meadow/20' : 'bg-canvas border-stone',
       { 'cursor-pointer hover:border-ember/30': !props.isReadOnly && !props.isMonthClosed }
     ]"
     :data-testid="`conta-fixa-card-${bill.id}`"
+    @pointerdown="onPointerDown"
+    @pointerup="onPointerUp"
+    @pointerleave="onPointerLeave"
+    @pointercancel="onPointerLeave"
   >
     <div 
       v-if="ripple.active"
@@ -202,7 +202,7 @@ onUnmounted(() => {
         transform: `translate(-50%, -50%) scale(${ripple.scale})`,
         opacity: ripple.opacity
       }"
-    ></div>
+    />
 
     <div class="flex items-center gap-4 min-w-0 flex-1 pointer-events-none">
       <div class="w-10 h-10 rounded-lg bg-white border border-stone flex items-center justify-center text-xl shadow-subtle group-hover:scale-110 transition-transform duration-500">
@@ -210,24 +210,34 @@ onUnmounted(() => {
       </div>
       <div class="min-w-0 flex-1">
         <span class="font-bold text-sm block text-charcoal truncate tracking-tight">{{ bill.name }}</span>
-        <div v-if="gasto" class="flex items-center mt-0.5">
+        <div
+          v-if="gasto"
+          class="flex items-center mt-0.5"
+        >
           <span class="text-[10px] text-meadow font-semibold uppercase tracking-wider">
             {{ formatarCentavosParaBRL(gasto.valorTotal.centavos) }} por {{ obterNomeMembro(gasto.compradorId) }}
           </span>
         </div>
-        <div v-else class="flex items-center mt-0.5">
+        <div
+          v-else
+          class="flex items-center mt-0.5"
+        >
           <span class="text-[10px] text-graphite font-semibold uppercase tracking-widest opacity-60">Aguardando lançamento</span>
         </div>
       </div>
     </div>
     
-    <div v-if="gasto" class="shrink-0 pointer-events-none">
+    <div
+      v-if="gasto"
+      class="shrink-0 pointer-events-none"
+    >
       <div class="w-6 h-6 rounded-full bg-meadow flex items-center justify-center shadow-sm animate-in zoom-in-50 duration-500">
-        <Check class="w-3.5 h-3.5 text-white" stroke-width="4" />
+        <Check
+          class="w-3.5 h-3.5 text-white"
+          stroke-width="4"
+        />
       </div>
     </div>
-
-
   </div>
 </template>
 

@@ -9,7 +9,7 @@ import Button from '../ui/Button.vue'
 import ConfiguracoesCartoes from '../ledger/ConfiguracoesCartoes.vue'
 import { aplicarMascaraBRLText, formatarCentavosParaBRL } from '../../../shared/utils/formatarMoeda'
 
-const props = defineProps<{
+defineProps<{
   isModoFoco: boolean
 }>()
 
@@ -133,7 +133,10 @@ const handleRendaInput = (e: Event) => {
 <template>
   <div class="space-y-6 animate-in fade-in duration-300">
     <!-- Card de Perfil Pessoal -->
-    <div v-if="!isModoFoco" class="bg-white border border-stone/30 rounded-2xl shadow-subtle p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div
+      v-if="!isModoFoco"
+      class="bg-white border border-stone/30 rounded-2xl shadow-subtle p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+    >
       <div class="flex items-center gap-4 flex-1">
         <MembroAvatar 
           v-if="currentMembro" 
@@ -143,105 +146,125 @@ const handleRendaInput = (e: Event) => {
         />
         <div class="flex flex-col flex-1 min-w-0 gap-2.5">
           <!-- Bloco de Nome -->
-          <div v-if="!editandoNome" class="flex flex-col min-w-0">
+          <div
+            v-if="!editandoNome"
+            class="flex flex-col min-w-0"
+          >
             <div class="flex items-center gap-2">
-              <h3 class="text-xl font-bold text-charcoal font-sans tracking-tight truncate">{{ currentMembro?.nome }}</h3>
+              <h3 class="text-xl font-bold text-charcoal font-sans tracking-tight truncate">
+                {{ currentMembro?.nome }}
+              </h3>
               <button 
                 v-if="podeAlterarNome"
-                @click="iniciarEdicaoNome" 
-                class="p-1 text-ash hover:text-charcoal transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
+                class="p-1 text-ash hover:text-charcoal transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center" 
                 aria-label="Editar nome"
+                @click="iniciarEdicaoNome"
               >
                 <Edit2 class="w-3.5 h-3.5" />
               </button>
             </div>
-            <p class="text-xs text-ash font-medium mt-0.5">@{{ currentMembro?.username || currentMembro?.nome?.toLowerCase() }}</p>
+            <p class="text-xs text-ash font-medium mt-0.5">
+              @{{ currentMembro?.username || currentMembro?.nome?.toLowerCase() }}
+            </p>
           </div>
-          <div v-else class="flex flex-col gap-1.5 flex-1 min-w-0">
+          <div
+            v-else
+            class="flex flex-col gap-1.5 flex-1 min-w-0"
+          >
             <div class="flex items-center gap-2">
               <input 
+                ref="inputNomeRef" 
                 v-model="nomeEditado" 
-                type="text" 
+                type="text"
                 :disabled="salvandoNome"
-                @keyup.enter="handleSalvarNome"
-                @keyup.esc="cancelarEdicaoNome"
                 class="flex-1 w-full max-w-[130px] xs:max-w-[170px] sm:max-w-[260px] px-3 py-1.5 rounded-xl border border-stone bg-white text-sm font-bold text-charcoal outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-all"
                 placeholder="Seu nome"
-                ref="inputNomeRef"
-              />
+                @keyup.enter="handleSalvarNome"
+                @keyup.esc="cancelarEdicaoNome"
+              >
               <button 
-                @click="handleSalvarNome" 
-                :disabled="salvandoNome"
+                :disabled="salvandoNome" 
                 class="p-2 bg-meadow/10 hover:bg-meadow/20 text-meadow rounded-xl border-none cursor-pointer transition-colors flex items-center justify-center disabled:opacity-50"
                 aria-label="Salvar nome"
+                @click="handleSalvarNome"
               >
                 <Check class="w-4 h-4" />
               </button>
               <button 
-                @click="cancelarEdicaoNome" 
-                :disabled="salvandoNome"
+                :disabled="salvandoNome" 
                 class="p-2 bg-stone/10 hover:bg-stone/20 text-ash rounded-xl border-none cursor-pointer transition-colors flex items-center justify-center disabled:opacity-50"
                 aria-label="Cancelar edição"
+                @click="cancelarEdicaoNome"
               >
                 <X class="w-4 h-4" />
               </button>
             </div>
-            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
+            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">
+              Pressione Enter para salvar, Esc para cancelar
+            </p>
           </div>
 
           <!-- Bloco de Renda -->
-          <div v-if="!editandoRenda" class="flex items-center gap-2">
+          <div
+            v-if="!editandoRenda"
+            class="flex items-center gap-2"
+          >
             <span class="text-xs text-graphite/70 font-semibold uppercase tracking-wider">Renda:</span>
             <span class="text-xs font-bold text-charcoal">
               {{ currentMembro?.rendaCentavos ? formatarCentavosParaBRL(currentMembro.rendaCentavos) : 'Não informada' }}
             </span>
             <button 
               v-if="podeAlterarRenda"
-              @click="iniciarEdicaoRenda" 
-              class="p-1 text-ash hover:text-charcoal transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
+              class="p-1 text-ash hover:text-charcoal transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center" 
               aria-label="Editar renda"
+              @click="iniciarEdicaoRenda"
             >
               <Edit2 class="w-3.5 h-3.5" />
             </button>
           </div>
-          <div v-else class="flex flex-col gap-1.5 min-w-0">
+          <div
+            v-else
+            class="flex flex-col gap-1.5 min-w-0"
+          >
             <div class="flex items-center gap-2">
               <input 
+                ref="inputRendaRef" 
                 v-model="rendaEditadaText" 
-                type="text" 
+                type="text"
                 :disabled="salvandoRenda"
-                @keyup.enter="handleSalvarRenda"
-                @keyup.esc="cancelarEdicaoRenda"
                 class="flex-1 w-full max-w-[110px] xs:max-w-[150px] sm:max-w-[200px] px-3 py-1.5 rounded-xl border border-stone bg-white text-sm font-bold text-charcoal outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-all"
                 placeholder="Ex: 3.500,00"
+                @keyup.enter="handleSalvarRenda"
+                @keyup.esc="cancelarEdicaoRenda"
                 @input="handleRendaInput"
-                ref="inputRendaRef"
-              />
+              >
               <button 
-                @click="handleSalvarRenda" 
-                :disabled="salvandoRenda"
+                :disabled="salvandoRenda" 
                 class="p-2 bg-meadow/10 hover:bg-meadow/20 text-meadow rounded-xl border-none cursor-pointer transition-colors flex items-center justify-center disabled:opacity-50"
                 aria-label="Salvar renda"
+                @click="handleSalvarRenda"
               >
                 <Check class="w-4 h-4" />
               </button>
               <button 
-                @click="cancelarEdicaoRenda" 
-                :disabled="salvandoRenda"
+                :disabled="salvandoRenda" 
                 class="p-2 bg-stone/10 hover:bg-stone/20 text-ash rounded-xl border-none cursor-pointer transition-colors flex items-center justify-center disabled:opacity-50"
                 aria-label="Cancelar edição de renda"
+                @click="cancelarEdicaoRenda"
               >
                 <X class="w-4 h-4" />
               </button>
             </div>
-            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">Pressione Enter para salvar, Esc para cancelar</p>
+            <p class="text-[10px] sm:text-[11px] text-ash font-medium ml-1">
+              Pressione Enter para salvar, Esc para cancelar
+            </p>
           </div>
         </div>
       </div>
       <Button 
-        @click="handleLogout" 
         variant="secondary" 
-        class="w-full md:w-auto text-xs font-bold uppercase tracking-widest h-10 px-5 transition-all duration-300 active:scale-95"
+        class="w-full md:w-auto text-xs font-bold uppercase tracking-widest h-10 px-5 transition-all duration-300 active:scale-95" 
+        @click="handleLogout"
       >
         Sair da Conta
       </Button>

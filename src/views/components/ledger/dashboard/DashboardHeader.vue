@@ -21,7 +21,7 @@ const appBarRef = useTemplateRef<InstanceType<typeof AppBar>>('appBarRef')
 const leftBtnRef = useTemplateRef<HTMLElement>('leftBtnRef')
 const leftLabelRef = useTemplateRef<HTMLElement>('leftLabelRef')
 const rightBtnRef = useTemplateRef<HTMLElement>('rightBtnRef')
-const rightLabelRef = useTemplateRef<HTMLElement>('rightLabelRef') // eslint-disable-line @typescript-eslint/no-unused-vars
+const rightLabelRef = useTemplateRef<HTMLElement>('rightLabelRef')  
 const centerRef = useTemplateRef<HTMLElement>('centerRef')
 const mascotRef = useTemplateRef<HTMLElement>('mascotRef')
 const tenantNameRef = useTemplateRef<HTMLElement>('tenantNameRef')
@@ -100,7 +100,7 @@ function commitStyles(t: number): void {
   if (rightLabelRef.value) {
     rightLabelRef.value.style.transform = `scale(${1 - 0.1 * t})`
   }
-  } catch (_) {
+  } catch {
     // AppBar's internal DOM structure changed — skip animation frame.
     // Next scroll event will re-attempt with fresh refs.
   }
@@ -142,7 +142,10 @@ onUnmounted(() => {
     O template NÃO usa :style para propriedades interpoladas pelo scroll.
     CSS transitions nessas propriedades estão removidas — exceto one-shot snap transition.
   -->
-  <AppBar ref="appBarRef" class="mb-4">
+  <AppBar
+    ref="appBarRef"
+    class="mb-4"
+  >
     <!-- Slot Esquerdo: Botão Período -->
     <template #left>
       <button
@@ -152,9 +155,15 @@ onUnmounted(() => {
         @click="emit('open-periodo')"
       >
         <div class="w-8 h-8 rounded-full bg-ember/10 flex items-center justify-center group-hover:bg-ember/20 group-hover:text-ember transition-colors duration-300">
-          <Calendar class="w-4 h-4 text-ember group-hover:scale-110 transition-transform duration-500 ease-jelly" aria-hidden="true" />
+          <Calendar
+            class="w-4 h-4 text-ember group-hover:scale-110 transition-transform duration-500 ease-jelly"
+            aria-hidden="true"
+          />
         </div>
-        <div ref="leftLabelRef" class="flex flex-col left-label-stack">
+        <div
+          ref="leftLabelRef"
+          class="flex flex-col left-label-stack"
+        >
           <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 text-ash/60 group-hover:text-ember transition-colors duration-300">Seletor</span>
           <span class="text-base font-bold tracking-tight leading-none text-charcoal group-hover:text-ember transition-colors duration-300">Período</span>
         </div>
@@ -180,7 +189,11 @@ onUnmounted(() => {
         >
           <!-- INNER WRAPPER: animate-wobble isolado — não conflita com transform do outer -->
           <div class="animate-wobble">
-            <IllustrationMascot variant="ember" :size="24" mood="happy" />
+            <IllustrationMascot
+              variant="ember"
+              :size="24"
+              mood="happy"
+            />
           </div>
         </div>
 
@@ -188,7 +201,10 @@ onUnmounted(() => {
           ref="tenantNameRef"
           class="relative mb-1.5 text-[8.5px] font-bold uppercase tracking-[0.2em] whitespace-nowrap flex items-center gap-2 justify-center text-ember"
         >
-          <House class="w-2 h-2 text-ember/40" aria-hidden="true" />
+          <House
+            class="w-2 h-2 text-ember/40"
+            aria-hidden="true"
+          />
           <span>{{ activeTenantObj.name }}</span>
         </div>
 
@@ -209,7 +225,11 @@ onUnmounted(() => {
           aria-hidden="true"
         >
           <div class="animate-wobble">
-            <IllustrationMascot variant="ember" :size="24" mood="happy" />
+            <IllustrationMascot
+              variant="ember"
+              :size="24"
+              mood="happy"
+            />
           </div>
         </div>
         <span
@@ -230,12 +250,18 @@ onUnmounted(() => {
         aria-label="Abrir ajustes"
         @click="emit('openSettings')"
       >
-        <div ref="rightLabelRef" class="flex flex-col text-right right-label-stack">
+        <div
+          ref="rightLabelRef"
+          class="flex flex-col text-right right-label-stack"
+        >
           <span class="text-[7.5px] font-bold uppercase tracking-[0.2em] mb-0.5 text-ash/60 group-hover:text-ember whitespace-nowrap transition-colors duration-300">Conta</span>
           <span class="text-xs font-bold text-charcoal leading-none whitespace-nowrap">Ajustes</span>
         </div>
         <div class="w-8 h-8 rounded-full bg-white/40 flex items-center justify-center group-hover:bg-ember/10 group-hover:text-ember transition-colors duration-300">
-          <User class="w-4 h-4 group-hover:scale-110 transition-transform duration-500 ease-jelly" aria-hidden="true" />
+          <User
+            class="w-4 h-4 group-hover:scale-110 transition-transform duration-500 ease-jelly"
+            aria-hidden="true"
+          />
         </div>
       </button>
     </template>

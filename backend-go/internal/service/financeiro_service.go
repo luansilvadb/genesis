@@ -1015,7 +1015,7 @@ func (s *FinanceiroService) CreateFaturaBatch(ctx context.Context, tenantID stri
 		return err
 	}
 
-	// Notifica clientes sobre faturas alteradas (batch)
+	// Notifica clients sobre faturas alteradas (batch)
 	s.wsHub.Broadcast(tenantID, dto.WSMessage{
 		Type:    dto.WSTypeInvoiceUpdated,
 		Payload: map[string]interface{}{"action": "batch-updated"},

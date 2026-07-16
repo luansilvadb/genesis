@@ -111,17 +111,17 @@ const handleAdicionarExterno = () => {
       <div class="inline-flex p-1 bg-stone/40 rounded-xl relative whitespace-nowrap">
         <button
           type="button"
-          @click="emit('update:splitType', 'equal')"
           class="px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-widest cursor-pointer border-none transition-all duration-200"
           :class="[splitType === 'equal' ? 'bg-white text-charcoal shadow-sm' : 'bg-transparent text-ash hover:text-charcoal']"
+          @click="emit('update:splitType', 'equal')"
         >
           Igual
         </button>
         <button
           type="button"
-          @click="emit('update:splitType', 'proportional')"
           class="px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-widest cursor-pointer border-none transition-all duration-200"
           :class="[splitType === 'proportional' ? 'bg-white text-charcoal shadow-sm' : 'bg-transparent text-ash hover:text-charcoal']"
+          @click="emit('update:splitType', 'proportional')"
         >
           Proporcional
         </button>
@@ -138,30 +138,39 @@ const handleAdicionarExterno = () => {
       ou escolha a divisão igual para continuar.
     </div>
 
-    <div class="flex gap-2" role="group" aria-label="Atalhos de divisão">
+    <div
+      class="flex gap-2"
+      role="group"
+      aria-label="Atalhos de divisão"
+    >
       <button 
-        @click="selecionarTodos" 
-        class="px-3.5 py-2 rounded-full bg-midnight text-white text-[10px] font-bold uppercase tracking-wider border-none cursor-pointer hover:bg-charcoal transition-colors"
+        class="px-3.5 py-2 rounded-full bg-midnight text-white text-[10px] font-bold uppercase tracking-wider border-none cursor-pointer hover:bg-charcoal transition-colors" 
+        @click="selecionarTodos"
       >
         Todos
       </button>
       <button 
-        @click="selecionarApenasEu" 
-        class="px-3.5 py-2 rounded-full bg-stone text-charcoal text-[10px] font-bold uppercase tracking-wider border-none cursor-pointer hover:bg-ash/20 transition-colors"
+        class="px-3.5 py-2 rounded-full bg-stone text-charcoal text-[10px] font-bold uppercase tracking-wider border-none cursor-pointer hover:bg-ash/20 transition-colors" 
+        @click="selecionarApenasEu"
       >
         Apenas eu
       </button>
     </div>
 
-    <div class="grid grid-cols-3 gap-2" role="listbox" aria-multiselectable="true" aria-label="Selecionar membros para dividir">
+    <div
+      class="grid grid-cols-3 gap-2"
+      role="listbox"
+      aria-multiselectable="true"
+      aria-label="Selecionar membros para dividir"
+    >
       <button
         v-for="m in membros"
         :key="m.id"
-        @click="toggleSplitMember(m.id)"
         role="option"
         :aria-selected="internalParticipantes.includes(m.id)"
         class="group relative flex flex-col items-center gap-2 p-3 rounded-card transition-all duration-300 border-none cursor-pointer"
         :class="[internalParticipantes.includes(m.id) ? 'bg-white shadow-subtle scale-[1.02]' : 'bg-parchment opacity-80']"
+        @click="toggleSplitMember(m.id)"
       >
         <MembroAvatar 
           :nome="m.nome.replace(' (Externo)', '')" 
@@ -174,34 +183,47 @@ const handleAdicionarExterno = () => {
           class="text-[9px] font-bold text-ash mt-0.5 leading-none block text-center animate-in fade-in duration-300"
         >
           {{ Math.round(proporcoesMembros[m.id]?.percent ?? 0) }}%
-          <span v-if="proporcoesMembros[m.id]?.valor !== undefined" class="block text-[8px] text-slate-500 font-semibold mt-0.5">
+          <span
+            v-if="proporcoesMembros[m.id]?.valor !== undefined"
+            class="block text-[8px] text-slate-500 font-semibold mt-0.5"
+          >
             {{ formatarBRL(proporcoesMembros[m.id]?.valor ?? 0) }}
           </span>
         </span>
-        <Check v-if="internalParticipantes.includes(m.id)" class="absolute top-2 right-2 w-3.5 h-3.5 text-meadow animate-in zoom-in-50 duration-300" aria-hidden="true" />
+        <Check
+          v-if="internalParticipantes.includes(m.id)"
+          class="absolute top-2 right-2 w-3.5 h-3.5 text-meadow animate-in zoom-in-50 duration-300"
+          aria-hidden="true"
+        />
       </button>
     </div>
 
     <!-- Botão/Input para Adicionar Externo -->
-    <div v-if="isPrivate" class="pt-4 border-t border-stone/50">
+    <div
+      v-if="isPrivate"
+      class="pt-4 border-t border-stone/50"
+    >
       <div v-if="!mostrarInputExterno">
         <button 
           type="button"
-          @click="mostrarInputExterno = true"
           class="w-full py-3.5 rounded-xl border-2 border-dashed border-stone hover:border-ember/40 text-xs font-bold text-ash hover:text-ember transition-colors flex items-center justify-center gap-2 cursor-pointer bg-transparent"
+          @click="mostrarInputExterno = true"
         >
           <Plus class="w-4 h-4" />
           Dividir com Pessoa Externa
         </button>
       </div>
-      <div v-else class="flex gap-2 items-center animate-in fade-in duration-200">
+      <div
+        v-else
+        class="flex gap-2 items-center animate-in fade-in duration-200"
+      >
         <input 
           v-model="nomeExterno"
           type="text" 
           placeholder="Nome da pessoa externa"
           class="flex-1 px-4 py-3.5 rounded-xl border border-stone bg-canvas text-xs font-bold text-charcoal focus:outline-none focus:border-ember"
           @keyup.enter="handleAdicionarExterno"
-        />
+        >
         <button 
           type="button"
           class="h-[46px] px-4 rounded-xl bg-midnight text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer border-none"

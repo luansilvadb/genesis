@@ -28,70 +28,273 @@
       />
       
       <!-- Embellishments: Blush -->
-      <g v-if="['happy', 'excited', 'proud', 'surprised'].includes(mood)" class="blush opacity-40">
-        <circle cx="30" cy="50" r="3" fill="white" />
-        <circle cx="70" cy="50" r="3" fill="white" />
+      <g
+        v-if="['happy', 'excited', 'proud', 'surprised'].includes(mood)"
+        class="blush opacity-40"
+      >
+        <circle
+          cx="30"
+          cy="50"
+          r="3"
+          fill="white"
+        />
+        <circle
+          cx="70"
+          cy="50"
+          r="3"
+          fill="white"
+        />
       </g>
 
       <!-- Eyes -->
       <g class="eyes animate-blink">
         <template v-if="['happy', 'proud'].includes(mood)">
-          <circle cx="38" cy="42" r="3" fill="black" />
-          <circle cx="62" cy="42" r="3" fill="black" />
-          <circle v-if="mood === 'proud'" cx="39" cy="40.5" r="1.2" fill="white" />
-          <circle v-if="mood === 'proud'" cx="63" cy="40.5" r="1.2" fill="white" />
+          <circle
+            cx="38"
+            cy="42"
+            r="3"
+            fill="black"
+          />
+          <circle
+            cx="62"
+            cy="42"
+            r="3"
+            fill="black"
+          />
+          <circle
+            v-if="mood === 'proud'"
+            cx="39"
+            cy="40.5"
+            r="1.2"
+            fill="white"
+          />
+          <circle
+            v-if="mood === 'proud'"
+            cx="63"
+            cy="40.5"
+            r="1.2"
+            fill="white"
+          />
         </template>
         <template v-else-if="mood === 'chill'">
-          <line x1="34" y1="44" x2="42" y2="44" stroke="black" stroke-width="2.5" stroke-linecap="round" />
-          <line x1="58" y1="44" x2="66" y2="44" stroke="black" stroke-width="2.5" stroke-linecap="round" />
+          <line
+            x1="34"
+            y1="44"
+            x2="42"
+            y2="44"
+            stroke="black"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
+          <line
+            x1="58"
+            y1="44"
+            x2="66"
+            y2="44"
+            stroke="black"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          />
         </template>
         <template v-else-if="mood === 'surprised'">
-          <circle cx="38" cy="42" r="4" fill="white" stroke="black" stroke-width="1.5" />
-          <circle cx="62" cy="42" r="4" fill="white" stroke="black" stroke-width="1.5" />
-          <circle cx="38" cy="42" r="1.5" fill="black" />
-          <circle cx="62" cy="42" r="1.5" fill="black" />
+          <circle
+            cx="38"
+            cy="42"
+            r="4"
+            fill="white"
+            stroke="black"
+            stroke-width="1.5"
+          />
+          <circle
+            cx="62"
+            cy="42"
+            r="4"
+            fill="white"
+            stroke="black"
+            stroke-width="1.5"
+          />
+          <circle
+            cx="38"
+            cy="42"
+            r="1.5"
+            fill="black"
+          />
+          <circle
+            cx="62"
+            cy="42"
+            r="1.5"
+            fill="black"
+          />
         </template>
         <template v-else-if="mood === 'excited'">
-          <circle cx="38" cy="40" r="4.5" fill="black" />
-          <circle cx="62" cy="40" r="4.5" fill="black" />
-          <circle cx="40" cy="38" r="1.5" fill="white" />
-          <circle cx="64" cy="38" r="1.5" fill="white" />
+          <circle
+            cx="38"
+            cy="40"
+            r="4.5"
+            fill="black"
+          />
+          <circle
+            cx="62"
+            cy="40"
+            r="4.5"
+            fill="black"
+          />
+          <circle
+            cx="40"
+            cy="38"
+            r="1.5"
+            fill="white"
+          />
+          <circle
+            cx="64"
+            cy="38"
+            r="1.5"
+            fill="white"
+          />
         </template>
         <template v-else-if="mood === 'thinking'">
-          <circle cx="38" cy="40" r="3" fill="black" />
-          <path d="M58 44 Q62 38 66 44" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <circle
+            cx="38"
+            cy="40"
+            r="3"
+            fill="black"
+          />
+          <path
+            d="M58 44 Q62 38 66 44"
+            stroke="black"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+          />
         </template>
         <template v-else-if="mood === 'sleeping'">
-          <path d="M34 44 Q38 48 42 44" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
-          <path d="M58 44 Q62 48 66 44" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path
+            d="M34 44 Q38 48 42 44"
+            stroke="black"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path
+            d="M58 44 Q62 48 66 44"
+            stroke="black"
+            stroke-width="2.5"
+            fill="none"
+            stroke-linecap="round"
+          />
         </template>
         <template v-else-if="mood === 'sad'">
-          <circle cx="38" cy="44" r="3" fill="black" />
-          <circle cx="62" cy="44" r="3" fill="black" />
-          <line x1="34" y1="42" x2="40" y2="44" stroke="white" stroke-width="1.2" stroke-linecap="round" />
-          <line x1="60" y1="44" x2="66" y2="42" stroke="white" stroke-width="1.2" stroke-linecap="round" />
+          <circle
+            cx="38"
+            cy="44"
+            r="3"
+            fill="black"
+          />
+          <circle
+            cx="62"
+            cy="44"
+            r="3"
+            fill="black"
+          />
+          <line
+            x1="34"
+            y1="42"
+            x2="40"
+            y2="44"
+            stroke="white"
+            stroke-width="1.2"
+            stroke-linecap="round"
+          />
+          <line
+            x1="60"
+            y1="44"
+            x2="66"
+            y2="42"
+            stroke="white"
+            stroke-width="1.2"
+            stroke-linecap="round"
+          />
         </template>
       </g>
 
       <!-- Mouth -->
       <g class="mouth">
-        <path v-if="mood === 'happy' || mood === 'proud'" d="M42 62 Q50 70 58 62" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
-        <line v-else-if="mood === 'chill' || mood === 'sleeping'" x1="45" y1="64" x2="55" y2="64" stroke="black" stroke-width="2" stroke-linecap="round" />
-        <circle v-else-if="mood === 'surprised'" cx="50" cy="65" r="3" fill="black" />
-        <path v-else-if="mood === 'excited'" d="M40 60 Q50 72 60 60 L40 60" fill="black" />
-        <path v-else-if="mood === 'thinking'" d="M45 65 Q50 62 55 65" stroke="black" stroke-width="2" fill="none" stroke-linecap="round" />
-        <path v-else-if="mood === 'sad'" d="M42 68 Q50 62 58 68" stroke="black" stroke-width="2.5" fill="none" stroke-linecap="round" />
+        <path
+          v-if="mood === 'happy' || mood === 'proud'"
+          d="M42 62 Q50 70 58 62"
+          stroke="black"
+          stroke-width="2.5"
+          fill="none"
+          stroke-linecap="round"
+        />
+        <line
+          v-else-if="mood === 'chill' || mood === 'sleeping'"
+          x1="45"
+          y1="64"
+          x2="55"
+          y2="64"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <circle
+          v-else-if="mood === 'surprised'"
+          cx="50"
+          cy="65"
+          r="3"
+          fill="black"
+        />
+        <path
+          v-else-if="mood === 'excited'"
+          d="M40 60 Q50 72 60 60 L40 60"
+          fill="black"
+        />
+        <path
+          v-else-if="mood === 'thinking'"
+          d="M45 65 Q50 62 55 65"
+          stroke="black"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+        />
+        <path
+          v-else-if="mood === 'sad'"
+          d="M42 68 Q50 62 58 68"
+          stroke="black"
+          stroke-width="2.5"
+          fill="none"
+          stroke-linecap="round"
+        />
       </g>
 
       <!-- Stick limbs (Noodle style) -->
-      <g class="limbs" stroke="black" stroke-width="3.2" stroke-linecap="round" fill="none" opacity="0.8">
+      <g
+        class="limbs"
+        stroke="black"
+        stroke-width="3.2"
+        stroke-linecap="round"
+        fill="none"
+        opacity="0.8"
+      >
         <!-- Legs -->
-        <path d="M38 80 Q35 88 32 92" class="animate-leg-left" />
-        <path d="M62 80 Q65 88 68 92" class="animate-leg-right" />
+        <path
+          d="M38 80 Q35 88 32 92"
+          class="animate-leg-left"
+        />
+        <path
+          d="M62 80 Q65 88 68 92"
+          class="animate-leg-right"
+        />
         <!-- Arms -->
         <template v-if="mood === 'happy' || mood === 'excited'">
-          <path d="M22 55 Q12 52 8 40" :class="{ 'animate-arm-wave': mood === 'happy', 'animate-excited-arms': mood === 'excited' }" />
-          <path d="M78 55 Q88 52 92 40" :class="{ 'animate-excited-arms': mood === 'excited' }" />
+          <path
+            d="M22 55 Q12 52 8 40"
+            :class="{ 'animate-arm-wave': mood === 'happy', 'animate-excited-arms': mood === 'excited' }"
+          />
+          <path
+            d="M78 55 Q88 52 92 40"
+            :class="{ 'animate-excited-arms': mood === 'excited' }"
+          />
         </template>
         <template v-else-if="mood === 'proud'">
           <path d="M22 62 Q15 68 12 78" />

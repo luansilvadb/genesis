@@ -141,10 +141,10 @@ export class HttpBaseRepository {
       return await fetch(url, { ...options, signal: controller.signal, credentials: 'include' })
     } catch (err: unknown) {
       if (err instanceof DOMException && err.name === 'AbortError') {
-        throw new Error('A requisição excedeu o tempo limite. Verifique sua conexão e tente novamente.')
+        throw new Error('A requisição excedeu o tempo limite. Verifique sua conexão e tente novamente.', { cause: err })
       }
       logger.error(`Falha de conexão para ${url}:`, err)
-      throw new Error('Não foi possível se conectar ao servidor do DIVI. Certifique-se de que a API está ativa e que há conexão com a internet.')
+      throw new Error('Não foi possível se conectar ao servidor do DIVI. Certifique-se de que a API está ativa e que há conexão com a internet.', { cause: err })
     } finally {
       clearTimeout(timeoutId)
     }

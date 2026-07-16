@@ -102,7 +102,7 @@ go test -v -run TestNome ./internal/...         # teste específico
 ## Estrutura do projeto
 
 ```
-genesis/
+financeiro-divi/
 ├── index.html                  # Entry point HTML
 ├── package.json                # Dependências e scripts do frontend
 ├── pnpm-lock.yaml

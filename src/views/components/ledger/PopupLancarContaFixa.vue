@@ -1,10 +1,10 @@
 <template>
   <BottomSheet 
     :model-value="visible" 
-    @update:model-value="val => { if (!val) $emit('cancel') }" 
-    :title="`Lançar ${bill?.name}`"
+    :title="`Lançar ${bill?.name}`" 
     subtitle="Conta fixa recorrente"
     max-height="90dvh"
+    @update:model-value="val => { if (!val) $emit('cancel') }"
   >
     <template #header>
       <div class="flex items-center gap-4 w-full">
@@ -22,20 +22,23 @@
     <div class="space-y-6 pt-2">
       <!-- Input de Valor Padronizado -->
       <div class="space-y-2">
-        <label for="fixed-bill-value" class="block text-[10px] font-bold uppercase tracking-widest text-graphite ml-1">Valor do Talão</label>
+        <label
+          for="fixed-bill-value"
+          class="block text-[10px] font-bold uppercase tracking-widest text-graphite ml-1"
+        >Valor do Talão</label>
         <div class="relative">
           <span class="absolute left-4 top-1/2 -translate-y-1/2 text-graphite text-sm font-bold">R$</span>
           <input
             id="fixed-bill-value"
             :value="valorFormatado"
-            @input="handleValorInput"
             type="text"
             inputmode="numeric"
             data-testid="valor-conta-fixa"
             class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-stone bg-canvas outline-none font-bold text-sm text-charcoal focus:border-ember transition-all"
             placeholder="0,00"
             autofocus
-          />
+            @input="handleValorInput"
+          >
         </div>
       </div>
 
@@ -46,12 +49,16 @@
           <button
             v-for="m in membros"
             :key="m.id"
-            @click="compradorId = m.id"
             class="group py-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer flex flex-col items-center gap-2"
             :class="compradorId === m.id ? 'border-2 border-charcoal bg-white shadow-sm scale-[1.02] text-charcoal' : 'border-2 border-transparent bg-stone hover:bg-stone/80 text-charcoal'"
             :data-testid="`pagador-${m.id}`"
+            @click="compradorId = m.id"
           >
-            <MembroAvatar :nome="m.nome" size="sm" :variant="compradorId === m.id ? 'ember' : 'sky'" />
+            <MembroAvatar
+              :nome="m.nome"
+              size="sm"
+              :variant="compradorId === m.id ? 'ember' : 'sky'"
+            />
             <span class="truncate max-w-full px-1">{{ m.nome }}</span>
           </button>
         </div>
@@ -64,14 +71,21 @@
           <button
             v-for="m in membros"
             :key="m.id"
-            @click="toggleSplit(m.id)"
             class="group relative py-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 flex flex-col items-center gap-2 border-none cursor-pointer"
             :class="splitIds.includes(m.id) ? 'bg-white shadow-subtle scale-[1.02] text-charcoal' : 'bg-stone/50 text-graphite opacity-60 hover:opacity-100'"
             :data-testid="`split-${m.id}`"
+            @click="toggleSplit(m.id)"
           >
-            <MembroAvatar :nome="m.nome" size="sm" :variant="splitIds.includes(m.id) ? 'meadow' : 'sky'" />
+            <MembroAvatar
+              :nome="m.nome"
+              size="sm"
+              :variant="splitIds.includes(m.id) ? 'meadow' : 'sky'"
+            />
             <span class="truncate max-w-full px-1">{{ m.nome }}</span>
-            <div v-if="splitIds.includes(m.id)" class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300">
+            <div
+              v-if="splitIds.includes(m.id)"
+              class="absolute top-1.5 right-1.5 animate-in zoom-in-50 duration-300"
+            >
               <Check class="w-3.5 h-3.5 text-meadow" />
             </div>
           </button>
@@ -84,7 +98,9 @@
           <Info class="w-5 h-5 text-meadow" />
         </div>
         <div class="space-y-0.5">
-          <p class="font-bold uppercase tracking-widest">Resumo do Rateio</p>
+          <p class="font-bold uppercase tracking-widest">
+            Resumo do Rateio
+          </p>
           <p class="font-semibold">
             {{ formatarBRL(valorReal || 0) }} pagos por
             <span class="text-charcoal">{{ obterNome(compradorId) }}</span>, dividido entre
@@ -100,19 +116,19 @@
       <div class="grid grid-cols-2 gap-3">
         <Button
           variant="secondary"
-          @click="$emit('cancel')"
           class="h-12 text-[10px] font-bold uppercase tracking-widest"
           :disabled="loading"
+          @click="$emit('cancel')"
         >
           Cancelar
         </Button>
         <Button
-          @click="confirmar"
           class="h-12 text-[10px] font-bold uppercase tracking-widest"
           variant="primary"
           :disabled="valorReal <= 0 || !compradorId || splitIds.length === 0 || loading"
           :loading="loading"
           data-testid="confirmar-conta-fixa"
+          @click="confirmar"
         >
           Confirmar Lançamento
         </Button>

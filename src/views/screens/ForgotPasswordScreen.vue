@@ -28,7 +28,12 @@ const onSubmit = async () => {
     <div class="w-full max-w-[420px] bg-card rounded-2xl shadow-subtle p-8 sm:p-10 transition-all duration-300">
       <div class="text-center mb-8 relative">
         <div class="inline-flex justify-center mb-4 transform hover:rotate-12 transition-transform duration-300 pointer-events-none">
-          <IllustrationMascot variant="ember" :size="48" mood="happy" class="animate-wobble" />
+          <IllustrationMascot
+            variant="ember"
+            :size="48"
+            mood="happy"
+            class="animate-wobble"
+          />
         </div>
         <h1 class="text-display text-3xl mb-2">
           Recuperar Senha<span class="text-ember">.</span>
@@ -38,28 +43,44 @@ const onSubmit = async () => {
         </p>
       </div>
 
-      <Transition name="fade-slide" mode="out-in">
-        <div v-if="message" class="text-center space-y-6">
+      <Transition
+        name="fade-slide"
+        mode="out-in"
+      >
+        <div
+          v-if="message"
+          class="text-center space-y-6"
+        >
           <div class="bg-sky/10 text-sky px-4 py-4 rounded-card text-sm font-semibold">
             ✅ {{ message }}
           </div>
           <button
-            @click="emit('back')"
             class="w-full bg-midnight hover:bg-charcoal text-white font-semibold py-4 px-6 rounded-pill text-sm tracking-widest uppercase transition-all duration-300 cursor-pointer border-none"
+            @click="emit('back')"
           >
             Voltar ao Login
           </button>
         </div>
 
-        <form v-else @submit.prevent="onSubmit" class="space-y-6">
+        <form
+          v-else
+          class="space-y-6"
+          @submit.prevent="onSubmit"
+        >
           <Transition name="fade">
-            <div v-if="errorMsg" class="bg-coral/10 text-coral text-caption px-4 py-3 rounded-card flex items-center gap-2 font-semibold">
+            <div
+              v-if="errorMsg"
+              class="bg-coral/10 text-coral text-caption px-4 py-3 rounded-card flex items-center gap-2 font-semibold"
+            >
               ⚠️ {{ errorMsg }}
             </div>
           </Transition>
 
           <div class="space-y-2">
-            <label for="email" class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1">
+            <label
+              for="email"
+              class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1"
+            >
               E-mail
             </label>
             <input
@@ -69,7 +90,7 @@ const onSubmit = async () => {
               required
               placeholder="seu@email.com"
               class="w-full bg-canvas border border-stone rounded-card px-4 py-3.5 text-body text-charcoal placeholder:text-ash focus:outline-none focus:border-ember transition-all duration-200"
-            />
+            >
           </div>
 
           <button
@@ -77,17 +98,23 @@ const onSubmit = async () => {
             :disabled="loading"
             class="w-full bg-midnight hover:bg-charcoal text-white font-semibold py-4 px-6 rounded-pill text-sm tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer border-none"
           >
-            <span v-if="loading" class="animate-spin inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span>
+            <span
+              v-if="loading"
+              class="animate-spin inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+            />
             <span>Enviar Link</span>
           </button>
         </form>
       </Transition>
 
-      <div v-if="!message" class="mt-8 pt-6 border-t border-stone text-center">
+      <div
+        v-if="!message"
+        class="mt-8 pt-6 border-t border-stone text-center"
+      >
         <button
           type="button"
-          @click="emit('back')"
           class="text-caption font-semibold text-graphite hover:text-charcoal uppercase tracking-widest bg-transparent border-none cursor-pointer transition-colors duration-200"
+          @click="emit('back')"
         >
           Voltar para o Login
         </button>

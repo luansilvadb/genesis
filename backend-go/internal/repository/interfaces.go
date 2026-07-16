@@ -38,7 +38,6 @@ type CartaoRepository interface {
 	Create(ctx context.Context, cartao *model.Cartao) error
 	ListByTenant(ctx context.Context, tenantID string) ([]model.Cartao, error)
 	ListByTenantPaginated(ctx context.Context, tenantID string, offset, limit int) ([]model.Cartao, int64, error)
-	Update(ctx context.Context, cartao *model.Cartao) error
 	Delete(ctx context.Context, id, tenantID string) error
 }
 

@@ -62,10 +62,10 @@ const handleAdicionarExterno = () => {
       <button
         v-for="m in filteredMembers"
         :key="m.id"
-        @click="handleSelect(m.id)"
         role="option"
         :aria-selected="selectedId === m.id"
         class="group flex flex-col items-center gap-3 p-4 rounded-card bg-parchment hover:bg-stone transition-all duration-300 border-none cursor-pointer"
+        @click="handleSelect(m.id)"
       >
         <MembroAvatar 
           :nome="m.nome.replace(' (Externo)', '')" 
@@ -77,25 +77,31 @@ const handleAdicionarExterno = () => {
     </div>
 
     <!-- Botão/Input para Adicionar Externo -->
-    <div v-if="isPrivate" class="pt-4 border-t border-stone">
+    <div
+      v-if="isPrivate"
+      class="pt-4 border-t border-stone"
+    >
       <div v-if="!mostrarInputExterno">
         <button 
           type="button"
-          @click="mostrarInputExterno = true"
           class="w-full py-3.5 rounded-xl border-2 border-dashed border-stone hover:border-ember/40 text-xs font-bold text-ash hover:text-ember transition-colors flex items-center justify-center gap-2 cursor-pointer bg-transparent"
+          @click="mostrarInputExterno = true"
         >
           <Plus class="w-4 h-4" />
           + Pessoa Externa
         </button>
       </div>
-      <div v-else class="flex gap-2 items-center animate-in fade-in duration-200">
+      <div
+        v-else
+        class="flex gap-2 items-center animate-in fade-in duration-200"
+      >
         <input 
           v-model="nomeExterno"
           type="text" 
           placeholder="Nome da pessoa externa"
           class="flex-1 px-4 py-3.5 rounded-xl border border-stone bg-canvas text-xs font-bold text-charcoal focus:outline-none focus:border-ember"
           @keyup.enter="handleAdicionarExterno"
-        />
+        >
         <button 
           type="button"
           class="h-[46px] px-4 rounded-xl bg-midnight text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer border-none"

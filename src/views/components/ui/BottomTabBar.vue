@@ -25,13 +25,13 @@ const emit = defineEmits<{
       <!-- Lado Esquerdo: Tab Casa -->
       <div class="flex-1 flex justify-center items-center h-full">
         <button
-          @click="emit('update:modelValue', 'hoje')"
           class="flex-1 min-w-[48px] min-h-[48px] flex flex-col items-center justify-center relative group outline-none cursor-pointer border-none bg-transparent rounded-2xl transition-all duration-300 ease-jelly active:scale-92"
           :class="[
             modelValue === 'hoje' ? 'text-ember' : 'text-graphite/85 hover:text-charcoal'
           ]"
           aria-label="Casa"
           :aria-selected="modelValue === 'hoje'"
+          @click="emit('update:modelValue', 'hoje')"
         >
           <!-- Jelly Active Indicator -->
           <div
@@ -51,11 +51,11 @@ const emit = defineEmits<{
       <!-- Centro: FAB (Botão de Adicionar) -->
       <div class="flex justify-center items-center px-2 shrink-0">
         <button
-          @click="emit('click-fab')"
           :disabled="isMonthClosed || isReadOnly"
           class="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-ember text-white flex items-center justify-center border-none transition-all duration-500 ease-jelly shadow-[0_12px_32px_-8px_rgba(255,62,0,0.5)] hover:bg-ember/90 hover:scale-105 active:scale-90 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed cursor-pointer group"
           aria-label="Adicionar novo gasto"
           data-testid="novo-lancamento-fab"
+          @click="emit('click-fab')"
         >
           <Plus class="w-6 h-6 stroke-[3px] group-hover:rotate-90 transition-transform duration-500 ease-jelly" />
         </button>
@@ -64,13 +64,13 @@ const emit = defineEmits<{
       <!-- Lado Direito: Tab Pessoal -->
       <div class="flex-1 flex justify-center items-center h-full">
         <button
-          @click="emit('update:modelValue', 'pessoal')"
           class="flex-1 min-w-[48px] min-h-[48px] flex flex-col items-center justify-center relative group outline-none cursor-pointer border-none bg-transparent rounded-2xl transition-all duration-300 ease-jelly active:scale-92"
           :class="[
             modelValue === 'pessoal' ? 'text-ember' : 'text-graphite/85 hover:text-charcoal'
           ]"
           aria-label="Pessoal"
           :aria-selected="modelValue === 'pessoal'"
+          @click="emit('update:modelValue', 'pessoal')"
         >
           <!-- Jelly Active Indicator -->
           <div

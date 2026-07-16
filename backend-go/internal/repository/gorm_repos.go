@@ -181,10 +181,6 @@ func (r *GormCartaoRepo) ListByTenantPaginated(ctx context.Context, tenantID str
 	return list, total, err
 }
 
-func (r *GormCartaoRepo) Update(ctx context.Context, c *model.Cartao) error {
-	return r.db.WithContext(ctx).Save(c).Error
-}
-
 func (r *GormCartaoRepo) Delete(ctx context.Context, id, tenantID string) error {
 	return r.db.WithContext(ctx).Delete(&model.Cartao{}, "id = ? AND tenant_id = ?", id, tenantID).Error
 }

@@ -126,21 +126,31 @@ const selecionarNovaCasaCriada = () => {
 
 <template>
   <div class="p-6">
-    <Transition name="fade" mode="out-in">
+    <Transition
+      name="fade"
+      mode="out-in"
+    >
       <!-- 1. MODO: LISTA DE CASAS -->
-      <div v-if="modo === 'lista'" key="lista">
+      <div
+        v-if="modo === 'lista'"
+        key="lista"
+      >
         <div class="mb-6">
-          <h2 class="text-xl font-bold text-charcoal tracking-tight">Minhas Casas</h2>
-          <p class="text-xs text-graphite font-semibold mt-1">Selecione o espaço que deseja visualizar</p>
+          <h2 class="text-xl font-bold text-charcoal tracking-tight">
+            Minhas Casas
+          </h2>
+          <p class="text-xs text-graphite font-semibold mt-1">
+            Selecione o espaço que deseja visualizar
+          </p>
         </div>
 
         <div class="space-y-3 mb-8 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
           <div
             v-for="tenant in tenants"
             :key="tenant.id"
-            @click="selecionarCasa(tenant.id)"
             class="w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-200 cursor-pointer text-left group"
             :class="activeTenantId === tenant.id ? 'border-ember bg-ember/5' : 'border-stone bg-canvas hover:border-ember/30'"
+            @click="selecionarCasa(tenant.id)"
           >
             <div class="flex items-center gap-4">
               <div 
@@ -152,30 +162,42 @@ const selecionarNovaCasaCriada = () => {
               <div class="flex flex-col">
                 <span class="font-bold text-charcoal text-sm leading-snug">{{ tenant.name }}</span>
                 <!-- Código de convite e cópia -->
-                <div class="flex items-center gap-1.5 mt-1" @click.stop>
+                <div
+                  class="flex items-center gap-1.5 mt-1"
+                  @click.stop
+                >
                   <span class="text-[9px] text-ash font-bold uppercase tracking-wider">Código:</span>
                   <code class="text-[10px] bg-stone/60 px-1.5 py-0.5 rounded text-charcoal font-mono select-all">
                     {{ tenant.inviteCode }}
                   </code>
                   <button 
-                    @click="copiarCodigo(tenant.inviteCode)" 
-                    class="p-1 hover:bg-stone/80 rounded transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center"
+                    class="p-1 hover:bg-stone/80 rounded transition-colors border-none bg-transparent cursor-pointer flex items-center justify-center" 
                     :title="'Copiar código de ' + tenant.name"
+                    @click="copiarCodigo(tenant.inviteCode)"
                   >
-                    <Check v-if="copiedCode === tenant.inviteCode" class="w-3.5 h-3.5 text-meadow" />
-                    <Copy v-else class="w-3.5 h-3.5 text-ash group-hover:text-charcoal" />
+                    <Check
+                      v-if="copiedCode === tenant.inviteCode"
+                      class="w-3.5 h-3.5 text-meadow"
+                    />
+                    <Copy
+                      v-else
+                      class="w-3.5 h-3.5 text-ash group-hover:text-charcoal"
+                    />
                   </button>
                 </div>
               </div>
             </div>
-            <Check v-if="activeTenantId === tenant.id" class="w-5 h-5 text-ember shrink-0" />
+            <Check
+              v-if="activeTenantId === tenant.id"
+              class="w-5 h-5 text-ember shrink-0"
+            />
           </div>
         </div>
 
         <div class="space-y-3 border-t border-stone pt-6">
           <button
-            @click="irParaCriar"
             class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-stone transition-colors cursor-pointer border-none bg-transparent text-left group"
+            @click="irParaCriar"
           >
             <div class="w-8 h-8 rounded-lg bg-white shadow-subtle flex items-center justify-center text-ember group-hover:scale-110 transition-transform">
               <Plus class="w-4 h-4" />
@@ -187,8 +209,8 @@ const selecionarNovaCasaCriada = () => {
           </button>
           
           <button
-            @click="irParaEntrar"
             class="w-full flex items-center gap-4 p-3 rounded-xl hover:bg-stone transition-colors cursor-pointer border-none bg-transparent text-left group"
+            @click="irParaEntrar"
           >
             <div class="w-8 h-8 rounded-lg bg-white shadow-subtle flex items-center justify-center text-charcoal group-hover:scale-110 transition-transform">
               <Key class="w-4 h-4" />
@@ -202,32 +224,42 @@ const selecionarNovaCasaCriada = () => {
       </div>
 
       <!-- 2. MODO: CRIAR CASA -->
-      <div v-else-if="modo === 'criar'" key="criar">
+      <div
+        v-else-if="modo === 'criar'"
+        key="criar"
+      >
         <!-- Caso de Sucesso após criação -->
-        <div v-if="casaCriada" class="text-center py-4">
+        <div
+          v-if="casaCriada"
+          class="text-center py-4"
+        >
           <div class="mb-6">
             <div class="w-16 h-16 bg-meadow/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-meadow/20">
               <Check class="w-8 h-8 text-meadow" />
             </div>
-            <h3 class="text-xl font-bold text-charcoal tracking-tight">Casa criada! 🏡</h3>
+            <h3 class="text-xl font-bold text-charcoal tracking-tight">
+              Casa criada! 🏡
+            </h3>
             <p class="text-xs text-graphite mt-1">
               <strong class="text-charcoal font-bold">{{ casaCriada.name }}</strong> está pronta.
             </p>
           </div>
 
           <div class="bg-parchment shadow-subtle rounded-2xl p-5 mb-6">
-            <p class="text-[9px] text-graphite mb-1.5 uppercase tracking-widest font-bold">Código de convite</p>
+            <p class="text-[9px] text-graphite mb-1.5 uppercase tracking-widest font-bold">
+              Código de convite
+            </p>
             <p class="text-2xl font-bold text-ember tracking-[0.2em] font-mono select-all">
               {{ casaCriada.inviteCode }}
             </p>
             <p class="text-[10px] text-ash mt-3 leading-relaxed font-medium">
-              Compartilhe este código com as pessoas <br/>que vão morar com você.
+              Compartilhe este código com as pessoas <br>que vão morar com você.
             </p>
           </div>
 
           <button
-            @click="selecionarNovaCasaCriada"
             class="w-full bg-charcoal hover:bg-midnight text-white font-bold py-3.5 px-6 rounded-pill text-xs tracking-widest uppercase transition-all duration-300 shadow-md flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95"
+            @click="selecionarNovaCasaCriada"
           >
             Acessar Nova Casa
             <ArrowRight class="w-4 h-4" />
@@ -238,20 +270,27 @@ const selecionarNovaCasaCriada = () => {
         <div v-else>
           <header class="flex items-center gap-4 mb-6">
             <button
-              @click="voltar"
               class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 flex items-center justify-center text-charcoal transition-colors border-none cursor-pointer"
+              @click="voltar"
             >
               <ChevronLeft class="w-5 h-5" />
             </button>
             <div>
-              <h2 class="text-lg font-bold text-charcoal tracking-tight leading-none">Nova Casa</h2>
-              <p class="text-xs text-graphite font-semibold mt-1">Dê um nome para a sua casa</p>
+              <h2 class="text-lg font-bold text-charcoal tracking-tight leading-none">
+                Nova Casa
+              </h2>
+              <p class="text-xs text-graphite font-semibold mt-1">
+                Dê um nome para a sua casa
+              </p>
             </div>
           </header>
 
           <div class="space-y-5">
             <div class="space-y-2">
-              <label for="modal-nome-casa" class="block text-[10px] font-bold text-charcoal uppercase tracking-widest ml-1">
+              <label
+                for="modal-nome-casa"
+                class="block text-[10px] font-bold text-charcoal uppercase tracking-widest ml-1"
+              >
                 Nome da Casa
               </label>
               <div class="relative">
@@ -262,9 +301,9 @@ const selecionarNovaCasaCriada = () => {
                   placeholder="Ex: Casa da Família Silva"
                   maxlength="60"
                   autofocus
-                  @keydown.enter="criarCasa"
                   class="w-full bg-canvas border border-stone rounded-xl px-4 py-3 text-sm text-charcoal placeholder:text-ash focus:outline-none focus:border-ember transition-all duration-200"
-                />
+                  @keydown.enter="criarCasa"
+                >
                 <span
                   v-if="nomeCasa.length > 0"
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-ash/60"
@@ -275,19 +314,29 @@ const selecionarNovaCasaCriada = () => {
             </div>
 
             <Transition name="fade">
-              <div v-if="errorMsg" role="alert" class="bg-coral/10 text-coral text-[10px] px-4 py-2.5 rounded-lg flex items-center gap-2 font-semibold">
+              <div
+                v-if="errorMsg"
+                role="alert"
+                class="bg-coral/10 text-coral text-[10px] px-4 py-2.5 rounded-lg flex items-center gap-2 font-semibold"
+              >
                 <span>⚠️</span>
                 <span>{{ errorMsg }}</span>
               </div>
             </Transition>
 
             <button
-              @click="criarCasa"
               :disabled="loading || !nomeCasa.trim()"
               class="w-full bg-ember hover:opacity-90 disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-pill text-xs tracking-widest uppercase transition-all duration-300 shadow-md flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95"
+              @click="criarCasa"
             >
-              <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
-              <Home v-else class="w-4 h-4" />
+              <Loader2
+                v-if="loading"
+                class="w-4 h-4 animate-spin"
+              />
+              <Home
+                v-else
+                class="w-4 h-4"
+              />
               Criar Casa
             </button>
           </div>
@@ -295,23 +344,33 @@ const selecionarNovaCasaCriada = () => {
       </div>
 
       <!-- 3. MODO: ENTRAR EM UMA CASA -->
-      <div v-else-if="modo === 'entrar'" key="entrar">
+      <div
+        v-else-if="modo === 'entrar'"
+        key="entrar"
+      >
         <header class="flex items-center gap-4 mb-6">
           <button
-            @click="voltar"
             class="w-10 h-10 rounded-full bg-stone hover:bg-ash/20 flex items-center justify-center text-charcoal transition-colors border-none cursor-pointer"
+            @click="voltar"
           >
             <ChevronLeft class="w-5 h-5" />
           </button>
           <div>
-            <h2 class="text-lg font-bold text-charcoal tracking-tight leading-none">Entrar em Casa</h2>
-            <p class="text-xs text-graphite font-semibold mt-1">Insira o código de convite</p>
+            <h2 class="text-lg font-bold text-charcoal tracking-tight leading-none">
+              Entrar em Casa
+            </h2>
+            <p class="text-xs text-graphite font-semibold mt-1">
+              Insira o código de convite
+            </p>
           </div>
         </header>
 
         <div class="space-y-5">
           <div class="space-y-2">
-            <label for="modal-codigo-convite" class="block text-[10px] font-bold text-charcoal uppercase tracking-widest ml-1">
+            <label
+              for="modal-codigo-convite"
+              class="block text-[10px] font-bold text-charcoal uppercase tracking-widest ml-1"
+            >
               Código de Convite
             </label>
             <input
@@ -320,25 +379,35 @@ const selecionarNovaCasaCriada = () => {
               type="text"
               placeholder="Ex: CASA-AB12C"
               autofocus
-              @keydown.enter="entrarCasa"
               class="w-full bg-canvas border border-stone rounded-xl px-4 py-3 text-base font-bold text-charcoal placeholder:text-ash focus:outline-none focus:border-charcoal font-mono uppercase tracking-[0.15em] transition-all duration-200 text-center"
-            />
+              @keydown.enter="entrarCasa"
+            >
           </div>
 
           <Transition name="fade">
-            <div v-if="errorMsg" role="alert" class="bg-coral/10 text-coral text-[10px] px-4 py-2.5 rounded-lg flex items-center gap-2 font-semibold">
+            <div
+              v-if="errorMsg"
+              role="alert"
+              class="bg-coral/10 text-coral text-[10px] px-4 py-2.5 rounded-lg flex items-center gap-2 font-semibold"
+            >
               <span>⚠️</span>
               <span>{{ errorMsg }}</span>
             </div>
           </Transition>
 
           <button
-            @click="entrarCasa"
             :disabled="loading || !codigoConvite.trim()"
             class="w-full bg-charcoal hover:bg-midnight disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-pill text-xs tracking-widest uppercase transition-all duration-300 shadow-md flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95"
+            @click="entrarCasa"
           >
-            <Loader2 v-if="loading" class="w-4 h-4 animate-spin" />
-            <Key v-else class="w-4 h-4" />
+            <Loader2
+              v-if="loading"
+              class="w-4 h-4 animate-spin"
+            />
+            <Key
+              v-else
+              class="w-4 h-4"
+            />
             Entrar na Casa
           </button>
         </div>

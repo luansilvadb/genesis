@@ -16,26 +16,48 @@ const emit = defineEmits(['close'])
 <template>
   <BottomSheet 
     :model-value="visible" 
-    @update:model-value="val => { if (!val) emit('close') }" 
-    max-height="90dvh"
+    max-height="90dvh" 
+    @update:model-value="val => { if (!val) emit('close') }"
   >
     <template #title>
-      <h3 class="text-heading text-charcoal font-display">Atividades <span class="text-ember">da Casa</span></h3>
-      <p class="text-[10px] text-graphite font-bold uppercase tracking-widest mt-1">Histórico de auditoria contábil</p>
+      <h3 class="text-heading text-charcoal font-display">
+        Atividades <span class="text-ember">da Casa</span>
+      </h3>
+      <p class="text-[10px] text-graphite font-bold uppercase tracking-widest mt-1">
+        Histórico de auditoria contábil
+      </p>
     </template>
 
     <div class="space-y-4 pt-2">
-      <div v-if="loading" class="flex flex-col items-center justify-center py-12 space-y-4">
-        <div class="w-8 h-8 border-4 border-ember border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-xs text-ash font-bold uppercase tracking-wider">Carregando...</p>
+      <div
+        v-if="loading"
+        class="flex flex-col items-center justify-center py-12 space-y-4"
+      >
+        <div class="w-8 h-8 border-4 border-ember border-t-transparent rounded-full animate-spin" />
+        <p class="text-xs text-ash font-bold uppercase tracking-wider">
+          Carregando...
+        </p>
       </div>
 
-      <div v-else-if="logs.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-4">
-        <IllustrationMascot variant="sky" :size="80" mood="chill" class="opacity-45" />
-        <p class="text-xs text-ash font-bold italic max-w-[240px]">Nenhuma atividade registrada na casa ainda.</p>
+      <div
+        v-else-if="logs.length === 0"
+        class="flex flex-col items-center justify-center py-16 text-center space-y-4"
+      >
+        <IllustrationMascot
+          variant="sky"
+          :size="80"
+          mood="chill"
+          class="opacity-45"
+        />
+        <p class="text-xs text-ash font-bold italic max-w-[240px]">
+          Nenhuma atividade registrada na casa ainda.
+        </p>
       </div>
 
-      <div v-else class="space-y-6">
+      <div
+        v-else
+        class="space-y-6"
+      >
         <div
           v-for="log in logs"
           :key="log.id"

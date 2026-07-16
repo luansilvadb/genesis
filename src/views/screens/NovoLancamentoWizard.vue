@@ -319,20 +319,42 @@ const handleGravar = async () => {
             Passo {{ stepIndex + 1 }} de {{ steps.length }}
           </p>
           <h2 class="mt-3 text-3xl font-display text-charcoal leading-tight tracking-tight">
-            <template v-if="currentState === 'FLOW_SELECTION'">O que deseja fazer?</template>
-            <template v-else-if="currentState === 'PAYMENT_METHOD_SELECTION'">Como você pagou?</template>
-            <template v-else-if="currentState === 'LENDER_SELECTION'">{{ wizFlow === 'loan_taken' ? 'Para quem você deve?' : 'Quem está emprestando?' }}</template>
-            <template v-else-if="currentState === 'BUYER_SELECTION'">{{ wizPayment === 'card' ? 'Quem usou o cartão?' : 'Quem foi que pagou?' }}</template>
-            <template v-else-if="currentState === 'BORROWER_SELECTION'">{{ wizFlow === 'loan_given' ? 'Quem está te devendo?' : 'Quem pegou emprestado?' }}</template>
-            <template v-else-if="currentState === 'VALUE'">Qual foi o valor total?</template>
-            <template v-else-if="currentState === 'DESCRIPTION'">Qual a descrição?</template>
-            <template v-else-if="currentState === 'SPLIT'">Com quem dividir?</template>
+            <template v-if="currentState === 'FLOW_SELECTION'">
+              O que deseja fazer?
+            </template>
+            <template v-else-if="currentState === 'PAYMENT_METHOD_SELECTION'">
+              Como você pagou?
+            </template>
+            <template v-else-if="currentState === 'LENDER_SELECTION'">
+              {{ wizFlow === 'loan_taken' ? 'Para quem você deve?' : 'Quem está emprestando?' }}
+            </template>
+            <template v-else-if="currentState === 'BUYER_SELECTION'">
+              {{ wizPayment === 'card' ? 'Quem usou o cartão?' : 'Quem foi que pagou?' }}
+            </template>
+            <template v-else-if="currentState === 'BORROWER_SELECTION'">
+              {{ wizFlow === 'loan_given' ? 'Quem está te devendo?' : 'Quem pegou emprestado?' }}
+            </template>
+            <template v-else-if="currentState === 'VALUE'">
+              Qual foi o valor total?
+            </template>
+            <template v-else-if="currentState === 'DESCRIPTION'">
+              Qual a descrição?
+            </template>
+            <template v-else-if="currentState === 'SPLIT'">
+              Com quem dividir?
+            </template>
           </h2>
         </div>
       </div>
 
-      <div v-if="currentState === 'BUYER_SELECTION' && wizPayment === 'card'" class="mt-4 p-3 rounded-xl bg-sky/10 border border-sky/20 flex gap-3 items-center animate-in fade-in slide-in-from-top-1">
-        <CreditCard class="w-4 h-4 text-sky shrink-0" aria-hidden="true" />
+      <div
+        v-if="currentState === 'BUYER_SELECTION' && wizPayment === 'card'"
+        class="mt-4 p-3 rounded-xl bg-sky/10 border border-sky/20 flex gap-3 items-center animate-in fade-in slide-in-from-top-1"
+      >
+        <CreditCard
+          class="w-4 h-4 text-sky shrink-0"
+          aria-hidden="true"
+        />
         <p class="text-[11px] font-semibold text-sky leading-tight">
           O crédito de reembolso será atribuído ao dono do cartão: 
           <strong>
@@ -357,7 +379,10 @@ const handleGravar = async () => {
     </header>
 
     <div class="flex-1 p-5 sm:p-6 bg-white overflow-y-auto custom-scrollbar">
-      <div :key="currentState" class="w-full">
+      <div
+        :key="currentState"
+        class="w-full"
+      >
         <StepFlowSelection
           v-if="currentState === 'FLOW_SELECTION'"
           :wiz-flow="wizFlow"
@@ -403,7 +428,10 @@ const handleGravar = async () => {
           :wiz-payment="wizPayment"
         />
 
-        <div v-else-if="currentState === 'DESCRIPTION'" class="space-y-6 animate-in fade-in duration-300">
+        <div
+          v-else-if="currentState === 'DESCRIPTION'"
+          class="space-y-6 animate-in fade-in duration-300"
+        >
           <StepDescriptionInput
             v-model:descricao="descricao"
             :wiz-flow="(wizFlow === 'loan_given' || wizFlow === 'loan_taken') ? 'loan' : wizFlow"
@@ -413,7 +441,7 @@ const handleGravar = async () => {
         <StepSplitSelector
           v-else-if="currentState === 'SPLIT'"
           v-model:participantes-divisao="participantesDivisao"
-          v-model:splitType="splitType"
+          v-model:split-type="splitType"
           :membros="membrosLocais"
           :comprador-selecionado-id="compradorSelecionadoId"
           :valor-total="Number(valor)"

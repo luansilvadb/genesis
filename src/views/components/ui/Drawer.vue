@@ -11,7 +11,10 @@
     </Transition>
 
     <!-- Drawer panel - slides from right -->
-    <Transition name="drawer-slide" @after-leave="onTransitionLeave">
+    <Transition
+      name="drawer-slide"
+      @after-leave="onTransitionLeave"
+    >
       <div
         v-if="modelValue"
         class="fixed inset-0 z-[999] flex justify-end pointer-events-none"
@@ -29,36 +32,63 @@
           @touchend="onTouchEnd"
         >
           <!-- Header -->
-          <div v-if="title || $slots.header || $slots.title" class="flex items-start justify-between px-6 pt-6 pb-4 shrink-0">
+          <div
+            v-if="title || $slots.header || $slots.title"
+            class="flex items-start justify-between px-6 pt-6 pb-4 shrink-0"
+          >
             <div class="flex-1 min-w-0 pr-4">
               <slot name="header">
                 <slot name="title">
-                  <h2 v-if="title" class="text-2xl font-display text-charcoal leading-[1.1] tracking-tight">{{ title }}</h2>
+                  <h2
+                    v-if="title"
+                    class="text-2xl font-display text-charcoal leading-[1.1] tracking-tight"
+                  >
+                    {{ title }}
+                  </h2>
                 </slot>
               </slot>
             </div>
             <button
               v-if="showClose"
               class="w-10 h-10 rounded-full bg-stone/50 flex items-center justify-center text-ash transition-all hover:bg-stone hover:text-charcoal cursor-pointer border-none focus-visible:ring-2 focus-visible:ring-ember focus-visible:outline-none shrink-0"
-              @click="close"
               aria-label="Fechar"
+              @click="close"
             >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                class="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
           <!-- Divider -->
-          <div v-if="(title || $slots.header || $slots.title) && showDivider" class="h-px bg-stone/60 mx-6 shrink-0" />
+          <div
+            v-if="(title || $slots.header || $slots.title) && showDivider"
+            class="h-px bg-stone/60 mx-6 shrink-0"
+          />
 
           <!-- Content -->
-          <div ref="contentEl" :class="['overflow-y-auto flex-1 custom-scrollbar', contentClass]">
+          <div
+            ref="contentEl"
+            :class="['overflow-y-auto flex-1 custom-scrollbar', contentClass]"
+          >
             <slot />
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="p-6 pt-4 border-t border-stone shrink-0 bg-white">
+          <div
+            v-if="$slots.footer"
+            class="p-6 pt-4 border-t border-stone shrink-0 bg-white"
+          >
             <slot name="footer" />
           </div>
         </div>

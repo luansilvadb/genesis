@@ -13,6 +13,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'default',
+  class: '',
   loading: false,
   disabled: false
 })
@@ -36,9 +37,20 @@ const classes = computed(() => {
 </script>
 
 <template>
-  <button type="button" :class="classes" :disabled="disabled || loading" :aria-busy="loading">
-    <Loader2 v-if="loading" class="absolute w-5 h-5 animate-spin text-current" />
-    <span class="inline-flex items-center gap-1.5" :class="{ 'invisible': loading }">
+  <button
+    type="button"
+    :class="classes"
+    :disabled="disabled || loading"
+    :aria-busy="loading"
+  >
+    <Loader2
+      v-if="loading"
+      class="absolute w-5 h-5 animate-spin text-current"
+    />
+    <span
+      class="inline-flex items-center gap-1.5"
+      :class="{ 'invisible': loading }"
+    >
       <slot />
     </span>
   </button>

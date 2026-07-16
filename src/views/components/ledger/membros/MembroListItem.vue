@@ -15,18 +15,25 @@ const emit = defineEmits(['click'])
 
 <template>
   <div 
-    @click="clickable !== false && emit('click')"
     class="p-4 flex justify-between items-center bg-canvas/50 border border-stone/50 rounded-2xl transition-all duration-500 group"
     :class="[
       { 'opacity-60 grayscale-[0.5]': !membro.ativo },
       clickable !== false ? 'cursor-pointer active:scale-[0.98] hover:border-ember/40' : 'cursor-default'
     ]"
+    @click="clickable !== false && emit('click')"
   >
     <div class="flex items-center gap-4 min-w-0">
-      <MembroAvatar :nome="membro.nome" :variant="variant" size="sm" />
+      <MembroAvatar
+        :nome="membro.nome"
+        :variant="variant"
+        size="sm"
+      />
       <div class="min-w-0">
         <span class="text-sm font-bold text-charcoal leading-none block truncate">{{ membro.nome }}</span>
-        <p class="text-caption text-[9px] mt-1" :class="membro.ativo ? 'text-meadow' : 'text-ash'">
+        <p
+          class="text-caption text-[9px] mt-1"
+          :class="membro.ativo ? 'text-meadow' : 'text-ash'"
+        >
           {{ membro.ativo ? 'Ativo na Casa' : 'Acesso Suspenso' }}
         </p>
       </div>

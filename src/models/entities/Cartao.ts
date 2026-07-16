@@ -1,4 +1,4 @@
-export interface CartaoProps {
+interface CartaoProps {
   id: string
   nome: string
   diaFechamento: number

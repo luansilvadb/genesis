@@ -77,24 +77,24 @@ const handleSalvarTransacao = () => {
       <DashboardSaldos
         ref="dashboardRef"
         :membros="state.membros.value"
-        :faturasAbertas="state.faturasAbertas.value"
-        :faturasFechadas="state.faturasFechadas.value"
+        :faturas-abertas="state.faturasAbertas.value"
+        :faturas-fechadas="state.faturasFechadas.value"
         :cartoes="state.cartoes.value"
         :is-loading="state.isLoading.value"
         :active-tab="activeTab"
         :is-read-only="state.isReadOnly.value"
-        @openSettings="currentView = 'settings'"
-        @periodoStatusChanged="handlePeriodoStatusChanged"
+        @open-settings="currentView = 'settings'"
+        @periodo-status-changed="handlePeriodoStatusChanged"
         @open-periodo="handleOpenPeriodo"
       />
     </main>
 
     <BottomSheet
       :model-value="currentView === 'wizard'"
-      @update:model-value="(val: boolean) => { if (!val) currentView = 'dashboard' }"
       width-class="md:w-[560px]"
       max-height="95dvh"
       content-class="p-0 h-full"
+      @update:model-value="(val: boolean) => { if (!val) currentView = 'dashboard' }"
     >
       <NovoLancamentoWizard
         v-if="currentView === 'wizard'"
@@ -107,9 +107,9 @@ const handleSalvarTransacao = () => {
 
     <Drawer
       :model-value="currentView === 'settings'"
-      @update:model-value="(val: boolean) => { if (!val) currentView = 'dashboard' }"
       width-class="md:max-w-[560px] lg:max-w-[860px] xl:max-w-[1000px]"
       content-class="p-0 h-full"
+      @update:model-value="(val: boolean) => { if (!val) currentView = 'dashboard' }"
     >
       <ConfiguracoesMembros
         @voltar="currentView = 'dashboard'"

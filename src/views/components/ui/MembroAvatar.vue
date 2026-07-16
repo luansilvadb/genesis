@@ -6,7 +6,8 @@ interface Props {
   size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
+  src: '',
   variant: 'ember',
   size: 'md'
 })
@@ -39,8 +40,18 @@ const variantColors = {
     <!-- Organic Pulse Overlay -->
     <div class="absolute inset-0 bg-current opacity-[0.05] blob-shape animate-pulse" />
     
-    <img v-if="src" :src="src" :alt="nome" class="absolute inset-0 w-full h-full object-cover blob-shape" referrerpolicy="no-referrer" loading="lazy" />
-    <span v-else class="relative z-10 uppercase tracking-tighter font-display select-none">{{ nome[0] }}</span>
+    <img
+      v-if="src"
+      :src="src"
+      :alt="nome"
+      class="absolute inset-0 w-full h-full object-cover blob-shape"
+      referrerpolicy="no-referrer"
+      loading="lazy"
+    >
+    <span
+      v-else
+      class="relative z-10 uppercase tracking-tighter font-display select-none"
+    >{{ nome[0] }}</span>
   </div>
 </template>
 

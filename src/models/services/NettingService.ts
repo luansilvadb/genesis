@@ -7,60 +7,58 @@ export interface TransferenciaNetting {
   val: number
 }
 
+// ── Helpers privados para cada tipo de gasto ──
+
+function processarGastoEmprestimo(g: Gasto, saldos: Record<string, number>): void {
+  const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
+  if (vp.centavos === 0) return
+  const c = vp.centavos
+  if (g.compradorId) saldos[g.compradorId] = (saldos[g.compradorId] || 0) + c
+  if (g.borrowerId) saldos[g.borrowerId] = (saldos[g.borrowerId] || 0) - c
+}
+
+function processarGastoAcerto(g: Gasto, saldos: Record<string, number>): void {
+  if (!g.settlementDetails) return
+  const vp = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
+  if (vp.centavos === 0) return
+  saldos[g.settlementDetails.fromMemberId] = (saldos[g.settlementDetails.fromMemberId] || 0) + vp.centavos
+  saldos[g.settlementDetails.toMemberId] = (saldos[g.settlementDetails.toMemberId] || 0) - vp.centavos
+}
+
+function processarGastoComum(g: Gasto, saldos: Record<string, number>): void {
+  const pagadorId = (g.method === 'card' && g.cardOwner) ? g.cardOwner : g.compradorId
+  let totalDebitos = 0
+  g.divisoes.forEach(div => {
+    const valorDebito = valorParcelaAtual(div.valor, g.installments, g.totalInstallments)
+    if (valorDebito.centavos === 0) return
+    const c = valorDebito.centavos
+    saldos[div.membroId] = (saldos[div.membroId] || 0) - c
+    totalDebitos += c
+  })
+  if (pagadorId) saldos[pagadorId] = (saldos[pagadorId] || 0) + totalDebitos
+}
+
+// ── API pública ──
+
 /**
  * Calcula saldos unificados de crédito/débito entre membros a partir dos gastos.
- * Funções puras sem dependência de framework.
+ * Função pura sem dependência de framework.
  */
 export function calcularSaldosUnificados(
   membros: { id: string }[],
   gastos: Gasto[]
 ): Record<string, number> {
-  const saldosCentavos: Record<string, number> = {}
-  membros.forEach(m => { saldosCentavos[m.id] = 0 })
+  const saldos: Record<string, number> = {}
+  membros.forEach(m => { saldos[m.id] = 0 })
 
+  for (const g of gastos) {
+    if (g.isPrivate) continue
+    if (g.isLoan) processarGastoEmprestimo(g, saldos)
+    else if (g.isSettlement) processarGastoAcerto(g, saldos)
+    else processarGastoComum(g, saldos)
+  }
 
-  gastos.forEach(g => {
-    if (g.isPrivate) return
-    if (g.isLoan) {
-      const valorParcela = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
-      if (valorParcela.centavos !== 0) {
-        const valorParcelaCentavos = valorParcela.centavos
-        if (g.compradorId) {
-          saldosCentavos[g.compradorId] = (saldosCentavos[g.compradorId] || 0) + valorParcelaCentavos
-        }
-        if (g.borrowerId) {
-          saldosCentavos[g.borrowerId] = (saldosCentavos[g.borrowerId] || 0) - valorParcelaCentavos
-        }
-      }
-    } else if (g.isSettlement && g.settlementDetails) {
-      const valor = valorParcelaAtual(g.valorTotal, g.installments, g.totalInstallments)
-      if (valor.centavos !== 0) {
-        const fromId = g.settlementDetails.fromMemberId
-        const toId = g.settlementDetails.toMemberId
-        
-        saldosCentavos[fromId] = (saldosCentavos[fromId] || 0) + valor.centavos
-        saldosCentavos[toId] = (saldosCentavos[toId] || 0) - valor.centavos
-      }
-    } else {
-      const pagadorId = (g.method === 'card' && g.cardOwner) ? g.cardOwner : g.compradorId
-
-      let totalDebitosCentavos = 0
-      g.divisoes.forEach(div => {
-        const valorDebito = valorParcelaAtual(div.valor, g.installments, g.totalInstallments)
-        if (valorDebito.centavos !== 0) {
-          const valorDebitoCentavos = valorDebito.centavos
-          saldosCentavos[div.membroId] = (saldosCentavos[div.membroId] || 0) - valorDebitoCentavos
-          totalDebitosCentavos += valorDebitoCentavos
-        }
-      })
-
-      if (pagadorId) {
-        saldosCentavos[pagadorId] = (saldosCentavos[pagadorId] || 0) + totalDebitosCentavos
-      }
-    }
-  })
-
-  return saldosCentavos
+  return saldos
 }
 
 /**

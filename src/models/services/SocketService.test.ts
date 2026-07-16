@@ -26,7 +26,7 @@ class MockWebSocket {
     }
   }
 
-  send(_data: string) {}
+  send() {}
 }
 
 // Mock do localStorage

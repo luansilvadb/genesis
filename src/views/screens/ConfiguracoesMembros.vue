@@ -60,13 +60,16 @@ onMounted(async () => {
     <!-- ===== Área de Conteúdo ===== -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <!-- ===== MOBILE HEADER (< lg) ===== -->
-      <div v-if="!isModoFoco" class="lg:hidden shrink-0 px-4 pt-5 pb-3">
+      <div
+        v-if="!isModoFoco"
+        class="lg:hidden shrink-0 px-4 pt-5 pb-3"
+      >
         <div class="flex items-center gap-3">
           <button
-            @click="emit('voltar')"
             type="button"
             class="w-10 h-10 rounded-full bg-white border border-stone/60 text-charcoal flex items-center justify-center cursor-pointer shadow-sm hover:scale-105 hover:text-ember hover:border-ash/50 active:scale-95 transition-all duration-300 ease-out shrink-0"
             aria-label="Voltar ao Dashboard"
+            @click="emit('voltar')"
           >
             <ArrowLeft class="w-5 h-5" />
           </button>
@@ -82,17 +85,20 @@ onMounted(async () => {
       </div>
 
       <!-- ===== MOBILE TABS (< lg): carrossel horizontal ===== -->
-      <div v-if="!isModoFoco" class="lg:hidden shrink-0 mb-3">
+      <div
+        v-if="!isModoFoco"
+        class="lg:hidden shrink-0 mb-3"
+      >
         <div class="flex px-3 overflow-x-auto no-scrollbar scroll-smooth gap-1.5">
           <button
             v-for="tab in visibleTabs"
             :key="tab.key"
-            @click="activeTab = tab.key"
             type="button"
             class="shrink-0 px-4 py-2.5 min-h-[44px] rounded-pill font-bold text-xs uppercase tracking-wider cursor-pointer border transition-all duration-300 ease-spring select-none active:scale-95"
             :class="activeTab === tab.key
               ? 'bg-ember text-white border-ember'
               : 'bg-transparent text-ash border-stone/20 hover:text-charcoal hover:border-stone/40 hover:bg-white/60'"
+            @click="activeTab = tab.key"
           >
             {{ tab.label }}
           </button>
@@ -140,8 +146,15 @@ onMounted(async () => {
       </div>
 
       <!-- ===== MOBILE FOOTER (< lg) ===== -->
-      <div v-if="!isModoFoco" class="lg:hidden shrink-0 px-4 py-4 border-t border-stone/30 bg-white">
-        <Button variant="secondary" class="w-full h-12 text-xs font-bold uppercase tracking-widest" @click="emit('voltar')">
+      <div
+        v-if="!isModoFoco"
+        class="lg:hidden shrink-0 px-4 py-4 border-t border-stone/30 bg-white"
+      >
+        <Button
+          variant="secondary"
+          class="w-full h-12 text-xs font-bold uppercase tracking-widest"
+          @click="emit('voltar')"
+        >
           Voltar ao Dashboard
         </Button>
       </div>

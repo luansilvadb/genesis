@@ -45,7 +45,7 @@ export function useMembros() {
       inicializado.value = true
       return
     }
-    let lista = await membroRepository.listarTodos()
+    const lista = await membroRepository.listarTodos()
     membros.value = lista
 
     if (tenantSessionService.getActiveTenantId()) {

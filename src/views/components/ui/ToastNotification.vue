@@ -37,7 +37,7 @@ const config = computed(() => {
       role="alert"
     >
       <!-- Borda Inset Simulatada para profundidade tátil -->
-      <div class="absolute inset-0 rounded-card-lg shadow-subtle pointer-events-none"></div>
+      <div class="absolute inset-0 rounded-card-lg shadow-subtle pointer-events-none" />
 
       <!-- Ícone Dinâmico -->
       <div
@@ -57,9 +57,9 @@ const config = computed(() => {
       </div>
 
       <button 
-        @click="hide" 
-        class="w-8 h-8 rounded-full flex items-center justify-center text-ash hover:text-charcoal hover:bg-stone transition-all cursor-pointer border-none bg-transparent"
+        class="w-8 h-8 rounded-full flex items-center justify-center text-ash hover:text-charcoal hover:bg-stone transition-all cursor-pointer border-none bg-transparent" 
         aria-label="Fechar notificação"
+        @click="hide"
       >
         <X class="w-4 h-4" />
       </button>

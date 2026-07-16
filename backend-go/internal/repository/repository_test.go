@@ -273,19 +273,6 @@ func TestGormCartaoRepo_Create(t *testing.T) {
 	}
 }
 
-func TestGormCartaoRepo_Update(t *testing.T) {
-	db, mock := setupMockDB(t)
-	repo := NewGormCartaoRepo(db)
-
-	expectUpdate(mock, "cartoes")
-	err := repo.Update(context.Background(), &model.Cartao{
-		ID: "c-1", TenantID: "t-1", Nome: "Nubank Updated", DiaFechamento: 20,
-	})
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-}
-
 func TestGormCartaoRepo_Delete(t *testing.T) {
 	db, mock := setupMockDB(t)
 	repo := NewGormCartaoRepo(db)

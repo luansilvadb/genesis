@@ -20,7 +20,7 @@ interface SidebarTab {
   show: boolean
 }
 
-const props = defineProps<{
+defineProps<{
   activeTab: TabKey
   visibleTabs: SidebarTab[]
   currentMembro: Membro | null | undefined
@@ -68,12 +68,12 @@ const iconMap: Record<TabKey, LucideIcon> = {
       <button
         v-for="tab in visibleTabs"
         :key="tab.key"
-        @click="emit('select-tab', tab.key)"
         type="button"
         class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left border-none cursor-pointer transition-all duration-200 select-none group"
         :class="activeTab === tab.key
           ? 'bg-ember/8 text-ember font-bold'
           : 'text-graphite hover:bg-stone/60 hover:text-charcoal font-medium'"
+        @click="emit('select-tab', tab.key)"
       >
         <component
           :is="iconMap[tab.key]"
@@ -92,19 +92,25 @@ const iconMap: Record<TabKey, LucideIcon> = {
     <!-- Footer Actions -->
     <div class="px-3 py-4 border-t border-stone/20 space-y-1.5">
       <button
-        @click="emit('logout')"
         type="button"
         class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left border-none cursor-pointer transition-all duration-200 text-graphite hover:bg-coral/6 hover:text-coral font-medium group"
+        @click="emit('logout')"
       >
-        <LogOut class="w-[18px] h-[18px] text-ash group-hover:text-coral transition-colors duration-200" :stroke-width="2" />
+        <LogOut
+          class="w-[18px] h-[18px] text-ash group-hover:text-coral transition-colors duration-200"
+          :stroke-width="2"
+        />
         <span class="text-xs leading-none">Sair da conta</span>
       </button>
       <button
-        @click="emit('voltar')"
         type="button"
         class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left border-none cursor-pointer transition-all duration-200 text-graphite hover:bg-stone/60 hover:text-charcoal font-medium group"
+        @click="emit('voltar')"
       >
-        <ArrowLeft class="w-[18px] h-[18px] text-ash group-hover:text-charcoal transition-colors duration-200" :stroke-width="2" />
+        <ArrowLeft
+          class="w-[18px] h-[18px] text-ash group-hover:text-charcoal transition-colors duration-200"
+          :stroke-width="2"
+        />
         <span class="text-xs leading-none">Voltar ao Dashboard</span>
       </button>
     </div>

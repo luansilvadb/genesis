@@ -125,11 +125,15 @@ defineExpose({
   <div class="space-y-12">
     <SkeletonMimic
       v-if="props.isLoading"
-      :variant="'hoje'"
       key="skeleton"
+      :variant="'hoje'"
       data-testid="skeleton-mimic"
     />
-    <div v-else key="content" class="space-y-12">
+    <div
+      v-else
+      key="content"
+      class="space-y-12"
+    >
       <DashboardHeader
         :current-year="currentYear"
         :current-month-name="currentMonthName"
@@ -141,19 +145,35 @@ defineExpose({
         @open-casas="vm.abrirModal('casas')"
         @open-audit-logs="abrirAuditLogs"
         @open-periodo="emit('open-periodo')"
-        @openSettings="emit('openSettings')"
+        @open-settings="emit('openSettings')"
       />
 
       <!-- Container Estabilizado -->
       <div class="relative overflow-x-hidden -mx-4 px-4 sm:-mx-6 sm:px-6">
-        <Transition :name="transitionName" mode="out-in">
-          <div v-if="isHoje" key="hoje" class="space-y-12 pb-2">
-            <div v-if="totalLancamentosPeriodoSelecionado === 0" class="py-16 flex flex-col items-center justify-center text-center space-y-8 bg-parchment/30 rounded-3xl border-2 border-dashed border-stone/50 mx-1">
+        <Transition
+          :name="transitionName"
+          mode="out-in"
+        >
+          <div
+            v-if="isHoje"
+            key="hoje"
+            class="space-y-12 pb-2"
+          >
+            <div
+              v-if="totalLancamentosPeriodoSelecionado === 0"
+              class="py-16 flex flex-col items-center justify-center text-center space-y-8 bg-parchment/30 rounded-3xl border-2 border-dashed border-stone/50 mx-1"
+            >
               <div class="animate-float">
-                <IllustrationMascot variant="sky" :size="140" mood="sleeping" />
+                <IllustrationMascot
+                  variant="sky"
+                  :size="140"
+                  mood="sleeping"
+                />
               </div>
               <div class="space-y-3 px-6">
-                <h3 class="text-3xl font-display text-charcoal leading-tight">Comece pelas<br><span class="text-sky">Despesas</span></h3>
+                <h3 class="text-3xl font-display text-charcoal leading-tight">
+                  Comece pelas<br><span class="text-sky">Despesas</span>
+                </h3>
                 <p class="text-sm text-graphite max-w-[280px] mx-auto leading-relaxed font-medium">
                   Registre a primeira despesa compartilhada para acompanhar os saldos e preparar o fechamento do mês.
                 </p>
@@ -167,7 +187,10 @@ defineExpose({
               />
             </section>
 
-            <section v-if="nettingTransferencias.length > 0" class="space-y-4">
+            <section
+              v-if="nettingTransferencias.length > 0"
+              class="space-y-4"
+            >
               <NettingPanel
                 :netting-transferencias="nettingTransferencias"
                 :fatura-selecionada-fechada="faturaSelecionadaFechada"
@@ -179,7 +202,7 @@ defineExpose({
 
             <section class="space-y-4">
               <ContasFixasPanel
-                :contasFixas="contasFixas"
+                :contas-fixas="contasFixas"
                 :gastos="gastosFaturaSelecionada"
                 :membros="props.membros"
                 :is-month-closed="faturaSelecionadaFechada"
@@ -203,7 +226,11 @@ defineExpose({
             </section>
           </div>
 
-          <div v-else-if="isPessoal" key="pessoal" class="space-y-12 pb-2">
+          <div
+            v-else-if="isPessoal"
+            key="pessoal"
+            class="space-y-12 pb-2"
+          >
             <PersonalBalancePanel
               :membros="props.membros"
               :gastos="gastosPrivadosFiltrados"
@@ -215,12 +242,12 @@ defineExpose({
 
     <DashboardModalsManager
       :vm="vm"
-      :membrosAtivos="membrosAtivos"
+      :membros-ativos="membrosAtivos"
       :cartoes="props.cartoes"
-      :faturasAbertas="props.faturasAbertas"
-      :faturasFechadas="props.faturasFechadas"
-      :casasMultitenant="{ activeTenantId, casas, form, copiedCode, isCreating, isEntering, selecionarCasa, criarNovaCasa, entrarPorCodigo, copyInviteCode, handleLogoutClick }"
-      :isFecharPeriodoBloqueado="isFecharPeriodoBloqueado"
+      :faturas-abertas="props.faturasAbertas"
+      :faturas-fechadas="props.faturasFechadas"
+      :casas-multitenant="{ activeTenantId, casas, form, copiedCode, isCreating, isEntering, selecionarCasa, criarNovaCasa, entrarPorCodigo, copyInviteCode, handleLogoutClick }"
+      :is-fechar-periodo-bloqueado="isFecharPeriodoBloqueado"
     />
   </div>
 </template>

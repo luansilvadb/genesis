@@ -23,6 +23,10 @@ const props = withDefaults(defineProps<Props>(), {
   iconVariant: 'sunburst'
 })
 
+defineEmits<{
+  (e: 'abrirNetting', t: TransferenciaNetting): void
+}>()
+
 // Map variant names to full Tailwind classes so the JIT compiler can detect them.
 const ICON_BG_CLASSES: Record<string, string> = {
   sunburst: 'bg-sunburst',
@@ -40,16 +44,23 @@ const iconBgClass = computed(() => ICON_BG_CLASSES[props.iconVariant] || ICON_BG
     <!-- Cabeçalho Padronizado -->
     <div class="py-5 px-5 sm:py-7 sm:px-6 border-b border-stone bg-parchment flex justify-between items-center">
       <div class="flex items-center gap-5">
-        <div :class="[
-          'w-11 h-11 rounded-xl text-white flex items-center justify-center shadow-sm',
-          iconBgClass
-        ]">
+        <div
+          :class="[
+            'w-11 h-11 rounded-xl text-white flex items-center justify-center shadow-sm',
+            iconBgClass
+          ]"
+        >
           <slot name="icon">
-            <Sparkles class="w-5 h-5" aria-hidden="true" />
+            <Sparkles
+              class="w-5 h-5"
+              aria-hidden="true"
+            />
           </slot>
         </div>
         <div>
-          <h2 class="font-bold text-lg leading-tight text-charcoal tracking-tight">{{ props.title }}</h2>
+          <h2 class="font-bold text-lg leading-tight text-charcoal tracking-tight">
+            {{ props.title }}
+          </h2>
           <p class="text-[11px] text-graphite uppercase tracking-widest mt-0.5 font-semibold">
             {{ props.subtitle }}
           </p>
@@ -66,7 +77,11 @@ const iconBgClass = computed(() => ICON_BG_CLASSES[props.iconVariant] || ICON_BG
         <div class="flex flex-col gap-6">
           <div class="flex items-center justify-between gap-4">
             <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
-              <MembroAvatar :nome="getMembroNome(t.from)" size="md" variant="sky" />
+              <MembroAvatar
+                :nome="getMembroNome(t.from)"
+                size="md"
+                variant="sky"
+              />
               <span class="text-[10px] font-bold text-charcoal uppercase truncate max-w-full text-center">{{ getMembroNome(t.from) }}</span>
             </div>
             
@@ -76,17 +91,21 @@ const iconBgClass = computed(() => ICON_BG_CLASSES[props.iconVariant] || ICON_BG
             </div>
 
             <div class="flex flex-col items-center gap-2 flex-1 min-w-0">
-              <MembroAvatar :nome="getMembroNome(t.to)" size="md" variant="meadow" />
+              <MembroAvatar
+                :nome="getMembroNome(t.to)"
+                size="md"
+                variant="meadow"
+              />
               <span class="text-[10px] font-bold text-charcoal uppercase truncate max-w-full text-center">{{ getMembroNome(t.to) }}</span>
             </div>
           </div>
 
           <div class="w-full">
             <Button
-              @click="$emit('abrirNetting', t)"
               variant="primary"
               class="w-full h-12 font-bold uppercase tracking-widest text-[10px] shadow-sm"
               :disabled="faturaSelecionadaFechada || isReadOnly"
+              @click="$emit('abrirNetting', t)"
             >
               Registrar Pagamento
             </Button>

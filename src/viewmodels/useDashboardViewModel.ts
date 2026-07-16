@@ -16,7 +16,7 @@ import { DivisaoDeGasto } from '../models/entities/DivisaoDeGasto'
 import type { Gasto } from '../models/entities/Gasto'
 import type { ContaFixa } from '../models/entities/ContaFixa'
 
-export interface ConfirmarAjusteGastoInput {
+interface ConfirmarAjusteGastoInput {
   descricao: string
   valorTotal: Dinheiro
   compradorId: string
@@ -26,7 +26,7 @@ export interface ConfirmarAjusteGastoInput {
   installments: number
 }
 
-export interface ConfirmarLancarBillInput {
+interface ConfirmarLancarBillInput {
   valorCentavos: number
   compradorId: string
   splitIds: string[]
@@ -106,7 +106,7 @@ export const useDashboardViewModel = (
     formatarMesAno, 
     showToast: toast.show,
     
-    abrirNovoPeriodoBottomSheet: () => ui.abrirNovoPeriodoBottomSheet(periodosState.faturaAtivaVisualizada.value),
+    abrirNovoPeriodoBottomSheet: () => ui.abrirNovoPeriodoBottomSheet(),
     
     confirmarBaixaNetting: async (dados: { from: string; to: string; valor: number; method: 'pix' | 'cash'; descricao: string }) => {
       const fatura = periodosState.faturaPixPeriodoSelecionado.value

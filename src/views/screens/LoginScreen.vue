@@ -36,7 +36,7 @@ const googleInicializado = ref(false)
 const inicializarGoogleSignIn = () => {
   if (googleInicializado.value) return
   logger.info('Inicializando Google Sign-In. Origem:', window.location.origin)
-  const google = (window as unknown as { google: { accounts: { id: { initialize: Function; renderButton: Function } } } }).google
+  const google = (window as unknown as { google: { accounts: { id: { initialize: (config: Record<string, unknown>) => void; renderButton: (element: HTMLElement, options: Record<string, unknown>) => void } } } }).google
   if (typeof google === 'undefined' || !google.accounts) {
     logger.error('Google SDK não foi carregado corretamente.')
     return
@@ -139,7 +139,6 @@ const onSubmit = async () => {
   <div class="min-h-screen bg-canvas flex items-center justify-center px-4 py-12">
     <!-- Card Container -->
     <div class="w-full max-w-[420px] bg-card rounded-2xl shadow-subtle p-8 sm:p-10 transition-all duration-300">
-      
       <!-- Brand Logo / Header -->
       <div class="text-center mb-8 relative">
         <div class="inline-flex justify-center mb-4 transform hover:rotate-12 transition-transform duration-300 pointer-events-none">
@@ -155,42 +154,74 @@ const onSubmit = async () => {
         </h1>
         
         <!-- Invite Context -->
-        <div v-if="housePreview && !membroId" class="mt-8 p-6 bg-parchment rounded-card shadow-subtle border-none animate-in fade-in slide-in-from-top-2 duration-200">
-          <p class="text-caption font-semibold text-ember uppercase tracking-widest mb-1">Você foi convidado para</p>
-          <h2 class="text-heading text-charcoal mb-6">{{ housePreview.name }}</h2>
+        <div
+          v-if="housePreview && !membroId"
+          class="mt-8 p-6 bg-parchment rounded-card shadow-subtle border-none animate-in fade-in slide-in-from-top-2 duration-200"
+        >
+          <p class="text-caption font-semibold text-ember uppercase tracking-widest mb-1">
+            Você foi convidado para
+          </p>
+          <h2 class="text-heading text-charcoal mb-6">
+            {{ housePreview.name }}
+          </h2>
           
-          <p class="text-caption font-semibold text-graphite uppercase tracking-widest mb-3">Quem é você na casa?</p>
+          <p class="text-caption font-semibold text-graphite uppercase tracking-widest mb-3">
+            Quem é você na casa?
+          </p>
           <div class="grid grid-cols-2 gap-3">
             <button 
               v-for="m in housePreview.membrosDisponiveis" 
               :key="m.id"
-              @click="selectMembro(m)"
               :aria-label="'Entrar como ' + m.nome"
               class="flex flex-col items-center gap-3 p-4 rounded-xl bg-card shadow-subtle hover:scale-[1.02] active:scale-95 transition-all duration-300 text-center group border-none cursor-pointer"
+              @click="selectMembro(m)"
             >
-              <MembroAvatar :nome="m.nome" size="md" variant="sky" class="group-hover:scale-110 transition-transform duration-300" />
+              <MembroAvatar
+                :nome="m.nome"
+                size="md"
+                variant="sky"
+                class="group-hover:scale-110 transition-transform duration-300"
+              />
               <span class="text-[11px] font-bold text-charcoal truncate uppercase tracking-widest">{{ m.nome }}</span>
             </button>
           </div>
         </div>
 
-        <div v-else-if="housePreview && membroId && membroId !== 'novo'" class="mt-8 p-6 bg-parchment rounded-card shadow-subtle border-none animate-in zoom-in-95 duration-200">
+        <div
+          v-else-if="housePreview && membroId && membroId !== 'novo'"
+          class="mt-8 p-6 bg-parchment rounded-card shadow-subtle border-none animate-in zoom-in-95 duration-200"
+        >
           <p class="text-body text-graphite">
-            Criando acesso para <br/>
-            <span class="text-heading text-charcoal">{{ selectedMembroNome }}</span><br/>
+            Criando acesso para <br>
+            <span class="text-heading text-charcoal">{{ selectedMembroNome }}</span><br>
             <span class="text-caption text-graphite font-semibold uppercase tracking-widest">na casa {{ housePreview.name }}</span>
           </p>
-          <button @click="membroId = ''" class="mt-4 text-caption font-semibold text-ember hover:opacity-80 transition-opacity uppercase tracking-widest bg-transparent border-none cursor-pointer">Alterar perfil</button>
+          <button
+            class="mt-4 text-caption font-semibold text-ember hover:opacity-80 transition-opacity uppercase tracking-widest bg-transparent border-none cursor-pointer"
+            @click="membroId = ''"
+          >
+            Alterar perfil
+          </button>
         </div>
 
-        <p v-else class="text-body text-graphite max-w-[280px] mx-auto mt-2">
+        <p
+          v-else
+          class="text-body text-graphite max-w-[280px] mx-auto mt-2"
+        >
           Organize despesas compartilhadas, feche o mês e entenda os acertos da casa
         </p>
       </div>
 
       <!-- Form (Show only if not choosing member or if member already selected) -->
-      <Transition name="fade-slide" mode="out-in">
-        <form v-if="!housePreview || membroId || !housePreview.membrosDisponiveis?.length" @submit.prevent="onSubmit" class="space-y-6 pt-4 border-t border-stone mt-8">
+      <Transition
+        name="fade-slide"
+        mode="out-in"
+      >
+        <form
+          v-if="!housePreview || membroId || !housePreview.membrosDisponiveis?.length"
+          class="space-y-6 pt-4 border-t border-stone mt-8"
+          @submit.prevent="onSubmit"
+        >
           <!-- Error Notification -->
           <Transition name="fade">
             <div 
@@ -205,14 +236,27 @@ const onSubmit = async () => {
           </Transition>
 
           <!-- Context Heading for Register -->
-          <div v-if="isRegisterMode && housePreview" class="space-y-1">
-            <h3 class="text-caption font-semibold text-graphite uppercase tracking-widest">Configurar Acesso</h3>
-            <p class="text-xs text-graphite/70">Escolha um e-mail, nome e senha para entrar.</p>
+          <div
+            v-if="isRegisterMode && housePreview"
+            class="space-y-1"
+          >
+            <h3 class="text-caption font-semibold text-graphite uppercase tracking-widest">
+              Configurar Acesso
+            </h3>
+            <p class="text-xs text-graphite/70">
+              Escolha um e-mail, nome e senha para entrar.
+            </p>
           </div>
 
           <!-- Nome Input (Apenas Cadastro) -->
-          <div v-if="isRegisterMode" class="space-y-2 fade-in slide-in-from-top-2">
-            <label for="nome" class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1">
+          <div
+            v-if="isRegisterMode"
+            class="space-y-2 fade-in slide-in-from-top-2"
+          >
+            <label
+              for="nome"
+              class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1"
+            >
               Nome de Exibição
             </label>
             <input
@@ -224,12 +268,15 @@ const onSubmit = async () => {
               placeholder="Como quer ser chamado"
               autocomplete="name"
               class="w-full bg-canvas border border-stone rounded-card px-4 py-3.5 text-body text-charcoal placeholder:text-ash focus:outline-none focus:border-ember transition-all duration-200"
-            />
+            >
           </div>
 
           <!-- Email Input -->
           <div class="space-y-2">
-            <label for="email" class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1">
+            <label
+              for="email"
+              class="block text-caption font-semibold text-charcoal uppercase tracking-widest ml-1"
+            >
               E-mail
             </label>
             <input
@@ -241,21 +288,24 @@ const onSubmit = async () => {
               placeholder="seu@email.com"
               autocomplete="email"
               class="w-full bg-canvas border border-stone rounded-card px-4 py-3.5 text-body text-charcoal placeholder:text-ash focus:outline-none focus:border-ember transition-all duration-200"
-            />
+            >
           </div>
 
           <!-- Password Input -->
           <div class="space-y-2">
             <div class="flex items-center justify-between ml-1">
-              <label for="password" class="block text-caption font-semibold text-charcoal uppercase tracking-widest">
+              <label
+                for="password"
+                class="block text-caption font-semibold text-charcoal uppercase tracking-widest"
+              >
                 Senha
               </label>
               <button 
                 v-if="!isRegisterMode"
                 type="button" 
-                @click="emit('forgot-password')"
                 tabindex="5"
                 class="text-[10px] font-semibold text-ember hover:opacity-80 transition-opacity uppercase tracking-widest bg-transparent border-none cursor-pointer focus:outline-none"
+                @click="emit('forgot-password')"
               >
                 Esqueci a senha
               </button>
@@ -270,20 +320,49 @@ const onSubmit = async () => {
                 placeholder="••••••••"
                 :autocomplete="isRegisterMode ? 'new-password' : 'current-password'"
                 class="w-full bg-canvas border border-stone rounded-card pl-4 pr-12 py-3.5 text-body text-charcoal placeholder:text-ash focus:outline-none focus:border-ember transition-all duration-200"
-              />
+              >
               <button
                 type="button"
-                @click="showPassword = !showPassword"
                 tabindex="4"
                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-graphite hover:text-charcoal focus:outline-none transition-colors border-none bg-transparent cursor-pointer"
                 :aria-label="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+                @click="showPassword = !showPassword"
               >
-                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                <svg
+                  v-if="showPassword"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
                 </svg>
               </button>
             </div>
@@ -298,24 +377,38 @@ const onSubmit = async () => {
             :aria-label="loading ? (isRegisterMode ? 'Criando conta...' : 'Entrando...') : (isRegisterMode ? 'Criar Conta e Entrar' : 'Entrar')"
             class="w-full bg-midnight hover:bg-charcoal text-white font-semibold py-4 px-6 rounded-pill text-sm tracking-widest uppercase transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-2 border-none cursor-pointer"
           >
-            <span v-if="loading" class="animate-spin inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full" aria-hidden="true"></span>
+            <span
+              v-if="loading"
+              class="animate-spin inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+              aria-hidden="true"
+            />
             <span>{{ isRegisterMode ? 'Criar Conta e Entrar' : 'Entrar' }}</span>
           </button>
 
           <!-- Divisor "OU" -->
           <div class="flex items-center my-4">
-            <div class="flex-grow border-t border-stone"></div>
+            <div class="flex-grow border-t border-stone" />
             <span class="px-3 text-caption text-ash uppercase font-semibold tracking-wider text-[10px]">Ou</span>
-            <div class="flex-grow border-t border-stone"></div>
+            <div class="flex-grow border-t border-stone" />
           </div>
 
           <!-- Google Sign-In Button Container -->
           <div class="w-full flex flex-col items-center gap-3">
-            <div v-if="googleLoginActive" class="flex items-center gap-2 text-sm text-graphite font-medium py-2">
-              <span class="animate-spin inline-block w-4 h-4 border-2 border-ember/30 border-t-ember rounded-full" aria-hidden="true"></span>
+            <div
+              v-if="googleLoginActive"
+              class="flex items-center gap-2 text-sm text-graphite font-medium py-2"
+            >
+              <span
+                class="animate-spin inline-block w-4 h-4 border-2 border-ember/30 border-t-ember rounded-full"
+                aria-hidden="true"
+              />
               <span>Conectando com Google...</span>
             </div>
-            <div v-show="!googleLoginActive" id="google-signin-btn" class="w-full min-h-[44px]"></div>
+            <div
+              v-show="!googleLoginActive"
+              id="google-signin-btn"
+              class="w-full min-h-[44px]"
+            />
           </div>
         </form>
       </Transition>
@@ -334,7 +427,6 @@ const onSubmit = async () => {
           </button>
         </p>
       </div>
-
     </div>
   </div>
 </template>

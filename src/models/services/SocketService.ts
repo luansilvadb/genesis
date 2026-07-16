@@ -51,6 +51,11 @@ const BatchDeletePayloadSchema = z.object({
   action: z.string(),
 })
 
+/** Payload para notificação de batch de faturas (criação em lote). */
+const FaturaBatchUpdatedPayloadSchema = z.object({
+  action: z.literal('batch-updated'),
+})
+
 /** Schema união: suporta tanto delete único quanto batch. */
 const ExpenseDeletedPayloadSchema = z.union([
   DeletePayloadSchema,
@@ -73,7 +78,7 @@ const WS_PAYLOAD_SCHEMAS: Record<WSEventType, z.ZodType> = {
   EXPENSE_DELETED: ExpenseDeletedPayloadSchema,
   CARD_CREATED: CartaoResponseSchema,
   CARD_DELETED: DeletePayloadSchema,
-  INVOICE_UPDATED: FaturaResponseSchema,
+  INVOICE_UPDATED: z.union([FaturaResponseSchema, FaturaBatchUpdatedPayloadSchema]),
   MEMBER_CREATED: MembroResponseSchema,
   MEMBER_UPDATED: MembroResponseSchema,
   FIXED_BILL_CREATED: ContaFixaResponseSchema,

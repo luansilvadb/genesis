@@ -167,9 +167,16 @@ const confirmarEstorno = async () => {
     <!-- Header e Boas-Vindas Pessoais -->
     <div class="p-6 rounded-3xl bg-parchment/70 border border-stone/50 flex flex-col md:flex-row justify-between items-center gap-6">
       <div class="flex items-center gap-5">
-        <IllustrationMascot variant="sky" :size="80" mood="happy" class="shrink-0" />
+        <IllustrationMascot
+          variant="sky"
+          :size="80"
+          mood="happy"
+          class="shrink-0"
+        />
         <div>
-          <h2 class="font-display text-2xl text-charcoal">Controle <span class="text-ember">Pessoal</span></h2>
+          <h2 class="font-display text-2xl text-charcoal">
+            Controle <span class="text-ember">Pessoal</span>
+          </h2>
           <p class="text-[11px] text-graphite uppercase tracking-widest font-semibold mt-1">
             Minhas pendências isoladas e acertos diretos
           </p>
@@ -179,7 +186,6 @@ const confirmarEstorno = async () => {
 
     <!-- Mini Cards de Totais -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
       <Card class="p-5 flex items-center justify-between bg-white shadow-subtle border-none">
         <div class="space-y-1">
           <span class="text-[10px] font-bold uppercase tracking-widest text-ash">A Receber</span>
@@ -220,18 +226,29 @@ const confirmarEstorno = async () => {
           @abrir-netting="handleAbrirNetting"
         >
           <template #icon>
-            <UserCheck class="w-5 h-5" aria-hidden="true" />
+            <UserCheck
+              class="w-5 h-5"
+              aria-hidden="true"
+            />
           </template>
         </NettingPanel>
 
-        <Card v-else class="!p-0 overflow-hidden shadow-subtle bg-white border-none flex flex-col min-h-[300px]">
+        <Card
+          v-else
+          class="!p-0 overflow-hidden shadow-subtle bg-white border-none flex flex-col min-h-[300px]"
+        >
           <div class="py-5 px-5 sm:py-6 sm:px-6 border-b border-stone bg-parchment flex justify-between items-center shrink-0">
             <div class="flex items-center gap-5">
               <div class="w-11 h-11 rounded-xl bg-sky text-white flex items-center justify-center shadow-sm">
-                <UserCheck class="w-5 h-5" aria-hidden="true" />
+                <UserCheck
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                />
               </div>
               <div>
-                <h3 class="font-bold text-lg leading-tight text-charcoal tracking-tight">Pendências</h3>
+                <h3 class="font-bold text-lg leading-tight text-charcoal tracking-tight">
+                  Pendências
+                </h3>
                 <p class="text-[11px] text-graphite uppercase tracking-widest mt-0.5 font-semibold">
                   Acertos de contas
                 </p>
@@ -240,7 +257,11 @@ const confirmarEstorno = async () => {
           </div>
 
           <div class="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
-            <IllustrationMascot variant="meadow" :size="70" mood="sleeping" />
+            <IllustrationMascot
+              variant="meadow"
+              :size="70"
+              mood="sleeping"
+            />
             <p class="text-xs text-ash font-medium leading-relaxed max-w-[200px]">
               Nenhum saldo pendente na sua área pessoal neste período.
             </p>
@@ -277,20 +298,24 @@ const confirmarEstorno = async () => {
 
     <BottomSheet
       :model-value="!!gastoParaEstornar"
-      @update:model-value="val => { if (!val) gastoParaEstornar = null }"
       title="Confirmar Estorno"
       subtitle="Deseja realmente estornar este lançamento privado?"
       content-class="px-6 pb-6"
+      @update:model-value="val => { if (!val) gastoParaEstornar = null }"
     >
       <div class="flex gap-3 pt-4">
         <button
           class="flex-1 px-4 py-3 rounded-xl border border-stone bg-stone/30 font-bold text-sm text-charcoal"
           @click="gastoParaEstornar = null"
-        >Cancelar</button>
+        >
+          Cancelar
+        </button>
         <button
           class="flex-1 px-4 py-3 rounded-xl bg-coral text-white font-bold text-sm"
           @click="confirmarEstorno"
-        >Sim, estornar</button>
+        >
+          Sim, estornar
+        </button>
       </div>
     </BottomSheet>
   </div>

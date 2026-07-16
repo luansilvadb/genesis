@@ -206,6 +206,7 @@ func (h *AuthHandler) CreateTenant(c *gin.Context) {
 		ID:         tenant.ID,
 		Name:       tenant.Name,
 		InviteCode: tenant.InviteCode,
+		CreatedAt:  tenant.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	})
 }
 
@@ -262,5 +263,6 @@ func (h *AuthHandler) JoinTenant(c *gin.Context) {
 		ID:         tenant.ID,
 		Name:       tenant.Name,
 		InviteCode: tenant.InviteCode,
+		CreatedAt:  tenant.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 	})
 }

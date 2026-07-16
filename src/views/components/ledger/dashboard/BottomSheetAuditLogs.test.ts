@@ -20,7 +20,7 @@ function createWrapper(props: Record<string, any> = {}) {
       visible: true,
       logs: [],
       loading: false,
-      getMembroNome: (_id: string) => 'Membro Teste',
+      getMembroNome: () => 'Membro Teste',
       ...props,
     },
     global: {
